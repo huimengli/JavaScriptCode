@@ -339,6 +339,12 @@ lt_code.chineseToUtf8 = function (s1) {
 }
 
 /**
+ * 产生一个新节点
+ * @param {string} domName 节点类型
+ */
+lt_code.newDom = (...arg) => document.createElement(arg);
+
+/**
  * utf-8转字符串
  * @param {any} szInput
  */
@@ -638,12 +644,12 @@ lt_code.getChinese = function (text, types) {
                 value_return = /^[\u4e00-\u9fa5]*/.exec(text)[0];
                 return !value_return ? "没有找到汉字" : value_return;
             } else {
-                console.log("getChinese函数暂时不支持该写法");
+                console.trace("getChinese函数暂时不支持该写法");
                 
                 return "";
             }
         default:
-            console.log("getChinese函数参数输入错误!");
+            console.trace("getChinese函数参数输入错误!");
             
             return "";
     }
@@ -698,9 +704,9 @@ lt_code.lt_css = document.getElementById("lt_code_css") ? document.getElementByI
  */
 lt_code.getId = function (idName) {
     var falseRet =  ()=> {
-        console.log("getId函数没有输入值!");
-        //console.log(this);
-        //console.log(arguments.callee.caller.name);
+        console.trace("getId函数没有输入值!");
+        //console.trace(this);
+        //console.trace(arguments.callee.caller.name);
     };
     return !document.getElementById(idName) ?falseRet() : document.getElementById(idName);
 };
@@ -725,10 +731,10 @@ lt_code.getClass = function (className, few, dom_father, useFew) {
         }
         default:
             if (arguments.length !== 0) {
-                console.log("getClass函数输入错误!");
+                console.trace("getClass函数输入错误!");
                 
             } else {
-                console.log("getClass函数没有输入值!");
+                console.trace("getClass函数没有输入值!");
                 
             }
     }
@@ -758,10 +764,10 @@ lt_code.getTage = function (tageName, dom, few, ISuseDom) {
             }
         default:
             if (arguments.length !== 0) {
-                console.log("getTage函数输入错误!");
+                console.trace("getTage函数输入错误!");
                 
             } else {
-                console.log("getTage函数没有输入值!");
+                console.trace("getTage函数没有输入值!");
                 
             }
     }
@@ -811,7 +817,7 @@ lt_code.getAll = function (name, few, dom_father, useFew) {
                 value_read = name.replace(/\#?\.?/, "");
                 if (exec_value[0] === "#") {
                     return_value = lt_code.getId(value_read);
-                    console.log("getAll函数读取id不需要输入few参数");
+                    console.trace("getAll函数读取id不需要输入few参数");
                     
                 } else if (exec_value[0] === ".") {
                     return_value = lt_code.getClass(value_read, few);
@@ -829,7 +835,7 @@ lt_code.getAll = function (name, few, dom_father, useFew) {
                 value_read = name.replace(/\#?\.?/, "");
                 if (exec_value[0] === "#") {
                     return_value = lt_code.getId(value_read);
-                    console.log("getAll函数读取id不需要输入few参数");
+                    console.trace("getAll函数读取id不需要输入few参数");
                     
                 } else if (exec_value[0] === ".") {
                     return_value = lt_code.getClass(value_read, few, dom_father);
@@ -851,7 +857,7 @@ lt_code.getAll = function (name, few, dom_father, useFew) {
                 value_read = name.replace(/\#?\.?/, "");
                 if (exec_value[0] === "#") {
                     return_value = lt_code.getId(value_read);
-                    console.log("getAll函数读取id不需要输入few参数");
+                    console.trace("getAll函数读取id不需要输入few参数");
                     
                 } else if (exec_value[0] === ".") {
                     return_value = lt_code.getClass(value_read, few, dom_father);
@@ -863,13 +869,13 @@ lt_code.getAll = function (name, few, dom_father, useFew) {
     }
 
     if (return_value === null) {
-        console.log("getAll函数name参数输入错误!");
+        console.trace("getAll函数name参数输入错误!");
         
     } else if (return_value === undefined) {
-        console.log("本页面中没有找到此对象");
+        console.trace("本页面中没有找到此对象");
         
     } else if (return_value.length === 0) {
-        console.log("没有此对象|此页面中没有使用此对象");
+        console.trace("没有此对象|此页面中没有使用此对象");
         
     } else if (return_value.length === 1) {
         return_value = return_value[0];
@@ -922,7 +928,7 @@ lt_code.getAll2 = function (name, dom_father, few, useFather) {
                 value_read = name.replace(/\#?\.?/, "");
                 if (exec_value[0] === "#") {
                     return_value = lt_code.getId(value_read);
-                    console.log("js不支持读取父类对象的子类id");
+                    console.trace("js不支持读取父类对象的子类id");
                     
                 } else if (exec_value[0] === ".") {
                     return_value = lt_code.getClass(value_read, null, dom_father, false);
@@ -940,7 +946,7 @@ lt_code.getAll2 = function (name, dom_father, few, useFather) {
                 value_read = name.replace(/\#?\.?/, "");
                 if (exec_value[0] === "#") {
                     return_value = lt_code.getId(value_read);
-                    console.log("getAll2函数读取id不需要输入few参数");
+                    console.trace("getAll2函数读取id不需要输入few参数");
                     
                 } else if (exec_value[0] === ".") {
                     return_value = lt_code.getClass(value_read, few, dom_father);
@@ -958,7 +964,7 @@ lt_code.getAll2 = function (name, dom_father, few, useFather) {
                 value_read = name.replace(/\#?\.?/, "");
                 if (exec_value[0] === "#") {
                     return_value = lt_code.getId(value_read);
-                    console.log("getAll2函数读取id不需要输入few参数");
+                    console.trace("getAll2函数读取id不需要输入few参数");
                     
                 } else if (exec_value[0] === ".") {
                     if (!useFather) {
@@ -974,13 +980,13 @@ lt_code.getAll2 = function (name, dom_father, few, useFather) {
     }
 
     if (return_value === null) {
-        console.log("getAll2函数name参数输入错误!");
+        console.trace("getAll2函数name参数输入错误!");
         
     } else if (return_value === undefined) {
-        console.log("本页面中没有找到此对象");
+        console.trace("本页面中没有找到此对象");
         
     } else if (return_value.length === 0) {
-        console.log("没有此对象|此页面中没有使用此对象");
+        console.trace("没有此对象|此页面中没有使用此对象");
         
     } else if (return_value.length === 1) {
         return_value = return_value[0];
@@ -1038,7 +1044,7 @@ lt_code.getAll3 = function (name, few, dom_father, useFew) {
                         value_read = name.replace(/\#?\.?/, "");
                         if (exec_value[0] === "#") {
                             return_value = lt_code.getId(value_read);
-                            console.log("getAll函数读取id不需要输入few参数");
+                            console.trace("getAll函数读取id不需要输入few参数");
                             
                         } else if (exec_value[0] === ".") {
                             return_value = lt_code.getClass(value_read, few);
@@ -1056,7 +1062,7 @@ lt_code.getAll3 = function (name, few, dom_father, useFew) {
                         value_read = name.replace(/\#?\.?/, "");
                         if (exec_value[0] === "#") {
                             return_value = lt_code.getId(value_read);
-                            console.log("getAll函数读取id不需要输入few参数");
+                            console.trace("getAll函数读取id不需要输入few参数");
                             
                         } else if (exec_value[0] === ".") {
                             return_value = lt_code.getClass(value_read, few, dom_father);
@@ -1079,7 +1085,7 @@ lt_code.getAll3 = function (name, few, dom_father, useFew) {
                         value_read = name.replace(/\#?\.?/, "");
                         if (exec_value[0] === "#") {
                             return_value = lt_code.getId(value_read);
-                            console.log("getAll函数读取id不需要输入few参数");
+                            console.trace("getAll函数读取id不需要输入few参数");
                             
                         } else if (exec_value[0] === ".") {
                             return_value = lt_code.getClass(value_read, few, dom_father);
@@ -1116,7 +1122,7 @@ lt_code.getAll3 = function (name, few, dom_father, useFew) {
                 }
                 //获取子类
                 if (exec_value[3] === ">") {
-                    //console.log(exec_value[4]);
+                    //console.trace(exec_value[4]);
                     return_value = lt_code.getAll3(
                         exec_value[4], null,
                         lt_code.getAll3(exec_value[1] + exec_value[2], 0),
@@ -1171,7 +1177,7 @@ lt_code.getAll3 = function (name, few, dom_father, useFew) {
                 }
                 //获取子类
                 if (exec_value[3] === ">") {
-                    //console.log(exec_value);
+                    //console.trace(exec_value);
                     return_value = lt_code.getAll3(exec_value[4], few, dom_father);
                 }
                 //获取父类
@@ -1196,7 +1202,7 @@ lt_code.getAll3 = function (name, few, dom_father, useFew) {
                 }
             }
             if (arguments.length === 4) {
-                //console.log(dom_father);
+                //console.trace(dom_father);
                 if (dom_father.item) {
                     dom_father = dom_father[0];
                 }
@@ -1229,20 +1235,20 @@ lt_code.getAll3 = function (name, few, dom_father, useFew) {
                 }
             }
             if(arguments.length>4){
-                console.log("getAll3选择子类函数暂时不支持其他参数");
+                console.trace("getAll3选择子类函数暂时不支持其他参数");
                 
             }
         }
     }
 
     if (return_value === null) {
-        console.log("getAll函数name参数输入错误!");
+        console.trace("getAll函数name参数输入错误!");
         
     } else if (return_value === undefined) {
-        console.log("本页面中没有找到此对象");
+        console.trace("本页面中没有找到此对象");
         
     } else if (return_value.length === 0) {
-        console.log("没有此对象|此页面中没有使用此对象");
+        console.trace("没有此对象|此页面中没有使用此对象");
         
     } else if (return_value.length === 1) {
         return_value = return_value[0];
@@ -1335,7 +1341,7 @@ lt_code.getIframeWindow = function (idName) {
 lt_code.getIframe = function (dom, name) {
     var inner_value = dom.contentDocument.getElementsByTagName("body")[0];
     if (!inner_value) {
-        console.log("读取对象非iframe内联边框|没能读取到对象");
+        console.trace("读取对象非iframe内联边框|没能读取到对象");
         
         return;
     }
@@ -1363,7 +1369,7 @@ lt_code.color_change = function (color) {
     color_exec = regular.exec(color);
 
     if (!color_exec) {
-        console.log("color_change函数输入的颜色值不正确!");
+        console.trace("color_change函数输入的颜色值不正确!");
         
     } else if (color_exec[0] === "#") {
         return_value = color.replace(/\#/, "");
@@ -1382,7 +1388,7 @@ lt_code.color_change = function (color) {
                 (lt_code.form16To10(return_value[4]) * 16 +
                     lt_code.form16To10(return_value[5])) + ")";
         } else {
-            console.log("color_change函数#类颜色值输入位数不正确!");
+            console.trace("color_change函数#类颜色值输入位数不正确!");
             
             return_value = null;
         }
@@ -1396,7 +1402,7 @@ lt_code.color_change = function (color) {
                     return_values[i] = lt_code.getNum(return_value[i], 4);
                     return_values[i] = lt_code.form10To16(return_values[i]);
                 } else {
-                    console.log("color_change函数rgb输入的第" + i + "个数值有误!");
+                    console.trace("color_change函数rgb输入的第" + i + "个数值有误!");
                     
                     return_values[i] = "00";
                 }
@@ -1407,14 +1413,14 @@ lt_code.color_change = function (color) {
             return_value = return_values[0] + return_values[1] +
                 return_values[2] + return_values[3];
         } else {
-            console.log("color_change函数,rgb()类颜色值输入错误");
+            console.trace("color_change函数,rgb()类颜色值输入错误");
             
             return_value = null;
         }
     } else if (color_exec[0] === "rgba") {
         return_value = /(\d+)\,(\d+)\,(\d+)\,(\d\.\d+|\d)/.exec(color);
         if (lt_code.getNum(return_value[4]) > 1) {
-            console.log("color_change函数rgba()类颜色输入alpha参数有误");
+            console.trace("color_change函数rgba()类颜色输入alpha参数有误");
             
             return_value = null;
         } else {
@@ -1430,7 +1436,7 @@ lt_code.color_change = function (color) {
                         return_values[i] = lt_code.getNum(return_values[i]);
                         return_values[i] = lt_code.form10To16(return_values[i]);
                     } else {
-                        console.log("color_change函数rgb输入的第" + i + "个数值有误!");
+                        console.trace("color_change函数rgb输入的第" + i + "个数值有误!");
                         
                         return_values[i] = "00";
                     }
@@ -1441,7 +1447,7 @@ lt_code.color_change = function (color) {
                 return_value = return_values[0] + return_values[1] +
                     return_values[2] + return_values[3];
             } else {
-                console.log("color_change函数,rgba()类颜色值输入值错误");
+                console.trace("color_change函数,rgba()类颜色值输入值错误");
                 
                 return_value = null;
             }
@@ -1492,9 +1498,9 @@ lt_code.show = function (dom, timer) {
             break;
         default:
             if (arguments.length !== 0) {
-                console.log("show函数输入错误!");
+                console.trace("show函数输入错误!");
             } else {
-                console.log("show函数没有输入值!");
+                console.trace("show函数没有输入值!");
             }
     }
 };
@@ -1518,7 +1524,7 @@ lt_code.disappear = function (dom, timer, ISwate) {
             break;
         case 3:
             if (typeof (ISwate) !== "boolean") {
-                console.log("disappear函数ISwate参数输入参数出错!");
+                console.trace("disappear函数ISwate参数输入参数出错!");
             } else {
                 if (ISwate) {
                     dom.style.transitionDuration = timer + "s";
@@ -1532,9 +1538,9 @@ lt_code.disappear = function (dom, timer, ISwate) {
             break;
         default:
             if (arguments.length !== 0) {
-                console.log("disppear函数输入错误!");
+                console.trace("disppear函数输入错误!");
             } else {
-                console.log("disppear函数没有输入值!");
+                console.trace("disppear函数没有输入值!");
             }
     }
 };
@@ -1561,14 +1567,14 @@ lt_code.getNum = function (text, types) {
             } else if (types === 5) {
                 return parseInt(/-?[\d]+\.?[\d]{0,}/.exec(text));//可以读取小数
             } else {
-                console.log("getNum函数,type参数输入错误!");
+                console.trace("getNum函数,type参数输入错误!");
             }
             break;
         default:
             if (arguments.length !== 0) {
-                console.log("getNum函数输入错误!");
+                console.trace("getNum函数输入错误!");
             } else {
-                console.log("getNum函数没有输入值!");
+                console.trace("getNum函数没有输入值!");
             }
     }
 };
@@ -1601,10 +1607,10 @@ lt_code.changeHeight = function (dom, from, to, timer) {
                     dom.style.webkitAnimation = "";
                 }, timer * 1000);
                 break;
-            default: console.log("changeHeight函数输入的参数有误!");
+            default: console.trace("changeHeight函数输入的参数有误!");
         }
     } else {
-        console.log("特殊style空间不存在");
+        console.trace("特殊style空间不存在");
     }
 };
 
@@ -1628,7 +1634,7 @@ lt_code.changeHeight2 = function (dom, to, timer) {
                 dom.style.transitionDuration = "";
             }, timer * 1000);
             break;
-        default: console.log("changeHeight函数输入的参数有误!");
+        default: console.trace("changeHeight函数输入的参数有误!");
     }
 };
 
@@ -1660,10 +1666,10 @@ lt_code.changeWidth = function (dom, from, to, timer) {
                     dom.style.webkitAnimation = "";
                 }, timer * 1000);
                 break;
-            default: console.log("changeWidth函数输入的参数有误!");
+            default: console.trace("changeWidth函数输入的参数有误!");
         }
     } else {
-        console.log("特殊style空间不存在");
+        console.trace("特殊style空间不存在");
     }
 };
 
@@ -1687,7 +1693,7 @@ lt_code.changeWidth2 = function (dom, to, timer) {
                 dom.style.transitionDuration = "";
             }, timer * 1000);
             break;
-        default: console.log("changeWidth函数输入的参数有误!");
+        default: console.trace("changeWidth函数输入的参数有误!");
     }
 };
 
@@ -1699,7 +1705,7 @@ lt_code.changeWidth2 = function (dom, to, timer) {
  */
 lt_code.changeWidth3 = function (dom, to, timer) {
     if (to > 100) {
-        console.log("changeWidth3警告:变动的百分比大于100%");
+        console.trace("changeWidth3警告:变动的百分比大于100%");
     }
     switch (arguments.length) {
         case 2: dom.style.transitionDuration = "1s";
@@ -1714,7 +1720,7 @@ lt_code.changeWidth3 = function (dom, to, timer) {
                 dom.style.transitionDuration = "";
             }, timer * 1000);
             break;
-        default: console.log("changeWidth函数输入的参数有误!");
+        default: console.trace("changeWidth函数输入的参数有误!");
     }
 };
 
@@ -1767,10 +1773,10 @@ lt_code.changeColor = function (dom, from, to, timer, ISbackgroundColor) {
                 }
                 break;
             default:
-                console.log("changeColor函数输入的参数有误!");
+                console.trace("changeColor函数输入的参数有误!");
         }
     } else {
-        console.log("特殊style空间不存在!");
+        console.trace("特殊style空间不存在!");
     }
 };
 
@@ -1841,7 +1847,7 @@ lt_code.changeBoxShadow = function (dom, x, z, colors, types, timer, ISinset) {
                         "px " + z + "px " + colors + ";}}";
                         break;
                     default:
-                        console.log("changeBoxShadow函数,types值输入错误!");
+                        console.trace("changeBoxShadow函数,types值输入错误!");
                 }
                 if (types !== 9) {
                     this.lt_css.innerHTML =
@@ -1887,7 +1893,7 @@ lt_code.changeBoxShadow = function (dom, x, z, colors, types, timer, ISinset) {
                         "px " + z + "px " + colors + ";}}";
                         break;
                     default:
-                        console.log("changeBoxShadow函数,types值输入错误!");
+                        console.trace("changeBoxShadow函数,types值输入错误!");
                 }
                 if (types !== 9) {
                     this.lt_css.innerHTML =
@@ -1934,7 +1940,7 @@ lt_code.changeBoxShadow = function (dom, x, z, colors, types, timer, ISinset) {
                             "px " + z + "px " + colors + " inset;}}";
                             break;
                         default:
-                            console.log("changeBoxShadow函数,types值输入错误!");
+                            console.trace("changeBoxShadow函数,types值输入错误!");
                     }
                     if (types !== 9) {
                         this.lt_css.innerHTML =
@@ -1979,7 +1985,7 @@ lt_code.changeBoxShadow = function (dom, x, z, colors, types, timer, ISinset) {
                             "px " + z + "px " + colors + ";}}";
                             break;
                         default:
-                            console.log("changeBoxShadow函数,types值输入错误!");
+                            console.trace("changeBoxShadow函数,types值输入错误!");
                     }
                     if (types !== 9) {
                         this.lt_css.innerHTML =
@@ -2006,10 +2012,10 @@ lt_code.changeBoxShadow = function (dom, x, z, colors, types, timer, ISinset) {
                 }
                 break;
             default:
-                console.log("changeBoxShadow函数参数输入错误！");
+                console.trace("changeBoxShadow函数参数输入错误！");
         }
     } else {
-        console.log("特殊style空间不存在!");
+        console.trace("特殊style空间不存在!");
     }
 };
 
@@ -2023,7 +2029,7 @@ lt_code.changeBoxShadow = function (dom, x, z, colors, types, timer, ISinset) {
  */
 lt_code.changeBigerSmaller = function (doms, from, to, timer, ISwidth) {
     if (!this.lt_css) {
-        console.log("特殊style空间不存在!");
+        console.trace("特殊style空间不存在!");
     } else {
         var value1 = /\s{0,}[\<]?/.exec(doms.innerHTML)[0];//从第一个字符开始读取,直到不是<或者\s为止
         value1 = value1.replace(/[^\<]?/ig, "");//移去上个字符串中的所有非<的字符
@@ -2047,10 +2053,10 @@ lt_code.changeBigerSmaller = function (doms, from, to, timer, ISwidth) {
                         doms.style.webkitAnimation = "";
                     }, timer * 1000);
                     break;
-                case 5: console.log("changeBigerSmaller函数在输入的doms内容里面没有立即读取到标签会判定为改变字号大小,无需输入第五个参数");
+                case 5: console.trace("changeBigerSmaller函数在输入的doms内容里面没有立即读取到标签会判定为改变字号大小,无需输入第五个参数");
                     break;
                 default:
-                    console.log("changeBigerSmaller函数输入的参数出错!");
+                    console.trace("changeBigerSmaller函数输入的参数出错!");
             }
         } else {
             switch (arguments.length) {
@@ -2062,7 +2068,7 @@ lt_code.changeBigerSmaller = function (doms, from, to, timer, ISwidth) {
                     this.changeHeight(doms, from, to, timer);
                 }
                     break;
-                default: console.log("changeBigerSmaller函数输入的参数出错!");
+                default: console.trace("changeBigerSmaller函数输入的参数出错!");
             }
         }
     }
@@ -2149,11 +2155,11 @@ lt_code.makeMoveBox = function (dom) {
  */
 lt_code.moveBox = function (dom, changeWidth, changeHeight, time) {
     if (!this.lt_css) {
-        console.log("特殊style样式空间不存在!");
+        console.trace("特殊style样式空间不存在!");
         return;
     } else {
         if (dom.style.position === "static") {
-            console.log("moveBox函数报错:此物件属性为static不能移动!");
+            console.trace("moveBox函数报错:此物件属性为static不能移动!");
             return;
         } else if (dom.style.position === "") {
             //dom.style.position = "absolute";
@@ -2228,11 +2234,11 @@ lt_code.moveBox = function (dom, changeWidth, changeHeight, time) {
  */
 lt_code.moveBoxTo = function (dom, changeWidth, changeHeight, time) {
     if (!this.lt_css) {
-        console.log("特殊style样式空间不存在!");
+        console.trace("特殊style样式空间不存在!");
         return;
     } else {
         if (dom.style.position === "static") {
-            console.log("moveBox函数报错:此物件属性为static不能移动!");
+            console.trace("moveBox函数报错:此物件属性为static不能移动!");
             return;
         } else if (dom.style.position === "") {
             //dom.style.position = "absolute";
@@ -2311,10 +2317,10 @@ lt_code.moveBoxTo = function (dom, changeWidth, changeHeight, time) {
  */
 lt_code.moveBoxTo2 = function (dom, changeWidth, changeHeight, time) {
     if (!dom) {
-        console.log("moveBoxTo2函数报错:移动对象不存在!");
+        console.trace("moveBoxTo2函数报错:移动对象不存在!");
         return;
     } else if (dom.style.position === "static") {
-        console.log("moveBox函数报错:此物件属性为static不能移动!");
+        console.trace("moveBox函数报错:此物件属性为static不能移动!");
         return;
     } else if (dom.style.position === "") {
         //dom.style.position = "absolute";
@@ -2361,7 +2367,7 @@ lt_code.moveBoxTo2 = function (dom, changeWidth, changeHeight, time) {
             }, time * 1000);
             break;
         default:
-            console.log("moveBoxTo2函数参数输入出错!");
+            console.trace("moveBoxTo2函数参数输入出错!");
     }
 };
 //moveBoxTo2函数接口
@@ -2379,11 +2385,11 @@ lt_code.moveBoxTo2.useBottom = false;
  */
 lt_code.moveBoxShow = function (dom, changeWidth, changeHeight, time) {
     if (!this.lt_css) {
-        console.log("特殊style样式空间不存在!");
+        console.trace("特殊style样式空间不存在!");
         return;
     } else {
         if (dom.style.position === "static") {
-            console.log("moveBoxShow函数报错:此物件属性为static不能移动!");
+            console.trace("moveBoxShow函数报错:此物件属性为static不能移动!");
             return;
         } else if (dom.style.position === "") {
             //dom.style.position = "absolute";
@@ -2449,7 +2455,7 @@ lt_code.moveBoxShow = function (dom, changeWidth, changeHeight, time) {
             }, time * 1000);
             break;
         default:
-            console.log("moveBoxShow函数输入出错!");
+            console.trace("moveBoxShow函数输入出错!");
     }
 };
 
@@ -2463,11 +2469,11 @@ lt_code.moveBoxShow = function (dom, changeWidth, changeHeight, time) {
  */
 lt_code.moveBoxDisappear = function (dom, changeWidth, changeHeight, time, ISdisappear) {
     if (!this.lt_css) {
-        console.log("特殊style样式空间不存在!");
+        console.trace("特殊style样式空间不存在!");
         return;
     } else {
         if (dom.style.position === "static") {
-            console.log("moveBoxShow函数报错:此物件属性为static不能移动!");
+            console.trace("moveBoxShow函数报错:此物件属性为static不能移动!");
             return;
         } else if (dom.style.position === "") {
             //dom.style.position = "absolute";
@@ -2557,7 +2563,7 @@ lt_code.moveBoxDisappear = function (dom, changeWidth, changeHeight, time, ISdis
             }, time * 1000);
             break;
         default:
-            console.log("moveBoxShow函数输入出错!");
+            console.trace("moveBoxShow函数输入出错!");
     }
 };
 
@@ -2570,7 +2576,7 @@ lt_code.moveBoxDisappear = function (dom, changeWidth, changeHeight, time, ISdis
  */
 lt_code.moveBox2 = function (dom, changeWidth, changeHeight, time) {
     if (dom.style.position === "static") {
-        console.log("moveBox函数报错:此物件属性为static不能移动!");
+        console.trace("moveBox函数报错:此物件属性为static不能移动!");
         return;
     } else if (dom.style.position === "") {
         dom.style.position = "absolute";
@@ -2618,7 +2624,7 @@ lt_code.moveBox2 = function (dom, changeWidth, changeHeight, time) {
             }, time * 1000);
             break;
         default:
-            console.log("moveBox2函数输入错误!");
+            console.trace("moveBox2函数输入错误!");
     }
 };
 
@@ -2629,10 +2635,10 @@ lt_code.moveBox2 = function (dom, changeWidth, changeHeight, time) {
  */
 lt_code.makeNestleMouse = function (dom, time) {
     if (arguments.length === 0) {
-        console.log("makeNestleMouse函数报错:没有输入值!");
+        console.trace("makeNestleMouse函数报错:没有输入值!");
         return;
     } else if (typeof (dom) !== "object") {
-        console.log("makeNestltMouse函数报错:输入的dom值出错!");
+        console.trace("makeNestltMouse函数报错:输入的dom值出错!");
         return;
     }
 
@@ -2654,7 +2660,7 @@ lt_code.makeNestleMouse = function (dom, time) {
         if (ISonBody) {
             var e = event || window.event;
             if (!e) {
-                console.log("makeNestleMouse函数报错:鼠标没有在当前文档上!");
+                console.trace("makeNestleMouse函数报错:鼠标没有在当前文档上!");
             } else {
                 switch (arguments.length) {
                     case 1:
@@ -2670,7 +2676,7 @@ lt_code.makeNestleMouse = function (dom, time) {
                         }
                         break;
                     default:
-                        console.log("makeNestleMouse函数出错:参数输入过多!");
+                        console.trace("makeNestleMouse函数出错:参数输入过多!");
                 }
             }
         }
@@ -2707,7 +2713,7 @@ lt_code.makeMoveBox2 = function (dom, IsOnlyLeft) {
                     offLeft = e.clientX - offLeft;
                     document.onmousemove = function (e) {
                         e = event || document.event;
-                        console.log(e);
+                        console.trace(e);
                         var move_x = e.clientX - offLeft;
                         if (max_width < 0) {
                             move_x = move_x < max_width ? max_width : move_x;
@@ -2783,7 +2789,7 @@ lt_code.makeMoveBox2 = function (dom, IsOnlyLeft) {
             }
             break;
         default:
-            console.log("makeMoveBox2函数输入参数出错!");
+            console.trace("makeMoveBox2函数输入参数出错!");
     }
 };
 
@@ -2891,7 +2897,7 @@ lt_code.mouseBoxShadow = function (dom, e, colors, boxShadow_z, moves) {
             dom.style.boxShadow = boxShadow_x + "px " + boxShadow_y + "px " + boxShadow_z + "px " + colors;
             break;
         default:
-            console.log("mouseBoxShadow函数输入参数出错!");
+            console.trace("mouseBoxShadow函数输入参数出错!");
     }
 };
 
@@ -2943,8 +2949,8 @@ lt_code.make3DBox = function (dom, changeSize, maxChange, doms) {
         dom.onmousemove = function (e) {
             e = e || window.event;
 
-            //console.log(e.clientX + " " + e.clientY);
-            //console.log(changeSize + " " + maxChange);
+            //console.trace(e.clientX + " " + e.clientY);
+            //console.trace(changeSize + " " + maxChange);
 
             /**元素最中间距离左边的宽度 */
             var child_left = child_dom.offsetLeft + child_dom.offsetWidth / 2;
@@ -2973,7 +2979,7 @@ lt_code.make3DBox = function (dom, changeSize, maxChange, doms) {
                 "deg) rotateY(" + change_X + "deg)";
         };
     } else {
-        console.log("make3DBox函数参数输入错误!");
+        console.trace("make3DBox函数参数输入错误!");
     }
 };
 
@@ -2993,7 +2999,7 @@ lt_code.make3DImg = function (dom) {
  */
 lt_code.make3DImgTrun = function (dom, trunDeg, type) {
     if (dom.id.length === 0) {
-        console.log("make3DImgTrun函数没有找到对象的id");
+        console.trace("make3DImgTrun函数没有找到对象的id");
     } else {
         switch (arguments.length) {
             case 2:
@@ -3132,11 +3138,11 @@ lt_code.make3DImgTrun = function (dom, trunDeg, type) {
                         }
                     };
                 } else {
-                    console.log("make3DImgTrun函数type参数输入错误!");
+                    console.trace("make3DImgTrun函数type参数输入错误!");
                 }
                 break;
             default:
-                console.log("make3DImgTrun函数输入参数出错!");
+                console.trace("make3DImgTrun函数输入参数出错!");
         }
     }
 };
@@ -3155,7 +3161,7 @@ lt_code.make3DTrun_inner = function (dom, trunDeg, child_name, type, times) {
     switch (arguments.length) {
         case 3:
             if (dom.length && dom.length > 1 && dom.innerHTML !== "") {
-                //console.log(dom_child);
+                //console.trace(dom_child);
                 for (var i = 0; i < dom.length; i++) {
                     dom[i].style.transformStyle = "preserve-3d";
                     dom[i].style.perspective = "1200px";
@@ -3182,7 +3188,7 @@ lt_code.make3DTrun_inner = function (dom, trunDeg, child_name, type, times) {
             break;
         case 4:
             if (dom.length && dom.length > 1 && dom.innerHTML !== "") {
-                //console.log(dom_child);
+                //console.trace(dom_child);
                 for (var i = 0; i < dom.length; i++) {
                     dom[i].style.transformStyle = "preserve-3d";
                     dom[i].style.perspective = "1200px";
@@ -3200,7 +3206,7 @@ lt_code.make3DTrun_inner = function (dom, trunDeg, child_name, type, times) {
                     } else if (type === 1) {
                         dom_child[i].style.transform = "rotateX(" + trunDeg + "deg)";
                     } else {
-                        console.log("make3DTrun_inner函数type参数输入错误!");
+                        console.trace("make3DTrun_inner函数type参数输入错误!");
                     }
                 }
             } else if (dom.innerHTML !== "" && !dom.length) {
@@ -3219,13 +3225,13 @@ lt_code.make3DTrun_inner = function (dom, trunDeg, child_name, type, times) {
                 } else if (type === 1) {
                     dom_child[0].style.transform = "rotateX(" + trunDeg + "deg)";
                 } else {
-                    console.log("make3DTrun_inner函数type参数输入错误!");
+                    console.trace("make3DTrun_inner函数type参数输入错误!");
                 }
             }
             break;
         case 5:
             if (dom.length && dom.length > 1 && dom.innerHTML !== "") {
-                //console.log(dom_child);
+                //console.trace(dom_child);
                 for (var i = 0; i < dom.length; i++) {
                     dom[i].style.transformStyle = "preserve-3d";
                     dom[i].style.perspective = "1200px";
@@ -3243,7 +3249,7 @@ lt_code.make3DTrun_inner = function (dom, trunDeg, child_name, type, times) {
                     } else if (type === 1) {
                         dom_child[i].style.transform = "rotateX(" + trunDeg + "deg)";
                     } else {
-                        console.log("make3DTrun_inner函数type参数输入错误!");
+                        console.trace("make3DTrun_inner函数type参数输入错误!");
                     }
                 }
             } else if (dom.innerHTML !== "" && !dom.length) {
@@ -3262,12 +3268,12 @@ lt_code.make3DTrun_inner = function (dom, trunDeg, child_name, type, times) {
                 } else if (type === 1) {
                     dom_child[0].style.transform = "rotateX(" + trunDeg + "deg)";
                 } else {
-                    console.log("make3DTrun_inner函数type参数输入错误!");
+                    console.trace("make3DTrun_inner函数type参数输入错误!");
                 }
             }
             break;
         default:
-            console.log("make3DTrun_inner函数参数输入错误!");
+            console.trace("make3DTrun_inner函数参数输入错误!");
 
     }
 
@@ -3290,7 +3296,7 @@ lt_code.make3DTrun_inner.clearAll = function () { };
  */
 lt_code.innerClock = function (dom) {
     if (!dom) {
-        console.log("innerClock函数对象不存在!");
+        console.trace("innerClock函数对象不存在!");
     } else {
         dom.innerHTML += "<canvas id=\"clockCanvas\"></canvas>";
     }
@@ -3346,7 +3352,7 @@ lt_code.innerClock = function (dom) {
         var nextMinutes = parseInt((nextSeconds % 3600) / 60);
         nextSeconds = nextSeconds % 60;
 
-        //console.log("+"+nextSeconds);
+        //console.trace("+"+nextSeconds);
 
         //获得之前的秒数的参数
         var curSeconds = getSeconds(NOWDATE);
@@ -3355,8 +3361,8 @@ lt_code.innerClock = function (dom) {
         var curMinutes = parseInt((curSeconds % 3600) / 60);
         curSeconds = curSeconds % 60;
 
-        //console.log(nextSeconds-curSeconds);
-        //console.log(nextHour-curHour);
+        //console.trace(nextSeconds-curSeconds);
+        //console.trace(nextHour-curHour);
 
         if (NOWDATE !== new Date()) {
             //在这里加上小球更新的函数
@@ -3413,7 +3419,7 @@ lt_code.innerClock = function (dom) {
             balls[i].y += balls[i].vy;
             balls[i].vy += balls[i].g;
 
-            //console.log(i);
+            //console.trace(i);
             //碰撞挡边检测
             if (balls[i].y >= WINDOW_HEIGHT - GROUP_R) {
                 balls[i].y = WINDOW_HEIGHT - GROUP_R;
@@ -3429,7 +3435,7 @@ lt_code.innerClock = function (dom) {
                 balls[effective++] = balls[i];
             }
         }
-        //console.log(effective);
+        //console.trace(effective);
         //开始维护
         while (balls.length > Math.min(MAXGROUP, effective)) {
             balls.pop();
@@ -3472,11 +3478,11 @@ lt_code.innerClock = function (dom) {
 
     //计算倒计时还有多少时间
     function change_time(time_now, time_end) {
-        //console.log(time_now + "" + time_end);
+        //console.trace(time_now + "" + time_end);
         var seconds;
         seconds = time_end.getTime() - time_now.getTime();
         seconds = Math.round(seconds / 1000);
-        //console.log(seconds);
+        //console.trace(seconds);
         return seconds >= 0 ? seconds : 0;
     }
 
@@ -3589,7 +3595,7 @@ lt_code.scrollToTop = (function smoothscroll() {
  */
 lt_code.inputToSpan = function (beChouseName, bottomName, fatherName, wardingName) {
     if (arguments.length < 3 || arguments.length > 4) {
-        console.log("input转为span函数输入参数出错!");
+        console.trace("input转为span函数输入参数出错!");
         return;
     }
 
@@ -3606,7 +3612,7 @@ lt_code.inputToSpan = function (beChouseName, bottomName, fatherName, wardingNam
 
     /**用来被选择的数组 */
     var lt_basic = lt_code.getClass(beChouseName);
-    console.log(lt_basic);
+    console.trace(lt_basic);
     /**用来存放lt_basic代码的数组 */
     var lt_basic_value = new Array();
     for (var i = 0; i < lt_basic.length; i++) {
@@ -3656,7 +3662,7 @@ lt_code.inputToSpan = function (beChouseName, bottomName, fatherName, wardingNam
                         } else {
                             lt_basic_neirong[i] = lt_basic_neirong[i][0];
                             if (!(lt_basic_neirong[i] === "男" || lt_basic_neirong[i] === "女")) {
-                                console.log(lt_basic_neirong[i]);
+                                console.trace(lt_basic_neirong[i]);
                                 lt_basic_neirong[i] = "没有内容";
                                 alert("性别输入错误!");
                             }
@@ -3668,7 +3674,7 @@ lt_code.inputToSpan = function (beChouseName, bottomName, fatherName, wardingNam
                 if (i === lt_code.inputToSpan.emall && lt_code.inputToSpan.emall !== 0) {
                     if (lt_basic_neirong[i] !== "没有内容") {
                         lt_basic_neirong[i] = chack_emall.exec(lt_basic_neirong[i]);
-                        //console.log(lt_basic_neirong[i]);
+                        //console.trace(lt_basic_neirong[i]);
                         if (!lt_basic_neirong[i]) {
                             lt_basic_neirong[i] = "没有内容";
                             alert("邮箱输入出错!");
@@ -3734,7 +3740,7 @@ lt_code.inputToSpan = function (beChouseName, bottomName, fatherName, wardingNam
             IStext = false;
         } else {
             for (var i = 0; i < lt_for_basic.length; i++) {
-                lt_span[0] ? lt_for_basic[i].removeChild(lt_span[0]) : console.log("lt_span[" + i + "]不存在");
+                lt_span[0] ? lt_for_basic[i].removeChild(lt_span[0]) : console.trace("lt_span[" + i + "]不存在");
                 lt_basic_value[i] = !lt_basic_value[i] ? " " : lt_basic_value[i];
                 lt_for_basic[i].innerHTML += lt_basic_value[i];
                 lt_basic[i] = lt_code.getClass("lt_basic", i);
@@ -3791,12 +3797,12 @@ lt_code.other.CanvasDotsLines = function (dom) {
             dom.innerHTML += "<canvas id=\"canvas\"></canvas>";
         } else {
             if (this.getTage("canvas").length === 0) {
-                console.log("otherCanvasDotsLines函数并没有找到已经提供的canvas画布!");
+                console.trace("otherCanvasDotsLines函数并没有找到已经提供的canvas画布!");
                 return;
             }
         }
     } else {
-        console.log("otherCanvasDotsLines函数参数输入错误!");
+        console.trace("otherCanvasDotsLines函数参数输入错误!");
         return;
     }
     var Dots = function (speed, alpha) {
@@ -3958,15 +3964,15 @@ lt_code.other.CanvasDotsLines = function (dom) {
             }
 
             for (var i = overNum; i < dotsNum; i++) {
-                // if (dotsArr[i].isMouseDot) console.log('aaa')
+                // if (dotsArr[i].isMouseDot) console.trace('aaa')
                 if (dotsArr[i]) dotsArr[i].update();
             }
 
             // 绘制连线
             for (var i = overNum; i < dotsNum; i++) {
                 for (var j = i + 1; j < dotsNum; j++) {
-                    // if (dotsArr[i].isMouseDot) console.log('bbb')
-                    // if (dotsArr[j].isMouseDot) console.log('ccc')
+                    // if (dotsArr[i].isMouseDot) console.trace('bbb')
+                    // if (dotsArr[j].isMouseDot) console.trace('ccc')
                     var tx = dotsArr[i].x - dotsArr[j].x,
                         ty = dotsArr[i].y - dotsArr[j].y,
                         s = Math.sqrt(Math.pow(tx, 2) + Math.pow(ty, 2));
@@ -4101,12 +4107,12 @@ lt_code.other.CanvasBall = function (dom) {
             }
         } else {
             if (this.getTage("canvas").length === 0) {
-                console.log("otherCanvasDotsLines函数并没有找到已经提供的canvas画布!");
+                console.trace("otherCanvasDotsLines函数并没有找到已经提供的canvas画布!");
                 return;
             }
         }
     } else {
-        console.log("otherCanvasDotsLines函数参数输入错误!");
+        console.trace("otherCanvasDotsLines函数参数输入错误!");
         return;
     }
     var canvas = document.getElementById("cas"),
@@ -5050,7 +5056,7 @@ lt_code.other.fireText = function (dom_father, text) {
         dom_father.innerHTML += '<div id="canvasContainer"></div>';
         changeText2();
     } else {
-        console.log("fireText函数参数输入错误!");
+        console.trace("fireText函数参数输入错误!");
         return;
     }
 
@@ -5228,7 +5234,7 @@ lt_code.other.fireText = function (dom_father, text) {
             context.textBaseline = "top";
 
             var copy = fontProps.clone();
-            //console.log("getFontSizeForWidth() 1  : ", copy.fontSize);
+            //console.trace("getFontSizeForWidth() 1  : ", copy.fontSize);
             context.font = copy.getFontString();
             var textWidth = context.measureText(string).width;
 
@@ -5238,7 +5244,7 @@ lt_code.other.fireText = function (dom_father, text) {
                     copy.fontSize++;
                     context.font = copy.getFontString();
                     if (copy.fontSize > maxFontSize) {
-                        console.log("getFontSizeForWidth() max fontsize reached");
+                        console.trace("getFontSizeForWidth() max fontsize reached");
                         return null;
                     }
                 }
@@ -5247,12 +5253,12 @@ lt_code.other.fireText = function (dom_father, text) {
                     copy.fontSize--;
                     context.font = copy.getFontString();
                     if (copy.fontSize < 0) {
-                        console.log("getFontSizeForWidth() min fontsize reached");
+                        console.trace("getFontSizeForWidth() min fontsize reached");
                         return null;
                     }
                 }
             }
-            //console.log("getFontSizeForWidth() 2  : ", copy.fontSize);
+            //console.trace("getFontSizeForWidth() 2  : ", copy.fontSize);
             return copy.fontSize;
         };
 
@@ -5515,7 +5521,7 @@ lt_code.other.fireText = function (dom_father, text) {
             }
         }
 
-        //console.log(particles.length);
+        //console.trace(particles.length);
         context.clearRect(0, 0, canvas.width, canvas.height);
 
         //pre calculate random numbers used for particle movement
@@ -5643,7 +5649,7 @@ lt_code.other.fireText = function (dom_father, text) {
 lt_code.scrollTo = function (y, duration) {
     duration = duration * 1000;
     var scrollTop = lt_code.variable.scrollTop;/*页面当前滚动距离*/
-    //console.log(scrollTop);
+    //console.trace(scrollTop);
     var distance = y - scrollTop;/*结果大于0,说明目标在下方,小于0,说明目标在上方*/
     var scrollCount = duration / 10;/*10毫秒滚动一次,计算滚动次数*/
     var everyDistance = distance / scrollCount;/*滚动距离除以滚动次数计算每次滚动距离*/
@@ -5671,7 +5677,7 @@ lt_code.scrollTop = function (dom, timer) {
         now_scroll = now_scroll - every_scroll;
         if (now_scroll<=0) {
             clearInterval(lt_code.scrollTop.run);
-            //console.log("回到顶部");
+            //console.trace("回到顶部");
         }
     }, 20);
 };
@@ -5710,7 +5716,7 @@ lt_code.littleUse.autoWidth = function (dom, widths, timer, dom_father) {
         }, (timer < 1 ? 1 : timer) * 10);
             break;
         default:
-            console.log("autoWidth函数输入参数出错!");
+            console.trace("autoWidth函数输入参数出错!");
     }
 };
 
@@ -5737,7 +5743,7 @@ lt_code.littleUse.autoHeight = function (dom, heights, timer, dom_father) {
         }, (timer < 1 ? 1 : timer) * 10);
             break;
         default:
-            console.log("autoHeight函数输入参数出错!");
+            console.trace("autoHeight函数输入参数出错!");
     }
 };
 
@@ -5753,12 +5759,12 @@ lt_code.getJson = function (str) {
 
 /**版本 */
 lt_code.Version = function () {
-    //eval("console.log('lt_code部分代码由楼听提供');");
+    //eval("console.trace('lt_code部分代码由楼听提供');");
     return 14;
 }();
 
 
-/**和网页无关的计算性函数 */
+/**计算性函数 */
 lt_code.math = {};
 
 /**
@@ -5778,7 +5784,7 @@ lt_code.math.lineFunc = function (funs) {
     if (!Array.isArray(funs)) {
         /**读取函数数组 */
         var func = read_funs.exec(funs);
-        console.log(func);
+        console.trace(func);
         /**函数的第一项 */
         var a1 = func[1];
         /**函数的计算符号 */
@@ -5878,6 +5884,46 @@ lt_code.math.lineFunc = function (funs) {
 };
 
 /**
+ * 求取数组中最小值
+ * @param {number[]} numbers 数值
+ * @return {number}
+ */
+lt_code.math.min = function (numbers) {
+    var min = numbers[0];
+    var i = 0;
+    for (var j = 0; j < numbers.length; j++) {
+        if (min>numbers[j]) {
+            min = numbers[j];
+            i = j;
+        }
+    }
+    if (this!=lt_code.math) {
+        this.minIndex = i;
+    }
+    return min;
+}
+
+/**
+ * 求取数组中最大值
+ * @param {number[]} numbers 数值
+ * @return {number}
+ */
+lt_code.math.max = function (numbers) {
+    var max = numbers[0];
+    var i = 0;
+    for (var j = 0; j < numbers.length; j++) {
+        if (max<numbers[j]) {
+            max = numbers[j];
+            i =j;
+        }
+    }
+    if (this != lt_code.math) {
+        this.maxIndex = i;
+    }
+    return max;
+}
+
+/**
  * 分割旋转切换图片
  * @param {HTMLDivElement} imgBox 图片盒子
  * @param {HTMLDivElement} imgLoadBox 预加载图片盒子
@@ -5934,7 +5980,7 @@ lt_code.trunGroupImg = function (imgBox, imgLoadBox, cut, count,imgName) {
     var run = setInterval(function () {
         nowCount = nowCount >= count - 1 ? 0 : nowCount + 1;
         runAround = runAround > 6 ? 0 : runAround + 1;
-        //console.log(nowCount);
+        //console.trace(nowCount);
         nowImg = images[nowCount];
         changeImage();
     }, 5000);
@@ -6110,6 +6156,8 @@ lt_code.innerGroup.max_group = null;
  */
 lt_code.innerGroup.new_group = function (x, y) { };
 //加入小球的函数接口
+
+
 
 
 
@@ -6300,7 +6348,7 @@ lt_code.test.fullpage = function (backgrounds, times, dom_father,chackType, useD
             /**
              * 要移动到的高度*/
             var change_height = new_pages * height;
-            //console.log(lt_all_pages);
+            //console.trace(lt_all_pages);
 
             //移动
             changeHeight(lt_all_pages, -change_height);
@@ -6318,7 +6366,7 @@ lt_code.test.fullpage = function (backgrounds, times, dom_father,chackType, useD
          * @param {number} num 移动的数值
          */
         var changeHeight = function (dom, num) {
-            //console.log("调用了" + dom + " " + num);
+            //console.trace("调用了" + dom + " " + num);
             lt_code.moveBoxTo2(dom, 0, num, times);
         };
 
@@ -6445,7 +6493,7 @@ lt_code.test.fullpage = function (backgrounds, times, dom_father,chackType, useD
             //重置canUseChange参数    
             change_canUseChange();
 
-            //setInterval(function () { console.log(canUseChange); }, 20);
+            //setInterval(function () { console.trace(canUseChange); }, 20);
 
             //判断是否使用导航
             if (useDaohang) {
@@ -6495,7 +6543,7 @@ lt_code.test.imgToBase = function (imgUrl) {
     image.src = img;
     image.onload = function () {
         var base64 = getBase64Image(image);
-        console.log(base64);
+        console.trace(base64);
     };
 };
 
@@ -6548,10 +6596,10 @@ lt_code.test.lunbo = function (className, dom_father) {
 
     //纠错判断
     if (arguments.length !== 2) {
-        console.log("lunbo函数参数输入出错");
+        console.trace("lunbo函数参数输入出错");
         return;
     } else if (!(/\./.exec(className))) {
-        console.log("lunbo函数className参数输入错误!请使用css方式输入!");
+        console.trace("lunbo函数className参数输入错误!请使用css方式输入!");
         return;
     }
 
@@ -6560,10 +6608,10 @@ lt_code.test.lunbo = function (className, dom_father) {
 
     //纠错判断
     if (!all_lunbo.length) {
-        console.log("lunbo函数className参数输入出错!");
+        console.trace("lunbo函数className参数输入出错!");
         return;
     } else if (dom_father.length && !dom_father) {
-        console.log("lunbo函数dom_father参数输入错误!");
+        console.trace("lunbo函数dom_father参数输入错误!");
         return;
     }
 
@@ -6736,9 +6784,9 @@ lt_code.test.lunbo = function (className, dom_father) {
      * @param {number} num 删除的项
      */
     var delete_lunbo = function (num) {
-        //console.log(all_lunbo);
+        //console.trace(all_lunbo);
         setTimeout(function () {
-            //console.log(move_box);
+            //console.trace(move_box);
             if (IsLeft && !lt_code.test.lunbo.direction || lt_code.test.lunbo.direction && IsTop) {
                 move_box.removeChild(all_lunbo[0]);
                 move_box.innerHTML += each_lunbo[num];
@@ -6763,9 +6811,9 @@ lt_code.test.lunbo = function (className, dom_father) {
     var delete_lunbo_fast = function (num) {
         var fast_time = timer / 3;
         fast_time = lt_code.getNum(fast_time * 10) / 10;
-        //console.log(all_lunbo);
+        //console.trace(all_lunbo);
         setTimeout(function () {
-            //console.log(move_box);
+            //console.trace(move_box);
             if (IsLeft && !lt_code.test.lunbo.direction || lt_code.test.lunbo.direction && IsTop) {
                 move_box.removeChild(all_lunbo[0]);
                 move_box.innerHTML += each_lunbo[num];
@@ -6858,7 +6906,7 @@ lt_code.test.lunbo = function (className, dom_father) {
             } else if (way === "bottom") {
                 trun_bottom(num);
             } else {
-                console.log("lunbo.moveTo函数way参数输入错误!");
+                console.trace("lunbo.moveTo函数way参数输入错误!");
             }
         } else {
             if (way === "left") {
@@ -6866,7 +6914,7 @@ lt_code.test.lunbo = function (className, dom_father) {
             } else if (way === "right") {
                 trun_right(num);
             } else {
-                console.log("lunbo.moveTo函数way参数输入错误!");
+                console.trace("lunbo.moveTo函数way参数输入错误!");
             }
         }
     };
@@ -7023,7 +7071,7 @@ lt_code.test.lunbo = function (className, dom_father) {
     lt_code.test.lunbo.moveToPage = function (num) {
         //检查num参数是否超出限制
         if (num >= lunbo_cont || num < 0) {
-            console.log("lunbo模块中的moveToPage函数参数输入超出上限/下限!");
+            console.trace("lunbo模块中的moveToPage函数参数输入超出上限/下限!");
             return;
         }
 
@@ -7125,7 +7173,7 @@ lt_code.test.lunbo = function (className, dom_father) {
                 chacks_right();
             }
             chouse_way();
-            //console.log(return_num());
+            //console.trace(return_num());
             return return_num() === 4 ? 0 : return_num();
         };
 
@@ -7200,7 +7248,7 @@ lt_code.test.middleBiger = function (className, minWH, maxWH) {
     var timer = lt_code.test.middleBiger.times;
     //纠错
     if (arguments.length !== 3) {
-        console.log("middleBiger函数参数输入错误!");
+        console.trace("middleBiger函数参数输入错误!");
         return;
     }
 
@@ -7384,12 +7432,12 @@ lt_code.test.cutImages = function (img, img2, input) {
         var read_img = function (obj) {
             var file = obj.files[0];
 
-            //console.log(obj); 
-            //console.log(file);
-            console.log("图片大小为: " + file.size+" byte");  //file.size 单位为byte
+            //console.trace(obj); 
+            //console.trace(file);
+            console.trace("图片大小为: " + file.size+" byte");  //file.size 单位为byte
 
             if (file.size > 5242880) {
-                console.log("图片过大!");
+                console.trace("图片过大!");
                 return;
             }
 
@@ -7397,19 +7445,19 @@ lt_code.test.cutImages = function (img, img2, input) {
             
             //读取文件过程方法
             reader.onloadstart = function (e) {
-                console.log("开始读取....");
+                console.trace("开始读取....");
             };
             reader.onprogress = function (e) {
-                console.log("正在读取中....");
+                console.trace("正在读取中....");
             };
             reader.onabort = function (e) {
-                console.log("中断读取....");
+                console.trace("中断读取....");
             };
             reader.onerror = function (e) {
-                console.log("读取异常....");
+                console.trace("读取异常....");
             };
             reader.onload = function (e) {
-                console.log("成功读取....");
+                console.trace("成功读取....");
                 //或者 img.src = this.result;  //e.target == this
                 img.src = e.target.result;
                 img_data = e.target.result;
@@ -7457,7 +7505,7 @@ lt_code.test.cutImages = function (img, img2, input) {
     chack_box.onmousewheel = function (e) {
         e = e || window.event;
         var change_delta = e.wheelDelta / 120;
-        //console.log(change_delta);
+        //console.trace(change_delta);
         chack_box.style.width = (/[\d]+/.exec(chack_box.style.width) - change_delta) + "px";
         chack_box.style.width = (/-?[\d]+/.exec(chack_box.style.width) > img.offsetWidth ? img.offsetWidth : /-?[\d]+/.exec(chack_box.style.width)) + "px";
         chack_box.style.height = (/[\d]+/.exec(chack_box.style.height) - change_delta) + "px";
@@ -7481,7 +7529,7 @@ lt_code.test.cutImages = function (img, img2, input) {
     
     /**裁切函数 */
     var input_chick = function () {
-        //console.log("开始裁切");
+        //console.trace("开始裁切");
         clear_2();
 
         var else_img = document.createElement("img");
@@ -7489,7 +7537,7 @@ lt_code.test.cutImages = function (img, img2, input) {
         else_img.id = "else_img";
         else_img.src = img_data;
         lt_code.getAll().appendChild(else_img);
-        //console.log(lt_code.getAll("#else_img"));
+        //console.trace(lt_code.getAll("#else_img"));
         var img_width = lt_code.getAll("#else_img").offsetWidth;
         img_width = img_width / 170;
         var img_height = lt_code.getAll("#else_img").offsetHeight;
@@ -7520,7 +7568,7 @@ lt_code.test.cutImages = function (img, img2, input) {
             10:img_height
         };
         
-        //console.log(a);
+        //console.trace(a);
 
         //读取base64码
         img_data = cas2.toDataURL();
@@ -7594,12 +7642,12 @@ lt_code.test.getImgInput = function (input,cas) {
         var read_img = function (obj) {
             var file = obj.files[0];
 
-            //console.log(obj); 
-            //console.log(file);
-            console.log("图片大小为: " + file.size + " byte");  //file.size 单位为byte
+            //console.trace(obj); 
+            //console.trace(file);
+            console.trace("图片大小为: " + file.size + " byte");  //file.size 单位为byte
 
             if (file.size > 5242880) {
-                console.log("图片过大!");
+                console.trace("图片过大!");
                 return;
             }
 
@@ -7607,20 +7655,20 @@ lt_code.test.getImgInput = function (input,cas) {
 
             //读取文件过程方法
             reader.onloadstart = function (e) {
-                console.log("开始读取....");
+                console.trace("开始读取....");
             };
             reader.onprogress = function (e) {
-                console.log("正在读取中....");
+                console.trace("正在读取中....");
             };
             reader.onabort = function (e) {
-                console.log("中断读取....");
+                console.trace("中断读取....");
             };
             reader.onerror = function (e) {
-                console.log("读取异常....");
+                console.trace("读取异常....");
             };
             reader.onload = function (e) {
-                console.log("成功读取....");
-                //console.log(type);
+                console.trace("成功读取....");
+                //console.trace(type);
                 if (type === 1) {
                     img_data = e.target.result;
                 } else if (type === 2) {
@@ -7678,7 +7726,8 @@ lt_code.test.dataURLtoFile = function (data, filename) {
  * @param {string} fileName 文件名
  */
 lt_code.test.downFile = function (data, fileName) {
-    var blob = new Blob([lt_code.test.dataURLtoFile(data, fileName)], { type: /data\:(image\/[\w]+)\;base64/.exec(data)[1   ] });
+    var file = lt_code.test.dataURLtoFile(data, fileName);
+    var blob = new Blob([file], { type: file.type });
     if (window.navigator.msSaveOrOpenBlob) {
         navigator.msSaveBlob(blob, fileName);
     } else {
@@ -7725,7 +7774,7 @@ lt_code.test.on = function (doms, e, fuc) {
         //    return ret;
         //}();
     }();
-    console.log(doms);
+    console.trace(doms);
     eval("var " + lt_code.test.on._time + " = lt_code.test.on._doms;");
     lt_code.test.on._doms = null;
     for (var i = 0; i < doms.length; i++) {
@@ -7765,6 +7814,133 @@ lt_code.test.on2._doms = null;
 //lt_code.test.on2.args = [];
 //给挂载函数的接口
 
+/**
+ * 把一位字符转为中文字符
+ * @param {string} s 需要转化的一位字符
+ */
+lt_code.test.oneTextToChinese = function (s) {
+    var ret = s;
+    if (/[a-z]/.test(ret)) {
+        ret = lt_code.test.oneTextToChinese.retlist[lt_code.test.oneTextToChinese.getlist.search(s)];
+    } else if (/[A-Z]/.test(ret)) {
+        ret = lt_code.test.oneTextToChinese.retList[lt_code.test.oneTextToChinese.getList.search(s)];
+    }
+    return ret;
+}
+//转化字符的外部内容
+lt_code.test.oneTextToChinese.retlist = "ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ";
+lt_code.test.oneTextToChinese.retList = "ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ";
+lt_code.test.oneTextToChinese.getlist = "abcdefghijklmnopqrstuvwxyz";
+lt_code.test.oneTextToChinese.getList = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+//转化字符的外部内容
+
+/**
+ * 把一位中文字符转化为正常字符
+ * @param {any} s 需要转化一位中文字符
+ */
+lt_code.test.oneChineseToText = function (s) {
+    var ret = s;
+    if (/[ａ-ｚ]/.test(ret)) {
+        ret = lt_code.test.oneTextToChinese.getlist[lt_code.test.oneTextToChinese.retlist.search(s)];
+    } else if (/[Ａ-Ｚ]/.test(ret)) {
+        ret = lt_code.test.oneTextToChinese.getList[lt_code.test.oneTextToChinese.retList.search(s)];
+    }
+    return ret;
+}
+
+/**
+ * 把字符串转化为全中文
+ * @param {string} str 字符串
+ */
+lt_code.test.textToChinese = function (str) {
+    var ret = "";
+    //解码出错...所以修改这个函数
+    //str = Array.prototype.slice.call(str);
+    //str.forEach(function (e) {
+    //    ret += lt_code.test.oneTextToChinese(e);
+    //});
+    for (var i = 0; i < str.length; i++) {
+        ret += lt_code.test.oneTextToChinese(str[i]);
+    }
+    return ret;
+};
+
+/**
+ * 把中文字符串转化为普通字符串
+ * @param {string} str 中文字符串
+ */
+lt_code.test.chineseToText = function (str) {
+    var ret = "";
+    //这个方式不行会因为(")字符导致失败
+    //str = Array.prototype.slice.call(str);
+    //str.forEach(function (e) {
+    //    ret += lt_code.test.oneChineseToText(e);
+    //});
+    for (var i = 0; i < str.length; i++) {
+        ret += lt_code.test.oneChineseToText(str[i]);
+    }
+    return ret;
+};
+
+/**操作cookie的模块 */
+lt_code.cookie = function () {
+    return document.cookie;
+};
+
+/**
+ * 保存cookie
+ * @param {string} cookieName 保存的cookie名称
+ * @param {string} cookieValue 保存的cookie值
+ * @param {number} cookieDates 保存的有效时间长度
+ */
+lt_code.cookie.saveCookie = function(cookieName, cookieValue, cookieDates){
+    var d = new Date();
+    cookieValue = lt_code.chineseToUtf8(lt_code.test.textToChinese(cookieValue));
+    d.setDate(d.getDate() + cookieDates);
+    document.cookie = cookieName + "=" + cookieValue + ";expires=" +
+        d.toUTCString();
+}
+
+/**
+ * 获取cookie
+ * @param {string} cookieName cookie名称
+ */
+lt_code.cookie.getCookie = function (cookieName) {
+    var cookieStr = document.cookie;
+    var arr = cookieStr.split("; ");
+    var cookieValue = "";
+    for (var i = 0; i < arr.length; i++) {
+        var temp = arr[i].split("=");
+        if (temp[0]==cookieName) {
+            cookieValue = temp[1];
+            break;
+        }
+    }
+    cookieValue = lt_code.test.chineseToText(lt_code.utf8ToChinese(cookieValue));
+    return cookieValue;
+}
+
+
+/**
+ * 删除cookie
+ * @param {any} cookieName
+ */
+lt_code.cookie.removeCookie = function (cookieName) {
+    document.cookie = encodeURIComponent(cookieName) +"=; expires =" + new Date(0).toUTCString();
+}
+
+/**删除所有的cookie */
+lt_code.cookie.clearAllCookie = function () {
+    var keys = document.cookie.match(/[^ =;]+(?==)/g);
+    if (keys) {
+        for (var i = keys.length; i--;) {
+            document.cookie = keys[i] + '=0;path=/;expires=' + new Date(0).toUTCString() // 清除当前域名下的
+            //document.cookie = keys[i] + '=0;path=/;domain=' + document.domain + ';expires=' + new Date(0).toUTCString() // 清除当前域名下的，例如 .m.ratingdog.cn
+            //document.cookie = keys[i] + '=0;path=/;domain=ratingdog.cn;expires=' + new Date(0).toUTCString() // 清除一级域名下的或指定的，例如 .ratingdog.cn
+        }
+    }
+};
+
 
 /**
  * 获取变量值为value值的变量变量名
@@ -7796,11 +7972,12 @@ lt_code.variable.images.headPortrait = new Array();
 }();
 
 
+
 /**
  * 重写用于控制台读取内容用的函数
  * 例如:
  * lt_code.innerConsole = function (str) {
- *     eval("console.log(" + str + ")");
+ *     eval("console.trace(" + str + ")");
  * };
  */
 lt_code.innerConsole = null;
@@ -7862,7 +8039,7 @@ lt_code.test.threeDimensionalCloud = function () {
     };
 
     lt_code.innerConsole = function (str) {
-        eval("console.log(" + str + ")");
+        eval("console.trace(" + str + ")");
     };
 
     /**
