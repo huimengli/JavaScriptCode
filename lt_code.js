@@ -383,13 +383,16 @@ lt_code.utf8ToChinese = function (szInput) {
     return (szRet);
 }
 
-/**获取当前网页url传参 */
-lt_code.getUrlData = function () {
-    var href = window.location.href;
+/**
+ * 获取网页url传参
+ * @param {string} [href] 网址
+ */
+lt_code.getUrlData = function (href) {
+    href = href || window.location.href;
     var urlData = [];
     if (/\?/.test(href)) {
         href = /\?(.+)/.exec(href)[1];
-        var leftAndRight = [...href.matchAll(/([^=]+)=([^=]+)&?/g)];
+        var leftAndRight = [...href.matchAll(/([^&=]+)=([^&=]+)&?/g)];
         for (var i = 0; i < leftAndRight.length; i++) {
             var str = '{"' + leftAndRight[i][1] + '":"' + leftAndRight[i][2] + '"}';
             urlData.push(JSON.parse(str));
