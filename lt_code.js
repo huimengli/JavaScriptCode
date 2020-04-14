@@ -1,7 +1,7 @@
 ﻿/**
  * @file 帮助文档
- * @author 楼听[修改日期:2019年11月22日]
- * @version demo-14
+ * @author 楼听[修改日期:2020年04月14日]
+ * @version demo-15
  */
 
 //向head里面丢一个特殊的style样式框
@@ -74,6 +74,19 @@ lt_code.variable.random = (max,min,noF) => {
     }
     return ret;
 };
+
+/**
+ * 添加子节点
+ * @param {HTMLElement} dom 子节点
+ * @param {HTMLElement} [domFather] 父节点
+ */
+lt_code.addChild = function (dom, domFather) {
+    if (domFather == null) {
+        lt_code.getAll().appendChild(dom);
+    } else {
+        domFather.appendChild(dom);
+    }
+}
 
 /**网页的宽度 */
 lt_code.variable.width = window.innerWidth;
@@ -1328,11 +1341,15 @@ lt_code.getAllToArray = function (...arg) {
 
 /**
  * 读取iframe内包含的window值(用于传值)
- * @param {string} idName iframe框的id
+ * @param {string|HTMLIFrameElement} dom iframe框的id
  * @return {Window} 返回一个window(大概)
  */
-lt_code.getIframeWindow = function (idName) {
-    return lt_code.getId(idName).contentWindow;
+lt_code.getIframeWindow = function (dom) {
+    if (typeof(dom)=="string") {
+        return lt_code.getAll(idName,0).contentWindow;
+    } else {
+        return dom.contentWindow;
+    }
 };
 
 /**
@@ -7942,6 +7959,724 @@ lt_code.cookie.clearAllCookie = function () {
             //document.cookie = keys[i] + '=0;path=/;domain=ratingdog.cn;expires=' + new Date(0).toUTCString() // 清除一级域名下的或指定的，例如 .ratingdog.cn
         }
     }
+};
+
+/**操作内联边框的模块(还有bug尚未修改完成) */
+lt_code.iframe = {};
+
+/**网页的内联边框对象 */
+lt_code.iframe.iframe = null;
+
+/**网页的内联边框window */
+lt_code.iframe.window = null;
+
+/**网页内联边框的document */
+lt_code.iframe.document = null;
+
+/**获取内联边框的window */
+lt_code.iframe.getWindow = function () {
+    if (this.iframe !== null) {
+        this.window = lt_code.getIframeWindow(this.iframe);
+        return this.window;
+    } else {
+        console.trace("iframe模块内没有设置内联对象");
+    }
+}
+
+/**获取内联边框的document */
+lt_code.iframe.getDocument = function () {
+    if (this.iframe!==null) {
+        if (this.window !== null) {
+            try {
+                this.document = this.window.parent.document;
+                return this.document;
+            } catch (e) {
+                console.trace("内联页面没有内容");
+                console.log(e);
+            }
+        } else {
+            console.trace("iframe模块没有获取到windows");
+        }
+    } else {
+        console.trace("iframe模块内没有设置内联对象");
+    }
+}
+
+/**
+ * iframe模块初始化
+ * @param {HTMLIFrameElement|String} iframeDom 内联边框对象
+ */
+lt_code.iframe.init = function (iframeDom) {
+    if (typeof (iframeDom) == "string") {
+        console.trace("不建议使用这种方法");
+        this.iframe = lt_code.getAll(iframeDom,0);
+    } else {
+        this.iframe = iframeDom;
+    }
+    this.getWindow();
+    this.getDocument();
+}
+
+/**
+ * 检查模块是否初始化
+ * @return {boolean}
+ */
+lt_code.iframe.isInit = function () {
+    return !!(this.iframe && this.window && this.document);
+}
+
+/**
+ * 获得id所代表的dom
+ * @param {string} idName 输入id名
+ * @return {HTMLElement}
+ */
+lt_code.iframe.getId = function (idName) {
+    if (!this.isInit()) {
+        return console.error("iframe模块没有初始化");
+    }
+    var falseRet = () => {
+        console.trace("getId函数没有输入值!");
+        //console.trace(this);
+        //console.trace(arguments.callee.caller.name);
+    };
+    return !this.document.getElementById(idName) ? falseRet() : this.document.getElementById(idName);
+};
+
+/**
+ * 读取class所代表的dom(重载+4)
+ * @param {string} className 输入class的名字 
+ * @param {number} few 输入要读取的class里面的第几个
+ * @param {HTMLElement} dom_father 要读取的父类代号
+ * @param {boolean} useFew 是否使用few参数(默认使用)
+ * @return {HTMLElement|HTMLElement[]} dom|doms
+ */
+lt_code.iframe.getClass = function (className, few, dom_father, useFew) {
+    switch (arguments.length) {
+        case 1: return this.document.getElementsByClassName(className);
+        case 2: return this.document.getElementsByClassName(className)[few];
+        case 3: return dom_father.getElementsByClassName(className)[few];
+        case 4: if (useFew) {
+            return dom_father.getElementsByClassName(className)[few];
+        } else {
+            return dom_father.getElementsByClassName(className);
+        }
+        default:
+            if (arguments.length !== 0) {
+                console.trace("getClass函数输入错误!");
+
+            } else {
+                console.trace("getClass函数没有输入值!");
+
+            }
+    }
+};
+
+/**
+ * 读取所有标签所代表的dom(重载+4)
+ * @param {string} tageName 输入标签名
+ * @param {HTMLElement} dom 输入要读取的父元素(不输入默认全文档)
+ * @param {number} few 输入要读取的tage里面的第几个(不输入默认返回数组)
+ * @param {boolean} ISuseDom 是否使用dom参数(默认使用)
+ * @return {HTMLElement|HTMLElement[]} dom|doms
+ */
+lt_code.iframe.getTage = function (tageName, dom, few, ISuseDom) {
+    switch (arguments.length) {
+        case 1:
+            return this.document.getElementsByTagName(tageName);
+        case 2:
+            return dom.getElementsByTagName(tageName);
+        case 3:
+            return dom.getElementsByTagName(tageName)[few];
+        case 4:
+            if (ISuseDom) {
+                return dom.getElementsByTagName(tageName)[few];
+            } else {
+                return this.document.getElementsByTagName(tageName)[few];
+            }
+        default:
+            if (arguments.length !== 0) {
+                console.trace("getTage函数输入错误!");
+
+            } else {
+                console.trace("getTage函数没有输入值!");
+
+            }
+    }
+};
+
+/**
+ * 读取对象的函数(功能不强)(重载+4)(id:#)(class:.)
+ * @param {string} name 输入的名称(可以是任何方式) 
+ * @param {number} few 第几个
+ * @param {HTMLElement} dom_father 父类名称
+ * @param {boolean} useFew 是否使用few参数
+ * @return {HTMLElement|HTMLCollection|void} 输出对象
+ */
+lt_code.iframe.getAll = function (name, few, dom_father, useFew) {
+    /**读取对象的内容 */
+    var value_read;
+    /**正则读取到的数组 */
+    var exec_value = new Array();
+    /**用于返回的参数 */
+    var return_value;
+    if (arguments.length === 0) {
+        return_value = this.document.body;
+    } else if (arguments.length === 1) {
+        exec_value = /\#?\.?/.exec(name);
+        if (!exec_value || !exec_value[0]) {
+            return_value = lt_code.getTage(name);
+        } else {
+            if (exec_value[0] === "#.") {
+                return_value = null;
+            } else {
+                value_read = name.replace(/\#?\.?/, "");
+                if (exec_value[0] === "#") {
+                    return_value = lt_code.getId(value_read);
+                } else if (exec_value[0] === ".") {
+                    return_value = lt_code.getClass(value_read);
+                }
+            }
+        }
+    } else if (arguments.length === 2) {
+        exec_value = /\#?\.?/.exec(name);
+        if (!exec_value || !exec_value[0]) {
+            return_value = lt_code.getTage(name, null, few, false);
+        } else {
+            if (exec_value[0] === "#.") {
+                return_value = null;
+            } else {
+                value_read = name.replace(/\#?\.?/, "");
+                if (exec_value[0] === "#") {
+                    return_value = lt_code.getId(value_read);
+                    console.trace("getAll函数读取id不需要输入few参数");
+
+                } else if (exec_value[0] === ".") {
+                    return_value = lt_code.getClass(value_read, few);
+                }
+            }
+        }
+    } else if (arguments.length === 3) {
+        exec_value = /\#?\.?/.exec(name);
+        if (!exec_value || !exec_value[0]) {
+            return_value = lt_code.getTage(name, dom_father, few);
+        } else {
+            if (exec_value[0] === "#.") {
+                return_value = null;
+            } else {
+                value_read = name.replace(/\#?\.?/, "");
+                if (exec_value[0] === "#") {
+                    return_value = lt_code.getId(value_read);
+                    console.trace("getAll函数读取id不需要输入few参数");
+
+                } else if (exec_value[0] === ".") {
+                    return_value = lt_code.getClass(value_read, few, dom_father);
+                }
+            }
+        }
+    } else if (arguments.length === 4) {
+        exec_value = /\#?\.?/.exec(name);
+        if (!exec_value || !exec_value[0]) {
+            if (useFew) {
+                return_value = lt_code.getTage(name, dom_father, few);
+            } else {
+                return_value = lt_code.getTage(name, dom_father);
+            }
+        } else {
+            if (exec_value[0] === "#.") {
+                return_value = null;
+            } else {
+                value_read = name.replace(/\#?\.?/, "");
+                if (exec_value[0] === "#") {
+                    return_value = lt_code.getId(value_read);
+                    console.trace("getAll函数读取id不需要输入few参数");
+
+                } else if (exec_value[0] === ".") {
+                    return_value = lt_code.getClass(value_read, few, dom_father);
+                }
+            }
+        }
+    } else {
+        return_value = this.document.head;
+    }
+
+    if (return_value === null) {
+        console.trace("getAll函数name参数输入错误!");
+
+    } else if (return_value === undefined) {
+        console.trace("本页面中没有找到此对象");
+
+    } else if (return_value.length === 0) {
+        console.trace("没有此对象|此页面中没有使用此对象");
+
+    } else if (return_value.length === 1) {
+        return_value = return_value[0];
+    }
+
+    return return_value;
+};
+
+/**
+ * 读取对象的函数(稍微有些差别)(重载+4)(id:#)(class:.)
+ * @param {string} name 输入的名称(可以是任何方式) 
+ * @param {HTMLElement} dom_father 父类名称
+ * @param {number} few 第几个
+ * @param {boolean} useFather 是否使用dom_father参数
+ * @return {HTMLElement|HTMLCollection|void} 输出对象
+ */
+lt_code.iframe.getAll2 = function (name, dom_father, few, useFather) {
+    /**读取对象的内容 */
+    var value_read;
+    /**正则读取到的数组 */
+    var exec_value = new Array();
+    /**用于返回的参数 */
+    var return_value;
+    if (arguments.length === 0) {
+        return_value = this.document.body;
+    } else if (arguments.length === 1) {
+        exec_value = /\#?\.?/.exec(name);
+        if (!exec_value || !exec_value[0]) {
+            return_value = lt_code.getTage(name);
+        } else {
+            if (exec_value[0] === "#.") {
+                return_value = null;
+            } else {
+                value_read = name.replace(/\#?\.?/, "");
+                if (exec_value[0] === "#") {
+                    return_value = lt_code.getId(value_read);
+                } else if (exec_value[0] === ".") {
+                    return_value = lt_code.getClass(value_read);
+                }
+            }
+        }
+    } else if (arguments.length === 2) {
+        exec_value = /\#?\.?/.exec(name);
+        if (!exec_value || !exec_value[0]) {
+            return_value = lt_code.getTage(name, dom_father);
+        } else {
+            if (exec_value[0] === "#.") {
+                return_value = null;
+            } else {
+                value_read = name.replace(/\#?\.?/, "");
+                if (exec_value[0] === "#") {
+                    return_value = lt_code.getId(value_read);
+                    console.trace("js不支持读取父类对象的子类id");
+
+                } else if (exec_value[0] === ".") {
+                    return_value = lt_code.getClass(value_read, null, dom_father, false);
+                }
+            }
+        }
+    } else if (arguments.length === 3) {
+        exec_value = /\#?\.?/.exec(name);
+        if (!exec_value || !exec_value[0]) {
+            return_value = lt_code.getTage(name, dom_father, few);
+        } else {
+            if (exec_value[0] === "#.") {
+                return_value = null;
+            } else {
+                value_read = name.replace(/\#?\.?/, "");
+                if (exec_value[0] === "#") {
+                    return_value = lt_code.getId(value_read);
+                    console.trace("getAll2函数读取id不需要输入few参数");
+
+                } else if (exec_value[0] === ".") {
+                    return_value = lt_code.getClass(value_read, few, dom_father);
+                }
+            }
+        }
+    } else if (arguments.length === 4) {
+        exec_value = /\#?\.?/.exec(name);
+        if (!exec_value || !exec_value[0]) {
+            return_value = lt_code.getTage(name, dom_father, few, useFather);
+        } else {
+            if (exec_value[0] === "#.") {
+                return_value = null;
+            } else {
+                value_read = name.replace(/\#?\.?/, "");
+                if (exec_value[0] === "#") {
+                    return_value = lt_code.getId(value_read);
+                    console.trace("getAll2函数读取id不需要输入few参数");
+
+                } else if (exec_value[0] === ".") {
+                    if (!useFather) {
+                        return_value = lt_code.getClass(value_read, few);
+                    } else {
+                        return_value = lt_code.getClass(value_read, few, dom_father);
+                    }
+                }
+            }
+        }
+    } else {
+        return_value = this.document.head;
+    }
+
+    if (return_value === null) {
+        console.trace("getAll2函数name参数输入错误!");
+
+    } else if (return_value === undefined) {
+        console.trace("本页面中没有找到此对象");
+
+    } else if (return_value.length === 0) {
+        console.trace("没有此对象|此页面中没有使用此对象");
+
+    } else if (return_value.length === 1) {
+        return_value = return_value[0];
+    }
+
+    return return_value;
+};
+
+/**
+ * 读取对象的函数(增加一些功能)(重载+4)(id:#)(class:.)
+ * @param {string} name 输入的名称(可以是任何方式) 
+ * @param {number} few 第几个
+ * @param {HTMLElement} dom_father 父类名称
+ * @param {boolean} useFew 是否使用few参数
+ * @return {HTMLElement|HTMLCollection|void|CSSStyleDeclaration} 输出对象
+ */
+lt_code.iframe.getAll3 = function (name, few, dom_father, useFew) {
+    /**读取对象的内容 */
+    var value_read;
+    /**正则读取到的数组 */
+    var exec_value = new Array();
+    /**用于返回的参数 */
+    var return_value;
+    /**读取子类,父类,伪类选择器的正则 */
+    var read_child = /\:\:|[\>\<\:]/;
+
+    if (arguments.length === 0) {
+        return_value = this.document.body;
+    } else {
+        if (!read_child.exec(name)) {
+            if (arguments.length === 1) {
+                exec_value = /\#?\.?/.exec(name);
+                if (!exec_value || !exec_value[0]) {
+                    return_value = lt_code.getTage(name);
+                } else {
+                    if (exec_value[0] === "#.") {
+                        return_value = null;
+                    } else {
+                        value_read = name.replace(/\#?\.?/, "");
+                        if (exec_value[0] === "#") {
+                            return_value = lt_code.getId(value_read);
+                        } else if (exec_value[0] === ".") {
+                            return_value = lt_code.getClass(value_read);
+                        }
+                    }
+                }
+            } else if (arguments.length === 2) {
+                exec_value = /\#?\.?/.exec(name);
+                if (!exec_value || !exec_value[0]) {
+                    return_value = lt_code.getTage(name, null, few, false);
+                } else {
+                    if (exec_value[0] === "#.") {
+                        return_value = null;
+                    } else {
+                        value_read = name.replace(/\#?\.?/, "");
+                        if (exec_value[0] === "#") {
+                            return_value = lt_code.getId(value_read);
+                            console.trace("getAll函数读取id不需要输入few参数");
+
+                        } else if (exec_value[0] === ".") {
+                            return_value = lt_code.getClass(value_read, few);
+                        }
+                    }
+                }
+            } else if (arguments.length === 3) {
+                exec_value = /\#?\.?/.exec(name);
+                if (!exec_value || !exec_value[0]) {
+                    return_value = lt_code.getTage(name, dom_father, few);
+                } else {
+                    if (exec_value[0] === "#.") {
+                        return_value = null;
+                    } else {
+                        value_read = name.replace(/\#?\.?/, "");
+                        if (exec_value[0] === "#") {
+                            return_value = lt_code.getId(value_read);
+                            console.trace("getAll函数读取id不需要输入few参数");
+
+                        } else if (exec_value[0] === ".") {
+                            return_value = lt_code.getClass(value_read, few, dom_father);
+                        }
+                    }
+                }
+            } else if (arguments.length === 4) {
+                exec_value = /\#?\.?/.exec(name);
+                if (!exec_value || !exec_value[0]) {
+                    if (useFew) {
+                        return_value = lt_code.getTage(name, dom_father, few);
+                    } else {
+                        return_value = lt_code.getTage(name, dom_father);
+                    }
+                }
+                else {
+                    if (exec_value[0] === "#.") {
+                        return_value = null;
+                    } else {
+                        value_read = name.replace(/\#?\.?/, "");
+                        if (exec_value[0] === "#") {
+                            return_value = lt_code.getId(value_read);
+                            console.trace("getAll函数读取id不需要输入few参数");
+
+                        } else if (exec_value[0] === ".") {
+                            return_value = lt_code.getClass(value_read, few, dom_father);
+                        }
+                    }
+                }
+            } else {
+                return_value = this.document.head;
+            }
+        } else {
+            /**读取选择器的正则 */
+            var read_select = new Array();
+            read_select[0] = /([\.\#]?)([\w]+)?(\:\:|[\<\>\:])([\w]+)?([\<\>\:]+[\s\S]+)?/;
+            read_select[1] = /([\.\#]?)([\w]+)?(\:\:|[\<\>\:])(.+)/;
+
+            exec_value = read_select[1].exec(name);
+            if (arguments.length === 1) {
+                //获取父类
+                if (exec_value[3] === "<") {
+                    //单纯父类
+                    if (!exec_value[4]) {
+                        return_value = lt_code.getDomFather(
+                            lt_code.getAll3(exec_value[1] + exec_value[2], 0)
+                        );
+                    }
+                    //相邻对象
+                    else {
+                        return_value = lt_code.getAll3(exec_value[4], 0,
+                            lt_code.getDomFather(
+                                lt_code.getAll3(exec_value[1] + exec_value[2], 0)
+                            )
+                        );
+                    }
+                }
+                //获取子类
+                if (exec_value[3] === ">") {
+                    //console.trace(exec_value[4]);
+                    return_value = lt_code.getAll3(
+                        exec_value[4], null,
+                        lt_code.getAll3(exec_value[1] + exec_value[2], 0),
+                        false
+                    );
+                }
+                //获取伪类
+                if (exec_value[3] === ":" || exec_value[3] === "::") {
+                    return_value = this.document.defaultView.getComputedStyle(
+                        lt_code.getAll3(exec_value[1] + exec_value[2], 0),
+                        exec_value[3] + exec_value[4]
+                    );
+                }
+            }
+            if (arguments.length === 2) {
+                //获取父类
+                if (exec_value[3] === "<") {
+                    //单纯父类
+                    if (!exec_value[4]) {
+                        return_value = lt_code.getDomFather(
+                            lt_code.getAll3(exec_value[1] + exec_value[2], few)
+                        );
+                    }
+                    //相邻对象
+                    else {
+                        return_value = lt_code.getAll3(exec_value[4], few,
+                            lt_code.getDomFather(
+                                lt_code.getAll3(exec_value[1] + exec_value[2], few)
+                            ),
+                            false
+                        );
+                    }
+                }
+                //获取子类
+                if (exec_value[3] === ">") {
+                    return_value = lt_code.getAll3(
+                        exec_value[4], few,
+                        lt_code.getAll3(exec_value[1] + exec_value[2], 0)
+                    );
+                }
+                //获取伪类
+                if (exec_value[3] === ":" || exec_value[3] === "::") {
+                    return_value = this.document.defaultView.getComputedStyle(
+                        lt_code.getAll3(exec_value[1] + exec_value[2], few),
+                        exec_value[3] + exec_value[4]
+                    );
+                }
+            }
+            if (arguments.length === 3) {
+                if (dom_father.item) {
+                    dom_father = dom_father[0];
+                }
+                //获取子类
+                if (exec_value[3] === ">") {
+                    //console.trace(exec_value);
+                    return_value = lt_code.getAll3(exec_value[4], few, dom_father);
+                }
+                //获取父类
+                if (exec_value[3] === "<") {
+                    //单纯父类
+                    if (!exec_value[4]) {
+                        return_value = lt_code.getDomFather(dom_father);
+                    }
+                    //获取同类
+                    else {
+                        return_value = lt_code.getAll3(
+                            exec_value[4], few,
+                            lt_code.getDomFather(dom_father)
+                        );
+                    }
+                }
+                //获取伪类
+                if (exec_value[3] === ":" || exec_value[3] === "::") {
+                    return_value = this.document.defaultView.getComputedStyle(
+                        lt_code.getAll3(exec_value[4], few, dom_father)
+                    );
+                }
+            }
+            if (arguments.length === 4) {
+                //console.trace(dom_father);
+                if (dom_father.item) {
+                    dom_father = dom_father[0];
+                }
+                //获取子类
+                if (exec_value[3] === ">") {
+                    return_value = lt_code.getAll3(exec_value[4], few,
+                        lt_code.getAll3(exec_value[0] + exec_value[1], 0, dom_father)
+                        , useFew);
+                }
+                //获取父类
+                if (exec_value[3] === "<") {
+                    //单纯父类
+                    if (!exec_value[4]) {
+                        return_value = lt_code.getDomFather(dom_father);
+                    }
+                    //获取同类
+                    else {
+                        return_value = lt_code.getAll3(
+                            exec_value[4], few,
+                            lt_code.getDomFather(dom_father),
+                            useFew
+                        );
+                    }
+                }
+                //获取伪类
+                if (exec_value[3] === ":" || exec_value[3] === "::") {
+                    return_value = this.document.defaultView.getComputedStyle(
+                        lt_code.getAll3(exec_value[4], few, dom_father)
+                    );
+                }
+            }
+            if (arguments.length > 4) {
+                console.trace("getAll3选择子类函数暂时不支持其他参数");
+
+            }
+        }
+    }
+
+    if (return_value === null) {
+        console.trace("getAll函数name参数输入错误!");
+
+    } else if (return_value === undefined) {
+        console.trace("本页面中没有找到此对象");
+
+    } else if (return_value.length === 0) {
+        console.trace("没有此对象|此页面中没有使用此对象");
+
+    } else if (return_value.length === 1) {
+        return_value = return_value[0];
+    }
+
+    return return_value;
+};
+
+/**
+ * 分类取用
+ * @param {any[]} arg
+ * @param {boolean} useLtDom 是否使用lt_dom类
+ */
+lt_code.iframe.getAllType = function (arg, useLtDom) {
+    /**返回值 */
+    var ret;
+    switch (arg.length) {
+        case 1: ret = lt_code.getAll(arg[0]); break;
+        case 2: ret = lt_code.getAll(arg[0], arg[1]); break;
+        case 3: ret = lt_code.getAll(arg[0], arg[1], arg[2]); break;
+        case 4: ret = lt_code.getAll(arg[0], arg[1], arg[2], arg[3]); break;
+        case 5: switch (arg[4]) {
+            case 1: ret = lt_code.getAll(arg[0], arg[1], arg[2], arg[3]); break;
+            case 2: ret = lt_code.getAll2(arg[0], arg[1], arg[2], arg[3]); break;
+            case 3: ret = lt_code.getAll3(arg[0], arg[1], arg[2], arg[3]); break;
+            default: console.error("最后参数出错!");
+        };
+        default: console.error("参数数量出错!");
+    }
+
+    if (useLtDom) {
+        if (ret.length) {
+            ret = function () {
+                var values = [];
+                ret = Array.prototype.slice.call(ret);
+                ret.forEach(function (e, i) {
+                    values[i] = new lt_code.lt_dom(e);
+                });
+                return values;
+            }();
+        } else {
+            ret = new lt_code.lt_dom(ret);
+        }
+    }
+    return ret;
+}
+
+
+/**
+ * 读取对象(输出动态数组)
+ * @param {...any} arg
+ * @returns {any[HTMLElement]|HTMLElement|void};
+ */
+lt_code.iframe.getAllToArray = function (...arg) {
+    var ret;
+    switch (arg.length) {
+        case 1: ret = lt_code.getAll(arg[0]); break;
+        case 2: ret = lt_code.getAll(arg[0], arg[1]); break;
+        case 3: ret = lt_code.getAll(arg[0], arg[1], arg[2]); break;
+        case 4: ret = lt_code.getAll(arg[0], arg[1], arg[2], arg[3]); break;
+        case 5: switch (arg[4]) {
+            case 1: ret = lt_code.getAll(arg[0], arg[1], arg[2], arg[3]); break;
+            case 2: ret = lt_code.getAll2(arg[0], arg[1], arg[2], arg[3]); break;
+            case 3: ret = lt_code.getAll3(arg[0], arg[1], arg[2], arg[3]); break;
+            default: console.error("最后参数出错!");
+        };
+        default: console.error("参数数量出错!");
+    }
+    if (ret.length) {
+        ret = Array.prototype.slice.call(ret);
+    }
+    return ret;
+}
+
+/**
+ * 读取iframe内包含的window值(用于传值)
+ * @param {string} idName iframe框的id
+ * @return {Window} 返回一个window(大概)
+ */
+lt_code.iframe.getIframeWindow = function (idName) {
+    return lt_code.getId(idName).contentWindow;
+};
+
+/**
+ * 获取iframe内部的对象
+ * @param {HTMLElement} dom iframe对象
+ * @param {string} name 要读取内部部件的名称
+ * @return {HTMLElement|void} 返回对象
+ */
+lt_code.iframe.getIframe = function (dom, name) {
+    var inner_value = dom.contentDocument.getElementsByTagName("body")[0];
+    if (!inner_value) {
+        console.trace("读取对象非iframe内联边框|没能读取到对象");
+
+        return;
+    }
+    return lt_code.getAll2(name, inner_value);
 };
 
 
