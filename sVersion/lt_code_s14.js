@@ -1342,19 +1342,19 @@ lt_code.color_change = function (color) {
     } else if (color_exec[0] === "#") {
         return_value = color.replace(/\#/, "");
         if (return_value.length === 3) {
-            return_value = "rgb(" + (lt_code.form16To10(return_value[0]) * 16 +
-                lt_code.form16To10(return_value[0])) + "," +
-                (lt_code.form16To10(return_value[1]) * 16 +
-                    lt_code.form16To10(return_value[1])) + "," +
-                (lt_code.form16To10(return_value[2]) * 16 +
-                    lt_code.form16To10(return_value[2])) + ")";
+            return_value = "rgb(" + (lt_code.from16To10(return_value[0]) * 16 +
+                lt_code.from16To10(return_value[0])) + "," +
+                (lt_code.from16To10(return_value[1]) * 16 +
+                    lt_code.from16To10(return_value[1])) + "," +
+                (lt_code.from16To10(return_value[2]) * 16 +
+                    lt_code.from16To10(return_value[2])) + ")";
         } else if (return_value.length === 6) {
-            return_value = "rgb(" + (lt_code.form16To10(return_value[0]) * 16 +
-                lt_code.form16To10(return_value[1])) + "," +
-                (lt_code.form16To10(return_value[2]) * 16 +
-                    lt_code.form16To10(return_value[3])) + "," +
-                (lt_code.form16To10(return_value[4]) * 16 +
-                    lt_code.form16To10(return_value[5])) + ")";
+            return_value = "rgb(" + (lt_code.from16To10(return_value[0]) * 16 +
+                lt_code.from16To10(return_value[1])) + "," +
+                (lt_code.from16To10(return_value[2]) * 16 +
+                    lt_code.from16To10(return_value[3])) + "," +
+                (lt_code.from16To10(return_value[4]) * 16 +
+                    lt_code.from16To10(return_value[5])) + ")";
         } else {
             console.log("color_change函数#类颜色值输入位数不正确!");
             
@@ -1368,7 +1368,7 @@ lt_code.color_change = function (color) {
             for (var i = 1; i < return_value.length; i++) {
                 if (return_value[i] > 0 && return_value[i] < 256) {
                     return_values[i] = lt_code.getNum(return_value[i], 4);
-                    return_values[i] = lt_code.form10To16(return_values[i]);
+                    return_values[i] = lt_code.from10To16(return_values[i]);
                 } else {
                     console.log("color_change函数rgb输入的第" + i + "个数值有误!");
                     
@@ -1402,7 +1402,7 @@ lt_code.color_change = function (color) {
                         //根据透明值减淡颜色
                         return_values[i] = lt_code.getNum(return_value[i], 4) * alpha;
                         return_values[i] = lt_code.getNum(return_values[i]);
-                        return_values[i] = lt_code.form10To16(return_values[i]);
+                        return_values[i] = lt_code.from10To16(return_values[i]);
                     } else {
                         console.log("color_change函数rgb输入的第" + i + "个数值有误!");
                         
@@ -1430,7 +1430,7 @@ lt_code.color_change = function (color) {
  * @param {number|string} num 输入的十进制的数值
  * @returns {string} 返回的十六进制的数值
  */
-lt_code.form10To16 = function (num) {
+lt_code.from10To16 = function (num) {
     if (typeof (num) === "string") {
         num = lt_code.getNum(num, 4);
     }
@@ -1442,7 +1442,7 @@ lt_code.form10To16 = function (num) {
  * @param {string} num 输入的十进制的数值
  * @returns {number} 返回的十六进制的数值
  */
-lt_code.form16To10 = function (num) {
+lt_code.from16To10 = function (num) {
     return parseInt(num, 16);
 };
 
