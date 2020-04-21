@@ -16,7 +16,7 @@ var lt_code = function (...arg) {
 }
 
 /**自制的类 */
-class lt_dom {
+lt_code.lt_dom = class {
     /**
      * 构造函数
      * @param {HTMLElement} dom 输入对象
@@ -27,18 +27,32 @@ class lt_dom {
     }
 
     /**
-     * 内容挂载
-     * @param {String} [evt] 事件
-     * @param {string} [cls] 指向对象
-     * @param {Function} [fuc] 挂载函数
+     * 获取子类
+     * @param {number|string} [type] 获取方式
+     * @return {HTMLCollection|HTMLElement}
      */
-    on = function (evt,cls,fuc) {
-        this.dom.addEventListener(evt, function (event) {
-            if (event.target.classList.contains(cls)) {
-                fuc.call(event.targe, event);
-            }
-        })
+    child(type) {
+        var all = this.dom.children;
+        if (type == null) {
+            return all;
+        } else if (typeof (type) == "number") {
+            return all[type];
+        } else if (typeof (type) == "string") {
+            return lt_code.getAll2(type, this.dom);
+        } else {
+            console.trace("参数输入错误");
+        }
     }
+
+    /**
+     * 添加节点
+     * @param {HTMLElement} dom 子节点
+     */
+    addChild(dom) {
+        this.dom.appendChild(dom);
+    }
+
+
 };
 
 /**
@@ -6236,9 +6250,7 @@ lt_code.test.changeLtCode = function () {
     }
 }
 
-lt_code.lt_dom = lt_dom;
 
-lt_dom = null;
 
 /**
  * 实验性fullpage(分页外面不能包裹任何内容)
@@ -8723,7 +8735,41 @@ lt_code.iframe.getIframe = function (dom, name) {
 /**图像操作模块 */
 lt_code.image = {};
 
-lt_code.image.from10To16 = 
+/**用于计算进制转换用的十进制数组 */
+lt_code.image.num10 = [];
+
+/**用于计算进制转换用的十六进制数组 */
+lt_code.image.num16 = [];
+
+/**图像操作模块初始化 */
+lt_code.image.init = function () {
+    this.num10 = [];
+    this.num16 = [];
+    for (var i = 0; i < 256; i++) {
+        this.num10.push(i);
+        this.num16.push(lt_code.from10To16(i));
+    }
+};
+
+/**
+ * 用于处理两位数以内的16进制转10进制的函数
+ * (不推荐使用,处理速度没有lt_code.from16To10函数快)
+ * @param {string} num
+ * @return {number}
+ */
+lt_code.image.from16To10 = function (num) {
+    return this.num10[this.num16.indexOf(num)];
+};
+
+/**
+ * 用于处理256以下的10进制转16进制的函数
+ * (建议使用,处理速度比lt_code.from10To16函数快)
+ * @param {number} num
+ * @return {String}
+ */
+lt_code.image.from10To16 = function (num) {
+    return this.num16[this.num10.indexOf(num)];
+}
 
 
 /**
