@@ -7896,13 +7896,18 @@ lt_code.test.oneTextToChinese = function (s) {
         ret = lt_code.test.oneTextToChinese.retlist[lt_code.test.oneTextToChinese.getlist.search(s)];
     } else if (/[A-Z]/.test(ret)) {
         ret = lt_code.test.oneTextToChinese.retList[lt_code.test.oneTextToChinese.getList.search(s)];
+    } else if (/[\d]/.test(ret)) {
+        ret = this.oneTextToChinese.numlist[this.oneTextToChinese.numList.search(s)];
     }
     return ret;
 }
+
 //转化字符的外部内容
 lt_code.test.oneTextToChinese.retlist = "ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ";
+lt_code.test.oneTextToChinese.numlist = "０１２３４５６７８９";
 lt_code.test.oneTextToChinese.retList = "ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ";
 lt_code.test.oneTextToChinese.getlist = "abcdefghijklmnopqrstuvwxyz";
+lt_code.test.oneTextToChinese.numList = "0123456789";
 lt_code.test.oneTextToChinese.getList = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 //转化字符的外部内容
 
@@ -7916,6 +7921,8 @@ lt_code.test.oneChineseToText = function (s) {
         ret = lt_code.test.oneTextToChinese.getlist[lt_code.test.oneTextToChinese.retlist.search(s)];
     } else if (/[Ａ-Ｚ]/.test(ret)) {
         ret = lt_code.test.oneTextToChinese.getList[lt_code.test.oneTextToChinese.retList.search(s)];
+    } else if (/[０-９]/.test(ret)) {
+        ret = lt_code.test.oneTextToChinese.numList[lt_code.test.oneTextToChinese.numlist.search(s)];
     }
     return ret;
 }
