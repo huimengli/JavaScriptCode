@@ -8970,7 +8970,7 @@ lt_code.base64 = {
             var ret = "";
             for (var i = 0; i < input.length; i++) {
                 ret += this.setCodeOne(
-                    time[(count - 1) - (i % count)],
+                    lt_code.getNum(time[(count - 1) - (i % count)]),
                     input[i]
                 );
             }
