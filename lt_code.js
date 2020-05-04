@@ -9090,6 +9090,156 @@ lt_code.base64 = {
             }
             return ret;
         },
+    },
+
+    /** 
+     * 还是我自己写的玩意,改了几个函数
+     * 不过这个加密中文占用的文字量少
+     */
+    chinese: {
+        /** 匙A */
+        _keyA: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+
+        /** 匙a */
+        _keya: "abcdefghijklmnopqrstuvwxyz",
+
+        /** 匙B */
+        _keyB: "0123456789ABCDEF",
+
+        /**
+         * 加密?
+         * @param {number} time
+         * @param {string} input
+         */
+        setCode: function (time, input) {
+            time = time.toString();
+            var count = time.length;
+            var ret = "";
+            for (var i = 0; i < input.length; i++) {
+                ret += this.setCodeOne(
+                    lt_code.getNum(time[(count - 1) - (i % count)]),
+                    input[i]
+                );
+            }
+            return ret;
+        },
+
+        /**
+         * 加密一位
+         * @param {number} numOne
+         * @param {String} inputOne
+         */
+        setCodeOne: function (numOne, inputOne) {
+            numOne = !numOne ? 1 : numOne;
+            inputOne = inputOne.charCodeAt(0);
+            var ret = numOne * inputOne;
+            var first = lt_code.getNum(ret / 26);
+            var last = lt_code.getNum(ret % 26);
+            first = this.numToTextA(first);
+            last = this.numToTexta(last);
+            return first + last;
+        },
+
+        /**
+         * 数字转字符
+         * @param {number} num
+         */
+        numToTextA: function (num) {
+            var ret = "";
+            var theNum = 0;
+            if (num>25) {
+                ret += this._keyA[25];
+                num -= 25;
+            }
+            while (num > 25) {
+                theNum++;
+                num -= 25;
+            }
+            if (theNum>0) {
+                ret += theNum.toString();
+            }
+            ret += this._keyA[num];
+            return ret;
+        },
+
+        /**
+         * 数字转字符
+         * @param {number} num
+         */
+        numToTexta: function (num) {
+            var ret = "";
+            while (num > 25) {
+                ret += this._keya[25];
+                num -= 25;
+            }
+            ret += this._keya[num];
+            return ret;
+        },
+
+        /**
+         * 解密
+         * @param {number} time
+         * @param {string} value
+         */
+        getCode: function (time, value) {
+            time = time.toString();
+            var count = time.length;
+            var ret = [...value.matchAll(/[A-Z\d]+[a-z]+/g)];
+            var values = [];
+            ret.forEach(function (e) {
+                values.push(e[0]);
+            });
+            //console.log(values);
+            //console.log(ret);
+            ret = "";
+            values.forEach(function (e, i) {
+                ret += String.fromCharCode(
+                    lt_code.base64.chinese.getCodeOne(
+                        lt_code.getNum(time[count - 1 - i % count]),
+                        e
+                    ));
+            });
+            return ret;
+        },
+
+        /**
+         * 解密一位
+         * @param {number} numOne
+         * @param {string} valueOne
+         */
+        getCodeOne: function (numOne, valueOne) {
+            numOne = !numOne ? 1 : numOne;
+            var first = /[A-Z\d]+/.exec(valueOne)[0];
+            var last = /[a-z]+/.exec(valueOne)[0];
+            first = lt_code.getNum(this.textToNumA(first));
+            last = lt_code.getNum(this.textToNuma(last));
+            var ret = (first * this._keyA.length + last) / numOne;
+            return lt_code.getNum(ret);
+        },
+
+        /**
+         * 字符转数字
+         * @param {string} str
+         */
+        textToNumA: function (str) {
+            var ret = 0;
+            var strs = /([\d]+)([A-Z])/.exec(str);
+            ret = 25 * (lt_code.getNum(strs[1]) + 1);
+            ret += this._keyA.indexOf(strs[2]);
+            return ret;
+        },
+
+        /**
+         * 字符转数字
+         * @param {string} str
+         */
+        textToNuma: function (str) {
+            var ret = 0;
+            for (var i = 0; i < str.length; i++) {
+                ret += this._keya.indexOf(str[i]);
+            }
+            return ret;
+        },
     }
 }
 
