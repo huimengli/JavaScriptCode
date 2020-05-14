@@ -8784,7 +8784,7 @@ lt_code.base64 = {
     // private property  
     _keyStr : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
 
-    // public method for encoding  
+    // public method for encoding 
     encode : function (input) {
         var output = "";
         var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
@@ -8859,7 +8859,7 @@ lt_code.base64 = {
     },
 
     // private method for UTF-8 decoding  
-    _utf8_encode : function (utftext) {
+    _utf8_decode : function (utftext) {
         var string = "";
         var i = 0;
         var c = c1 = c2 = 0;
@@ -8880,6 +8880,25 @@ lt_code.base64 = {
             }
         }
         return string;
+    },
+
+    /** 原生js自带的base64（也不支持中文） */
+    base64: {
+        /**
+         * 解码
+         * @param {string} input
+         */
+        decode: function (input) {
+            return window.atob(input);
+        },
+
+        /**
+         * 编码
+         * @param {string} input
+         */
+        encode: function (input) {
+            return window.btoa(input);
+        }
     },
 
     /** 我自己写的加密玩意(尝试性) */
