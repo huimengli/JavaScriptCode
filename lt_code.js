@@ -7929,6 +7929,8 @@ lt_code.test.oneTextToChinese = function (s) {
         ret = lt_code.test.oneTextToChinese.retList[lt_code.test.oneTextToChinese.getList.search(s)];
     } else if (/[\d]/.test(ret)) {
         ret = this.oneTextToChinese.numlist[this.oneTextToChinese.numList.search(s)];
+    } else if (s == "-") {
+        ret = "—";
     }
     return ret;
 }
@@ -7954,6 +7956,8 @@ lt_code.test.oneChineseToText = function (s) {
         ret = lt_code.test.oneTextToChinese.getList[lt_code.test.oneTextToChinese.retList.search(s)];
     } else if (/[０-９]/.test(ret)) {
         ret = lt_code.test.oneTextToChinese.numList[lt_code.test.oneTextToChinese.numlist.search(s)];
+    } else if (s == "—") {
+        ret = "-";
     }
     return ret;
 }
