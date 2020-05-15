@@ -635,7 +635,38 @@ lt_code.variable.addRun = function (num, name) {
     name = name ? name : "匿名事件";
     var newOne = { name: name, num: num };
     lt_code.variable.runer[lt_code.variable.runer.length] = newOne;
-}
+};
+
+/**
+ * 生成新UID
+ * @param {string} [input] 输入
+ */
+lt_code.variable.newUID = function (input) {
+    var d = new Date().getTime();
+    input = !input?"": input.toString() ||
+        lt_code.getNum(lt_code.variable.random(
+            d)
+        ).toString();
+    input = lt_code.md5(input);
+    input = [...input.matchAll(/[\d]/g)];
+    input = function () {
+        var ret = "";
+        input.forEach(function (e) {
+            ret += e[0];
+        });
+        return ret;
+    }();
+    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-yxxxxx0xxxxxy'.replace(/[xy]/g,
+        function (c) {
+            var r = lt_code.variable.random(1) < 0.5 ?
+                (d + lt_code.variable.random(16)) % 16 | 0 :
+                (input + lt_code.variable.random(16)) % 16 | 0;
+            d = lt_code.getNum(d / 16);
+            input = lt_code.getNum(input / 16);
+            return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+        });
+    return uuid;
+};
 
 /**
  * 清空所有lt_code里面所定义的变量的函数
