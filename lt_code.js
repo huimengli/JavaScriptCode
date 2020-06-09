@@ -397,7 +397,7 @@ lt_code.newDom = function (domName, attr) {
  * @returns {CanvasRenderingContext2D|WebGLRenderingContext}
  */
 lt_code.getCtx = function (cas, type) {
-    type = type = null ? "2d" : type;
+    type = type == null ? "2d" : type;
     return cas.getContext(type);
 }
 
