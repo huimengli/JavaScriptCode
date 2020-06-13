@@ -477,6 +477,21 @@ lt_code.getUrlData = function (href) {
         }
     }
     return urlData;
+};
+
+/**
+ * 删除url中的参数(不跳转页面)
+ * @param {string} [href] 网页网址
+ * @param {string} [url] 新的网址
+ */
+lt_code.clearUrlData = function (href,url) {
+    href = href || window.location.href;
+    if (/\?/.test(href)) {
+        href = href.slice(0, /\?/.exec(href).index);
+        url = url || href;
+        var state = { title: '', url: href };
+        history.pushState(state, '',url);
+    }
 }
 
 /**
@@ -6719,6 +6734,7 @@ lt_code.test.lunbo = function (className, dom_father) {
 
     /**存放所有的轮播项 */
     var all_lunbo = lt_code.getAll(className);
+    //all_lunbo = Array.prototype.slice.call(all_lunbo);
 
     //纠错判断
     if (!all_lunbo.length) {
@@ -7040,6 +7056,21 @@ lt_code.test.lunbo = function (className, dom_father) {
         each_height = lt_code.test.lunbo.each_height || all_lunbo[0].offsetHeight;
     };
 
+    /**重置all_lunbo参数以及each_lunbo参数的函数 */
+    var update_lunbo2 = function () {
+        all_lunbo = lt_code.getAll(className);
+        each_width = lt_code.test.lunbo.each_width || all_lunbo[0].offsetWidth;
+        each_height = lt_code.test.lunbo.each_height || all_lunbo[0].offsetHeight;
+        for (var i = 0; i < all_lunbo.length; i++) {
+            all_lunbo[i].style.width = each_width + "px";
+            all_lunbo[i].style.height = each_height + "px";
+        }
+        for (var i = 0; i < each_lunbo.length; i++) {
+            each_lunbo[i] = all_lunbo[i].outerHTML;
+        }
+        //console.log(each_lunbo);
+    };
+
     //重新读取all_lunbo
     update_lunbo();
 
@@ -7295,6 +7326,28 @@ lt_code.test.lunbo = function (className, dom_father) {
         //进行移动
         moves(chacks());
     };
+
+    //重写改变宽高
+    lt_code.test.lunbo.changeEachWH = function (w, h) {
+        lt_code.test.lunbo.each_height = h;
+        lt_code.test.lunbo.each_width = w;
+        update_lunbo2();
+        if (lt_code.test.lunbo.direction) {
+            //移动框高度赋值
+            move_box.style.height = each_height * lunbo_cont + "px";
+            //移动框宽度赋值
+            move_box.style.width = each_width + "px";
+            //向上移动留出移动空隙
+            move_box.style.top = -each_height + "px";
+        } else {
+            //移动框高度赋值
+            move_box.style.height = each_height + "px";
+            //移动框宽度赋值
+            move_box.style.width = each_width * lunbo_cont + "px";
+            //向左移动留出移动空隙
+            move_box.style.left = -each_width + "px";
+        }
+    }
 };
 
 //以下是lt_code.test.lunbo的接口
@@ -7315,6 +7368,47 @@ lt_code.test.lunbo.timer = 1;
 
 /**轮播间隔时间(默认3s) */
 lt_code.test.lunbo.waitTime = 3;
+
+/**
+ * 定义给外部的,移动到那一片的函数接口
+ * @param {number} num 移动到第几片
+ * @param {string} way 移动的方向("top,bottom,left,right")
+ */
+lt_code.test.lunbo.moveTo = function (num, way) { };
+
+/**鼠标在的时候是否停止(默认是) */
+lt_code.test.lunbo.useOnMouseStop = true;
+
+/**
+ * 鼠标在大框上的时候是否停止2(默认否)
+ * (使用window.onmousemove,可能造成影响)
+ * @param {HTMLElement} box 大框
+ * */
+lt_code.test.lunbo.useOnMouseStop2 = function (box) { };
+
+/**使用鼠标滚轮切换图片(默认否) */
+lt_code.test.lunbo.useMouseWheel = false;
+
+/**现在是第几页 */
+lt_code.test.lunbo.nowPage = 0;
+
+/**
+ * 移动到固定页面的函数
+ * @param {number} num 固定页面数
+ */
+lt_code.test.lunbo.moveToPage = function (num) { };
+
+/**
+ * 改变每项宽高(不建议使用)
+ * 1.可能会导致轮播出错
+ * 2.可能会导致当前页码参数出错
+ * @param {number} w 宽度
+ * @param {number} h 高度
+ */
+lt_code.test.lunbo.changeEachWH = function (w, h) {
+
+}
+//以上是lt_code.test.lunbo的接口
 
 /**
  * 定义给外部的,移动到那一片的函数接口
