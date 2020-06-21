@@ -677,9 +677,9 @@ lt_code.variable.newUID = function (input) {
     input = [...input.matchAll(/[\d]/g)];
     input = function () {
         var ret = "";
-        input.forEach(function (e) {
-            ret += e[0];
-        });
+        for (var i = 0; i < input.length; i++) {
+            ret += input[i][0];
+        }
         return ret;
     }();
     var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-yxxxxx0xxxxxy'.replace(/[xy]/g,
