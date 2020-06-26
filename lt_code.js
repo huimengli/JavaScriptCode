@@ -8954,7 +8954,10 @@ lt_code.base64 = {
     // private property  
     _keyStr : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
 
-    // public method for encoding 
+    /**
+     * 加密
+     * @param {string} input
+     */
     encode : function (input) {
         var output = "";
         var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
@@ -8980,7 +8983,10 @@ lt_code.base64 = {
         return output;
     },
 
-    // public method for decoding  
+    /**
+     * 解密
+     * @param {string} input
+     */
     decode : function (input) {
         var output = "";
         var chr1, chr2, chr3;
@@ -9003,7 +9009,7 @@ lt_code.base64 = {
                 output = output + String.fromCharCode(chr3);
             }
         }
-        output = this._utf8_encode(output);
+        output = this._utf8_decode(output);
         return output;
     },
 
@@ -9446,6 +9452,33 @@ lt_code.test.getNameOfValue = function (value) {
         }
     }
 }
+
+/**
+ * 把动态数组转字符串
+ * @param {Array} list
+ */
+lt_code.test.listToStr = function (list) {
+    ret = "";
+    for (var i = 0; i < list.length; i++) {
+        ret += i + ":" + lt_code.base64.encode(list[i].toString()) + ";";
+    }
+    return ret;
+}
+
+/**
+ * 把字符串转为动态数组
+ * @param str
+ */
+lt_code.test.strToList = function (str) {
+    ret = [];
+    all = [...str.matchAll(/([^:;]*):([^:;]*);/g)];
+    for (var i = 0; i < all.length; i++) {
+        ret[i] = lt_code.base64.decode(all[i][2]);
+    }
+    return ret;
+}
+
+
 
 /**用来存放图片的参数空间 */
 lt_code.variable.images = {};
