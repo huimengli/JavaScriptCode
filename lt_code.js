@@ -1,7 +1,7 @@
 ﻿/**
  * @file 帮助文档
- * @author 楼听[修改日期:2020年04月14日]
- * @version demo-15
+ * @author 楼听[修改日期:2020年8月30日]
+ * @version demo-16
  */
 
 //向head里面丢一个特殊的style样式框
@@ -95,12 +95,19 @@ lt_code.variable.random = (max,min,noF) => {
  * @param {HTMLElement} [domFather] 父节点
  */
 lt_code.addChild = function (dom, domFather) {
-    if (domFather == null) {
-        lt_code.getAll().appendChild(dom);
-    } else {
-        domFather.appendChild(dom);
-    }
-}
+    domFather = domFather ? domFather:  lt_code.getAll();
+    domFather.appendChild(dom);
+};
+
+/**
+ * 删除子节点
+ * @param {HTMLElement} dom 子节点
+ * @param {HTMLElement} [domFather] 父节点
+ */
+lt_code.removeChild = function (dom, domFather) {
+    domFather = domFather ? domFather : lt_code.getDomFather(dom);
+    domFather.removeChild(dom);
+};
 
 /**网页的宽度 */
 lt_code.variable.width = window.innerWidth;
@@ -128,6 +135,64 @@ lt_code.variable.WHchange = function () {
     }, 200);
     return false;
 }();
+
+/**
+ * 网页的真正宽度
+ */
+lt_code.variable.Width = function () {
+    var dir = document.getElementById("WidthAndHeight") ?
+        function () {
+            var ret = lt_code.getId("WidthAndHeight");
+            ret.style.display = "block";
+            return ret;
+        }() :
+        function () {
+            var ret = lt_code.newDom("dir", {
+                id: "WidthAndHeight", style: {
+                    width: "100vw",
+                    height: "100vh",
+                    opacity: "0",
+                    position: "fixed",
+                    top: "0",
+                    left:"0",
+                }
+            });
+            lt_code.addChild(ret);
+            return ret;
+        }();
+    var ret = dir.offsetWidth;
+    dir.style.display = "none";
+    return ret;
+};
+
+/**
+ * 网页真正的高度
+ */
+lt_code.variable.Height = function () {
+    var dir = document.getElementById("WidthAndHeight") ?
+        function () {
+            var ret = lt_code.getId("WidthAndHeight");
+            ret.style.display = "block";
+            return ret;
+        }() :
+        function () {
+            var ret = lt_code.newDom("dir", {
+                id: "WidthAndHeight", style: {
+                    width: "100vw",
+                    height: "100vh",
+                    opacity: "0",
+                    position: "fixed",
+                    top: "0",
+                    left: "0",
+                }
+            });
+            lt_code.addChild(ret);
+            return ret;
+        }();
+    var ret = dir.offsetHeight;
+    dir.style.display = "none";
+    return ret;
+};
 
 /**
  * 随机颜色
@@ -275,6 +340,91 @@ lt_code.variable.roundRgba = (max, min,alpha) => {
     }
     return return_value;
 };
+
+/**
+ * 浏览器头部报文
+ */
+lt_code.variable.userAgent = () => window.navigator.userAgent;
+
+/**
+ * 浏览器信息
+ */
+lt_code.variable.browserInfo = function () {
+    var is360 = false;
+    var isIE = false;
+    var isFirefox = false;
+    var isChrome = false;
+    var isEdge = false;
+    var broName = 'Runing';
+    var str = '';
+    var strStart = 0;
+    var strStop = 0;
+    var arr = new Array();
+    var temp = '';
+
+    var userAgent = lt_code.variable.userAgent(); //包含以下属性中所有或一部分的字符串：appCodeName,appName,appVersion,language,platform
+
+    /*alert(userAgent);*/
+
+    //FireFox
+    if (userAgent.indexOf('Firefox') != -1) {
+        isFireFox = true;
+        /*broName = 'FireFox浏览器';*/
+        strStart = userAgent.indexOf('Firefox');
+        temp = userAgent.substring(strStart);
+        broName = temp.replace('/', ' 版本号')
+    }
+
+    //Edge
+    if (userAgent.indexOf('Edge') != -1) {
+        isEdge = true;
+        /*broName = 'Edge浏览器';*/
+        strStart = userAgent.indexOf('Edge');
+        temp = userAgent.substring(strStart);
+        broName = temp.replace('/', ' 版本号');
+    }
+
+    //IE浏览器
+    if (userAgent.indexOf('NET') != -1 && userAgent.indexOf("rv") != -1) {
+        isIE = true;
+        /*broName = 'IE浏览器'; */
+        strStart = userAgent.indexOf('rv');
+        strStop = userAgent.indexOf(')');
+        temp = userAgent.substring(strStart, strStop);
+        broName = temp.replace('rv', 'IE').replace(':', ' 版本号');
+    }
+
+    //360极速模式可以区分360安全浏览器和360极速浏览器
+    if (userAgent.indexOf('WOW') != -1 && userAgent.indexOf("NET") < 0 && userAgent.indexOf("Firefox") < 0) {
+        if (navigator.javaEnabled()) {
+            is360 = true;
+            broName = '360安全浏览器-极速模式';
+        } else {
+            is360 = true;
+            broName = '360极速浏览器-极速模式';
+        }
+    }
+
+    //360兼容
+    if (userAgent.indexOf('WOW') != -1 && userAgent.indexOf("NET") != -1 && userAgent.indexOf("MSIE") != -1 && userAgent.indexOf("rv") < 0) {
+        is360 = true;
+        broName = '360兼容模式';
+    }
+
+    //Chrome浏览器
+    if (userAgent.indexOf('WOW') < 0 && userAgent.indexOf("Edge") < 0) {
+        isChrome = true;
+        /*broName = 'Chrome浏览器';*/
+        strStart = userAgent.indexOf('Chrome');
+        strStop = userAgent.indexOf(' Safari');
+        temp = userAgent.substring(strStart, strStop);
+        broName = temp.replace('/', ' 版本号');
+    }
+
+    return broName;
+}();
+
+
 
 /**
  * 字符串转utf-8
@@ -5908,7 +6058,7 @@ lt_code.getJson = function (str) {
 lt_code.Version = function () {
     //eval("console.log('lt_code部分代码由楼听提供');");
     window.addEventListener("load", function () {
-        var ico = lt_code.getAll("link");
+        var ico = document.getElementsByTagName("link");
         var have = false;
         for (var i in ico) {
             if (i.type == "image/x-icon") {
@@ -5918,8 +6068,25 @@ lt_code.Version = function () {
         if (!have) {
             lt_code.variable.setIcon(0);
         }
+
+        !function () {
+            if (document.getElementById("lt_code_globla_css")) {
+                lt_code.removeChild(lt_code.getId("lt_code_globla_css"));
+            }
+            var lt_code_globla_css = lt_code.newDom("style", {
+                id: "lt_code_globla_css",
+                type: "text/css",
+                rel: "stylesheet",
+                style: {
+                    display: "none",
+                }
+            });
+            lt_code_globla_css.innerHTML = "*{margin:0;padding:0;border:0;}";
+            lt_code.addChild(lt_code_globla_css, lt_code.getAll("head"));
+        }();
     });
-    return 15;
+   
+    return 16;
 }();
 
 
