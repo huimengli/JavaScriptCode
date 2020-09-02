@@ -9003,7 +9003,7 @@ lt_code.base64 = {
                 output = output + String.fromCharCode(chr3);
             }
         }
-        output = this._utf8_encode(output);
+        output = this._utf8_decode(output);
         return output;
     },
 
