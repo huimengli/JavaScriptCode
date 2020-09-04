@@ -63,6 +63,9 @@ lt_code.variable = {};
 /**用来记录是否登录的参数 */
 lt_code.variable.online = false;
 
+/**lt_code的新名字 */
+lt_code.variable.newName = "_";
+
 /**随机值 */
 lt_code.variable.random = (max,min,noF) => {
     var ret = 0;
@@ -6526,13 +6529,23 @@ lt_code.innerGroup.new_group = function (x, y) { };
  */
 lt_code.test = {};
 
-/**重定向指向 */
-lt_code.test.changeLtCode = function () {
-    window._ = lt_code;
+/**
+ * 重定向指向
+ * @param {string} newName 新的名字
+ */
+lt_code.test.changeLtCode = function (newName) {
+    newName = !newName ? "_" : newName;
+    eval("window." + newName + " = lt_code");
+    lt_code.variable.newName = newName;
     lt_code.test.changeLtCode.changeBack = function () {
-        window._ = null;
+        eval("window." + lt_code.variable.newName + " = null");
         lt_code.test.changeLtCode.changeBack = null;
     }
+    //window._ = lt_code;
+    //lt_code.test.changeLtCode.changeBack = function () {
+    //    window._ = null;
+    //    lt_code.test.changeLtCode.changeBack = null;
+    //}
 }
 
 
