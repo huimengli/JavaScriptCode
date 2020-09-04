@@ -1020,22 +1020,22 @@ lt_code.getClass = function (className, few, dom_father, useFew) {
 /**
  * 读取所有标签所代表的dom(重载+4)
  * @param {string} tageName 输入标签名
- * @param {HTMLElement} dom 输入要读取的父元素(不输入默认全文档)
+ * @param {HTMLElement} dom_father 输入要读取的父元素(不输入默认全文档)
  * @param {number} few 输入要读取的tage里面的第几个(不输入默认返回数组)
  * @param {boolean} ISuseDom 是否使用dom参数(默认使用)
  * @return {HTMLElement|HTMLElement[]} dom|doms
  */
-lt_code.getTage = function (tageName, dom, few, ISuseDom) {
+lt_code.getTage = function (tageName, dom_father, few, ISuseDom) {
     switch (arguments.length) {
         case 1:
             return document.getElementsByTagName(tageName);
         case 2:
-            return dom.getElementsByTagName(tageName);
+            return dom_father.getElementsByTagName(tageName);
         case 3:
-            return dom.getElementsByTagName(tageName)[few];
+            return dom_father.getElementsByTagName(tageName)[few];
         case 4:
             if (ISuseDom) {
-                return dom.getElementsByTagName(tageName)[few];
+                return dom_father.getElementsByTagName(tageName)[few];
             } else {
                 return document.getElementsByTagName(tageName)[few];
             }
@@ -1532,6 +1532,39 @@ lt_code.getAll3 = function (name, few, dom_father, useFew) {
     }
 
     return return_value;
+};
+
+/**
+ * 读取对象的函数(未完成)
+ * @param {string} htmldom 读取方式
+ */
+lt_code.getAll4 = function (htmldom) {
+    var alldomtext = htmldom.split(" ");
+    console.log(alldomtext);
+    //var allDom = lt_code.getAll("*");
+    var retdoms = [];
+    var getText = /([^>\.#\{\}]*)(\{?[\d,]*\}?)([\.#]?[^>\.#\{\}]*)(\{?[\d,]*\}?)(>?)([^>\.#\{\}]*)(\{?[\d,]*\}?)([\.#]?[^>\.#\{\}]*)(\{?[\d,]*\}?)/
+    for (var eachText in alldomtext) {
+        var texts = getText.exec(eachText);
+        console.log(texts);
+        if (texts[5] == "") {
+            if (texts[1] != "") {
+                var allDom;
+                if (texts[2] != "") {
+                    allDom = document.getElementsByTagName(texts[1])[lt_code.getNum(texts[2])];
+                }
+                else {
+                    allDom = document.getElementsByTagName(texts[1])[0];
+                }
+            }
+        }
+        else if (texts[5] == ">") {
+
+        }
+        else if (texts[5] == "<") {
+
+        }
+    }
 };
 
 /**
