@@ -10142,7 +10142,7 @@ lt_code.variable.currentDir = lt_code.variable.currentSrc.slice(0, this.length -
 //加载图片
 !function () {
     var headportrait = lt_code.newDom("script", {
-        src: lt_code.variable.currentDir+"images/headportrait.js",
+        src: lt_code.variable.currentDir+"images/headPortrait.js",
     });
     lt_code.addChild(headportrait, lt_code.getAll("head"));
 }();
