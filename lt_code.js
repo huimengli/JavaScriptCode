@@ -15,6 +15,11 @@ var lt_code = function (...arg) {
     return lt_code.getAllType(arg,true);
 }
 
+/**关闭浏览器 */
+lt_code.close = function () {
+    window.close();
+}
+
 /**自制的类 */
 lt_code.lt_dom = class {
     /**
@@ -10164,22 +10169,37 @@ lt_code.addMethod.ArrayAddMethod = function () {
      */
     Array.prototype.delete = function (obj, needAll) {
         var ret = [];
-        if (needAll) {
-            var i = -1;
-            this.forEach(function (e, j) {
-                if (obj === e && i < 0) {
-                    i = j;
-                } else {
-                    ret.push(e);
-                }
-            });
-        } else {
-            this.forEach(function (e) {
-                if (obj !== e) {
-                    ret.push(e);
-                }
-            });
+        var base = this;
+        if (Array.isArray(obj)===false) {
+            if (!needAll) {
+                var i = -1;
+                base.forEach(function (e, j) {
+                    if (obj === e && i < 0) {
+                        i = j;
+                    } else {
+                        ret.push(e);
+                    }
+                });
+            } else {
+                base.forEach(function (e) {
+                    if (obj !== e) {
+                        ret.push(e);
+                    }
+                });
+            }
         }
+        //这里有bug
+        //else {
+        //    if (!needAll) {
+        //        obj.forEach(function (e) {
+        //            ret = ret.delete(e, false);
+        //        });
+        //    } else {
+        //        obj.forEach(function (e) {
+        //            ret = ret.delete(e, true);
+        //        });
+        //    }
+        //}
         return ret;
     }
 }();
