@@ -555,6 +555,14 @@ lt_code.getCtx = function (cas, type) {
 }
 
 /**
+ * 获取结点确切位置数据
+ * @param {HTMLElement} dom 结点
+ */
+lt_code.getClientRect = function (dom) {
+    return dom.getClientRects()[0];
+}
+
+/**
  * 时间筛查
  * @param {Date} time
  */
@@ -3134,6 +3142,9 @@ lt_code.mouseBoxShadow = function (dom, e, colors, boxShadow_z, moves) {
     //读取屏幕卷掉的高度
     var t = document.body.scrollTop || document.documentElement.scrollTop;
 
+    //父类物件数据
+    var clintRect = lt_code.getDomFather(dom).getClientRects()[0];
+
     switch (arguments.length) {
         case 3:
 
@@ -3150,7 +3161,7 @@ lt_code.mouseBoxShadow = function (dom, e, colors, boxShadow_z, moves) {
             var dom_y = dom.offsetTop + dom.offsetHeight / 2;
 
             //计算阴影的距离
-            boxShadow_x = dom_x - e.clientX;
+            boxShadow_x = dom_x - e.clientX + clintRect.left;
             boxShadow_y = dom_y - e.clientY - t;
 
             //偏移计算
@@ -3179,7 +3190,7 @@ lt_code.mouseBoxShadow = function (dom, e, colors, boxShadow_z, moves) {
             var dom_y = dom.offsetTop + dom.offsetHeight / 2;
 
             //计算阴影的距离
-            boxShadow_x = dom_x - e.clientX;
+            boxShadow_x = dom_x - e.clientX + clintRect.left;
             boxShadow_y = dom_y - e.clientY - t;
 
             //偏移计算
@@ -3209,7 +3220,7 @@ lt_code.mouseBoxShadow = function (dom, e, colors, boxShadow_z, moves) {
             var dom_y = dom.offsetTop + dom.offsetHeight / 2;
 
             //计算阴影的距离
-            boxShadow_x = dom_x - e.clientX;
+            boxShadow_x = dom_x - e.clientX + clintRect.left;
             boxShadow_y = dom_y - e.clientY - t;
 
             //偏移计算
