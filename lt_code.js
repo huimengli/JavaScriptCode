@@ -6109,6 +6109,7 @@ lt_code.getJson = function (str) {
  */
 lt_code.Version = function () {
     //eval("console.log('lt_code部分代码由楼听提供');");
+    //窗体启动时候运行的内容
     window.addEventListener("load", function () {
         var ico = document.getElementsByTagName("link");
         var have = false;
@@ -6136,6 +6137,31 @@ lt_code.Version = function () {
             lt_code_globla_css.innerHTML = "*{margin:0;padding:0;border:0;}";
             lt_code.addChild(lt_code_globla_css, lt_code.getAll("head"));
         }();
+
+        /**
+         * 日期格式化
+         * @param {any} fmt
+         */
+        Date.prototype.format = function (fmt) {
+            var o = {
+                "M+": this.getMonth() + 1,                   //月份 
+                "d+": this.getDate(),                        //日 
+                "h+": this.getHours(),                       //小时 
+                "m+": this.getMinutes(),                     //分 
+                "s+": this.getSeconds(),                     //秒 
+                "q+": Math.floor((this.getMonth() + 3) / 3), //季度 
+                "S": this.getMilliseconds()                  //毫秒 
+            };
+            if (/(y+)/.test(fmt)) {
+                fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+            }
+            for (var k in o) {
+                if (new RegExp("(" + k + ")").test(fmt)) {
+                    fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+                }
+            }
+            return fmt;
+        }       
     });
    
     return 16;
@@ -10149,6 +10175,11 @@ lt_code.variable.currentSrc = function () {
 
 /**当前文件所在文件夹 */
 lt_code.variable.currentDir = lt_code.variable.currentSrc.slice(0, this.length - 10);
+
+/**非对称模块 */
+lt_code.RSA = {
+
+}
 
 /**追加方法模块 */
 lt_code.addMethod = {};
