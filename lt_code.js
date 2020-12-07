@@ -6981,8 +6981,32 @@ lt_code.test.fileToBase = function (inputFile) {
     return ret;
 };
 //fileToBase函数接口
-lt_code.test.fileToBase.getReturn = function () { }
+lt_code.test.fileToBase.getReturn = function () { };
 //fileToBase函数接口
+
+/**
+ * 直接读取文件内容
+ * @param {HTMLInputElement} inputFile 上传结点
+ */
+lt_code.test.readFile = function (inputFile) {
+    /**H5自带读取器 */
+    var reader = new FileReader();
+    var ret = "";
+    if (inputFile.value.length > 0) {
+        var file = inputFile.files[0];
+        reader.readAsText(file);
+    }
+    reader.onloadend = function (e) {
+        ret = e.target.result;
+        lt_code.test.readFile.getReturn = function () {
+            return ret;
+        }
+    }
+    return ret;
+};
+//readFile函数接口
+lt_code.test.readFile.getReturn = function () { return ""; };
+//readFile函数接口
 
 /**
  * 尝试制作纯代码轮播的函数
@@ -10404,6 +10428,9 @@ lt_code.RSA = {
 
 }
 
+/**3D模块 */
+//lt_code.threeD = {};
+
 /**追加方法模块 */
 lt_code.addMethod = {};
 
@@ -10481,3 +10508,11 @@ lt_code.addMethod.ArrayAddMethod = function () {
     });
     lt_code.addChild(headportrait, lt_code.getAll("head"));
 }();
+
+//加载工具
+//!function () {
+//    var threeD = lt_code.newDom("script", {
+//        src: lt_code.variable.currentDir+"item/threeD.js",
+//    });
+//    lt_code.addChild(threeD, lt_code.getAll("head"));
+//}();
