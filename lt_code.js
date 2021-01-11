@@ -9653,145 +9653,179 @@ lt_code.base64 = {
         },
     },
 
-    /** 我自己写的加密玩意(修改中) */
-    chineseTest: {
-        /** 匙A */
-        _keyA: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    /** 变种base64 */
+    base64change: {
 
-        /** 匙a */
-        _keya: "abcdefghijklmnopqrstuvwxyz",
+        //key  
+        _keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
 
-        /** 匙B */
-        _keyB: "0123456789ABCDEF",
+        /**产生一个随机的key */
+        getKey: function () {
+            var ret = "";
+            var all = Array.prototype.slice.call(this._keyStr.slice(0,62));
+            while (all.length > 0) {
+                var oneKey = all[lt_code.variable.random(all.length, null, true)];
+                ret += oneKey;
+                all = all.delete(oneKey);
+            }
+            ret += "+/=";
+            return ret;
+        },
 
         /**
-         * 加密?
-         * @param {number} time
+         * 加密
          * @param {string} input
+         * @param {string} [key]
          */
-        setCode: function (time, input) {
-            time = time.toString();
-            var count = time.length;
-            var ret = "";
-            for (var i = 0; i < input.length; i++) {
-                ret += this.setCodeOne(
-                    lt_code.getNum(time[(count - 1) - (i % count)]),
-                    input[i]
-                );
+        encode: function (input, key) {
+            key = key ? key : this._keyStr;
+            var output = "";
+            var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+            var i = 0;
+            input = this._utf8_encode(input);
+            while (i < input.length) {
+                chr1 = input.charCodeAt(i++);
+                chr2 = input.charCodeAt(i++);
+                chr3 = input.charCodeAt(i++);
+                enc1 = chr1 >> 2;
+                enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+                enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+                enc4 = chr3 & 63;
+                if (isNaN(chr2)) {
+                    enc3 = enc4 = 64;
+                } else if (isNaN(chr3)) {
+                    enc4 = 64;
+                }
+                output = output +
+                    key.charAt(enc1) + key.charAt(enc2) +
+                    key.charAt(enc3) + key.charAt(enc4);
             }
-            return ret;
-        },
-
-        /**
-         * 加密一位
-         * @param {number} numOne
-         * @param {String} inputOne
-         */
-        setCodeOne: function (numOne, inputOne) {
-            numOne = !numOne ? 10 : numOne;
-            inputOne = inputOne.charCodeAt(0);
-            var ret = numOne * inputOne;
-            var first = lt_code.getNum(ret / 26);
-            var last = lt_code.getNum(ret % 26);
-            first = this.numToTextA(first);
-            last = this.numToTexta(last);
-            return first + last;
-        },
-
-        /**
-         * 数字转字符
-         * @param {number} num
-         */
-        numToTextA: function (num) {
-            var ret = "";
-            while (num > 25) {
-                ret += this._keyA[25];
-                num -= 25;
-            }
-            ret += this._keyA[num];
-            return ret;
-        },
-
-        /**
-         * 数字转字符
-         * @param {number} num
-         */
-        numToTexta: function (num) {
-            var ret = "";
-            while (num > 25) {
-                ret += this._keya[25];
-                num -= 25;
-            }
-            ret += this._keya[num];
-            return ret;
+            return output;
         },
 
         /**
          * 解密
-         * @param {number} time
-         * @param {string} value
+         * @param {string} input
+         * @param {string} [key]
          */
-        getCode: function (time, value) {
-            time = time.toString();
-            var count = time.length;
-            var ret = [...value.matchAll(/[A-Z]+[a-z]+/g)];
-            var values = [];
-            ret.forEach(function (e) {
-                values.push(e[0]);
-            });
-            //console.log(ret);
-            ret = "";
-            values.forEach(function (e, i) {
-                ret += String.fromCharCode(
-                    lt_code.base64.else.getCodeOne(
-                        lt_code.getNum(time[count - 1 - i % count]),
-                        e
-                    ));
-            });
+        decode: function (input, key) {
+            key = key ? key : this._keyStr;
+            var output = "";
+            var chr1, chr2, chr3;
+            var enc1, enc2, enc3, enc4;
+            var i = 0;
+            input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+            while (i < input.length) {
+                enc1 = key.indexOf(input.charAt(i++));
+                enc2 = key.indexOf(input.charAt(i++));
+                enc3 = key.indexOf(input.charAt(i++));
+                enc4 = key.indexOf(input.charAt(i++));
+                chr1 = (enc1 << 2) | (enc2 >> 4);
+                chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+                chr3 = ((enc3 & 3) << 6) | enc4;
+                output = output + String.fromCharCode(chr1);
+                if (enc3 != 64) {
+                    output = output + String.fromCharCode(chr2);
+                }
+                if (enc4 != 64) {
+                    output = output + String.fromCharCode(chr3);
+                }
+            }
+            output = this._utf8_decode(output);
+            return output;
+        },
+
+        // private method for UTF-8 encoding  
+        _utf8_encode: function (string) {
+            string = string.replace(/\r\n/g, "\n");
+            var utftext = "";
+            for (var n = 0; n < string.length; n++) {
+                var c = string.charCodeAt(n);
+                if (c < 128) {
+                    utftext += String.fromCharCode(c);
+                } else if ((c > 127) && (c < 2048)) {
+                    utftext += String.fromCharCode((c >> 6) | 192);
+                    utftext += String.fromCharCode((c & 63) | 128);
+                } else {
+                    utftext += String.fromCharCode((c >> 12) | 224);
+                    utftext += String.fromCharCode(((c >> 6) & 63) | 128);
+                    utftext += String.fromCharCode((c & 63) | 128);
+                }
+
+            }
+            return utftext;
+        },
+
+        // private method for UTF-8 decoding  
+        _utf8_decode: function (utftext) {
+            var string = "";
+            var i = 0;
+            var c = c1 = c2 = 0;
+            while (i < utftext.length) {
+                c = utftext.charCodeAt(i);
+                if (c < 128) {
+                    string += String.fromCharCode(c);
+                    i++;
+                } else if ((c > 191) && (c < 224)) {
+                    c2 = utftext.charCodeAt(i + 1);
+                    string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+                    i += 2;
+                } else {
+                    c2 = utftext.charCodeAt(i + 1);
+                    c3 = utftext.charCodeAt(i + 2);
+                    string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+                    i += 3;
+                }
+            }
+            return string;
+        },
+
+    },
+
+    /** 转码 */
+    change: {
+
+        //key  
+        _keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+
+        /**产生一个随机的key */
+        getKey: function () {
+            var ret = "";
+            var all = Array.prototype.slice.call(this._keyStr.slice(0, 62));
+            while (all.length > 0) {
+                var oneKey = all[lt_code.variable.random(all.length, null, true)];
+                ret += oneKey;
+                all = all.delete(oneKey);
+            }
+            ret += "+/=";
             return ret;
         },
 
         /**
-         * 解密一位
-         * @param {number} numOne
-         * @param {string} valueOne
+         * 解码
+         * @param {string} input
+         * @param {string} key
          */
-        getCodeOne: function (numOne, valueOne) {
-            numOne = !numOne ? 10 : numOne;
-            var first = /[A-Z]+/.exec(valueOne)[0];
-            var last = /[a-z]+/.exec(valueOne)[0];
-            first = lt_code.getNum(this.textToNumA(first));
-            last = lt_code.getNum(this.textToNuma(last));
-            var ret = (first * this._keyA.length + last) / numOne;
-            return lt_code.getNum(ret);
-        },
-
-        /**
-         * 字符转数字
-         * @param {string} str
-         */
-        textToNumA: function (str) {
-            var ret = 0;
-            for (var i = 0; i < str.length; i++) {
-                ret += this._keyA.indexOf(str[i]);
-            }
-            if (this !== lt_code.base64.else) {
-                ret = ret / this;
+        decode: function (input, key) {
+            input = input.split(",");
+            var ret = input[0] + ",";
+            for (var i = 0; i < input[1].length; i++) {
+                ret += this._keyStr[key.indexOf(input[1][i])];
             }
             return ret;
         },
 
         /**
-         * 字符转数字
-         * @param {string} str
+         * 转码
+         * @param {string} input
+         * @param {string} [key]
          */
-        textToNuma: function (str) {
-            var ret = 0;
-            for (var i = 0; i < str.length; i++) {
-                ret += this._keya.indexOf(str[i]);
-            }
-            if (this !== lt_code.base64.else) {
-                ret = ret / this;
+        encode: function (input, key) {
+            input = input.split(",");
+            var ret = input[0] + ",";
+            console.log(input[1].length);
+            for (var i = 0; i < input[1].length; i++) {
+                ret += key[this._keyStr.indexOf(input[1][i])];
             }
             return ret;
         },
