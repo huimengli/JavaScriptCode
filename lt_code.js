@@ -9225,6 +9225,74 @@ lt_code.image.from16To10 = function (num) {
  */
 lt_code.image.from10To16 = function (num) {
     return this.num16[this.num10.indexOf(num)];
+};
+
+/**
+ * rgb色彩转hsv色彩
+ * @param {string} color rgb颜色
+ */
+lt_code.image.fromRGBToHSV = function (color) {
+    color = color.length > 7 ? color : lt_code.color_change(color);
+    var RGB = /(\d+),(\d+),(\d+)/.exec(color);
+    var R = RGB[1], G = RGB[2], B = RGB[3];
+    var Max = Math.max(R, G, B), Min = Math.min(R, G, B);
+    var V = Max, S = (Max - Min) / Max;
+    S = !S ? 0 : S;
+    var H = R == Max ? (G - B) / (Max - Min) * 60 :
+        G == Max ? 120 + (B - R) / (Max - Min) * 60 :
+            B == Max ? 240 + (R - G) / (Max - Min) * 60 :
+                console.error("color数据错误!");
+    H = H < 0 ? H + 360 : !H ? 0 : H;
+    H = lt_code.getNum(H * 1000) / 1000, S = lt_code.getNum(S * 1000) / 1000;
+    return "hsv(" + H.toString() + "," + S.toString() + "," + V.toString() + ")";
+};
+
+/**
+ * hsv色彩转rgb色彩
+ * @param {string} color hsv颜色
+ */
+lt_code.image.fromHSVToRGB = function (color) {
+    var HSV = /hsv/.test(color) ? /([\d\.]+),([\d\.]+),(\d+)/.exec(color) : console.error("输入颜色错误!");
+    var h = HSV[1], s = HSV[2], v = HSV[3],r,g,b;
+    if (s == 0) {
+        r = v, g = v, b = v;
+    } else {
+        h /= 60;
+        var i = lt_code.getNum(h),f = h-i;
+        var a = v * (1 - s), b = v * (1 - s * f), c = v * (1 - s * (1 - f));
+        switch (i) {
+            case 0: r = v; g = c; b = a; break;
+            case 1: r = b; g = v; b = a; break;
+            case 2: r = a; g = v; b = c; break;
+            case 3: r = a; g = b; b = v; break;
+            case 4: r = c; g = a; b = v; break;
+            case 5: r = v; g = a; b = b; break;
+            default:
+                console.error("数据错误!");
+        }
+        r = lt_code.getNum(r), g = lt_code.getNum(g), b = lt_code.getNum(b);
+    }
+    return "rgb(" + r.toString() + "," + g.toString() + "," + b.toString() + ")";
+};
+
+
+var test = function () {
+    var all = [];
+    var max = 255,a,b,c;
+    for (a = 0; a < max; a++) {
+        for (b = 0; b < max; b++) {
+            for (c = 0; c < max; c++) {
+                var rgb = "rgb(" + a + "," + b + "," + c + ")";
+                var hsv = lt_code.image.fromRGBToHSV(rgb);
+                var rgb2 = lt_code.image.fromHSVToRGB(hsv);
+                if (rgb==rgb2) {
+                    all.push(true);
+                } else {
+                    all.push(false);
+                }
+            }
+        }
+    }
 }
 
 /**base64加密模块 */
