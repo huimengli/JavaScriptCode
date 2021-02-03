@@ -9891,7 +9891,6 @@ lt_code.base64 = {
         encode: function (input, key) {
             input = input.split(",");
             var ret = input[0] + ",";
-            console.log(input[1].length);
             for (var i = 0; i < input[1].length; i++) {
                 ret += key[this._keyStr.indexOf(input[1][i])];
             }
