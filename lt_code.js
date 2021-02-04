@@ -9870,7 +9870,7 @@ lt_code.base64 = {
         },
 
         /**
-         * 解码
+         * 全码解码
          * @param {string} input
          * @param {string} key
          */
@@ -9884,15 +9884,39 @@ lt_code.base64 = {
         },
 
         /**
-         * 转码
+         * 全码转码
          * @param {string} input
-         * @param {string} [key]
+         * @param {string} key
          */
         encode: function (input, key) {
             input = input.split(",");
             var ret = input[0] + ",";
             for (var i = 0; i < input[1].length; i++) {
                 ret += key[this._keyStr.indexOf(input[1][i])];
+            }
+            return ret;
+        },
+
+        /**
+         * 部分转码
+         * @param {String} input
+         */
+        setCode: function (input,key) {
+            let ret = "";
+            for (var i = 0; i < input.length; i++) {
+                ret += key[this._keyStr.indexOf(input[i])];
+            }
+            return ret;
+        },
+
+        /**
+         * 部分解码
+         * @param {String} input
+         */
+        getCode: function (input,key) {
+            let ret = "";
+            for (var i = 0; i < input.length; i++) {
+                ret += this._keyStr[key.indexOf(input[i])];
             }
             return ret;
         },
