@@ -6965,6 +6965,7 @@ lt_code.test.imgToBase = function (imgUrl) {
  */
 lt_code.test.fileToBase = function (inputFile) {
     //console.trace(inputFile);
+    lt_code.test.fileToBase.getReturn = function () { };
     var oFReader = new FileReader();
     var ret;
     if (inputFile.value.length > 0) {
@@ -9276,24 +9277,6 @@ lt_code.image.fromHSVToRGB = function (color) {
 };
 
 
-var test = function () {
-    var all = [];
-    var max = 255,a,b,c;
-    for (a = 0; a < max; a++) {
-        for (b = 0; b < max; b++) {
-            for (c = 0; c < max; c++) {
-                var rgb = "rgb(" + a + "," + b + "," + c + ")";
-                var hsv = lt_code.image.fromRGBToHSV(rgb);
-                var rgb2 = lt_code.image.fromHSVToRGB(hsv);
-                if (rgb==rgb2) {
-                    all.push(true);
-                } else {
-                    all.push(false);
-                }
-            }
-        }
-    }
-}
 
 /**base64加密模块 */
 lt_code.base64 = {
