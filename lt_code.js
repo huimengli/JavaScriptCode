@@ -1800,6 +1800,22 @@ lt_code.color_change = function (color) {
 };
 
 /**
+ * 10进制转换为2进制
+ * @param {number} num 输入的十进制的数值
+ */
+lt_code.from10To2 = function (num) {
+    return num.toString(2);
+};
+
+/**
+ * 二进制转换为十进制
+ * @param {number} num
+ */
+lt_code.from2To10 = function (num) {
+    return parseInt(num, 2);
+}
+
+/**
  * 10进制转换为16进制
  * @param {number|string} num 输入的十进制的数值
  * @returns {string} 返回的十六进制的数值
@@ -1819,8 +1835,6 @@ lt_code.from10To16 = function (num) {
 lt_code.from16To10 = function (num) {
     return parseInt(num, 16);
 };
-
-
 
 /**
  * 出现的函数(重载+2)(通过display和opacity来实现)
@@ -9225,19 +9239,19 @@ lt_code.image.from16To10 = function (num) {
  */
 lt_code.image.from10To16 = function (num) {
     return this.num16[this.num10.indexOf(num)];
-}
+};
 
 /**base64加密模块 */
 lt_code.base64 = {
 
     // private property  
-    _keyStr : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+    _keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
 
     /**
      * 加密
      * @param {string} input
      */
-    encode : function (input) {
+    encode: function (input) {
         var output = "";
         var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
         var i = 0;
@@ -9266,7 +9280,7 @@ lt_code.base64 = {
      * 解密
      * @param {string} input
      */
-    decode : function (input) {
+    decode: function (input) {
         var output = "";
         var chr1, chr2, chr3;
         var enc1, enc2, enc3, enc4;
@@ -9293,7 +9307,7 @@ lt_code.base64 = {
     },
 
     // private method for UTF-8 encoding  
-    _utf8_encode : function (string) {
+    _utf8_encode: function (string) {
         string = string.replace(/\r\n/g, "\n");
         var utftext = "";
         for (var n = 0; n < string.length; n++) {
@@ -9314,7 +9328,7 @@ lt_code.base64 = {
     },
 
     // private method for UTF-8 decoding  
-    _utf8_decode : function (utftext) {
+    _utf8_decode: function (utftext) {
         var string = "";
         var i = 0;
         var c = c1 = c2 = 0;
@@ -9360,7 +9374,7 @@ lt_code.base64 = {
     else: {
         /** 匙A */
         _keyA: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-        
+
         /** 匙a */
         _keya: "abcdefghijklmnopqrstuvwxyz",
 
@@ -9407,7 +9421,7 @@ lt_code.base64 = {
          */
         numToTextA: function (num) {
             var ret = "";
-            while (num>25) {
+            while (num > 25) {
                 ret += this._keyA[25];
                 num -= 25;
             }
@@ -9421,7 +9435,7 @@ lt_code.base64 = {
          */
         numToTexta: function (num) {
             var ret = "";
-            while (num>25) {
+            while (num > 25) {
                 ret += this._keya[25];
                 num -= 25;
             }
@@ -9447,9 +9461,9 @@ lt_code.base64 = {
             values.forEach(function (e, i) {
                 ret += String.fromCharCode(
                     lt_code.base64.else.getCodeOne(
-                    lt_code.getNum(time[count - 1 - i % count]),
-                    e
-                ));
+                        lt_code.getNum(time[count - 1 - i % count]),
+                        e
+                    ));
             });
             return ret;
         },
@@ -9460,7 +9474,7 @@ lt_code.base64 = {
          * @param {string} valueOne
          */
         getCodeOne: function (numOne, valueOne) {
-            numOne = !numOne? 1: numOne;
+            numOne = !numOne ? 1 : numOne;
             var first = /[A-Z]+/.exec(valueOne)[0];
             var last = /[a-z]+/.exec(valueOne)[0];
             first = lt_code.getNum(this.textToNumA(first));
@@ -9478,7 +9492,7 @@ lt_code.base64 = {
             for (var i = 0; i < str.length; i++) {
                 ret += this._keyA.indexOf(str[i]);
             }
-            if (this!==lt_code.base64.else) {
+            if (this !== lt_code.base64.else) {
                 ret = ret / this;
             }
             return ret;
@@ -9555,7 +9569,7 @@ lt_code.base64 = {
         numToTextA: function (num) {
             var ret = "";
             var theNum = 0;
-            if (num>25) {
+            if (num > 25) {
                 ret += this._keyA[25];
                 num -= 25;
             }
@@ -9563,7 +9577,7 @@ lt_code.base64 = {
                 theNum++;
                 num -= 25;
             }
-            if (theNum>0) {
+            if (theNum > 0) {
                 ret += theNum.toString();
             }
             ret += this._keyA[num];
@@ -9662,7 +9676,7 @@ lt_code.base64 = {
         /**产生一个随机的key */
         getKey: function () {
             var ret = "";
-            var all = Array.prototype.slice.call(this._keyStr.slice(0,62));
+            var all = Array.prototype.slice.call(this._keyStr.slice(0, 62));
             while (all.length > 0) {
                 var oneKey = all[lt_code.variable.random(all.length, null, true)];
                 ret += oneKey;
@@ -9830,41 +9844,41 @@ lt_code.base64 = {
             return ret;
         },
     },
-}
+};
 
 /**sha256加密模块 */
 lt_code.SHA256 = {
 
-    rotateRight:function(n, x) {
+    rotateRight: function (n, x) {
         return ((x >>> n) | (x << (32 - n)));
     },
 
-    choice: function(x, y, z) {
+    choice: function (x, y, z) {
         return ((x & y) ^ (~x & z));
     },
 
-    majority:function(x, y, z) {
+    majority: function (x, y, z) {
         return ((x & y) ^ (x & z) ^ (y & z));
     },
-    sha256_Sigma0:function(x) {
-        return (this.rotateRight(2, x) ^ this.rotateRight(13, x) ^ this. rotateRight(22, x));
+    sha256_Sigma0: function (x) {
+        return (this.rotateRight(2, x) ^ this.rotateRight(13, x) ^ this.rotateRight(22, x));
     },
-    sha256_Sigma1:function(x) {
+    sha256_Sigma1: function (x) {
         return (this.rotateRight(6, x) ^ this.rotateRight(11, x) ^ this.rotateRight(25, x));
     },
-    sha256_sigma0:function(x) {
+    sha256_sigma0: function (x) {
         return (this.rotateRight(7, x) ^ this.rotateRight(18, x) ^ (x >>> 3));
     },
-    sha256_sigma1:function(x) {
+    sha256_sigma1: function (x) {
         return (this.rotateRight(17, x) ^ this.rotateRight(19, x) ^ (x >>> 10));
     },
-    sha256_expand:function(W, j) {
+    sha256_expand: function (W, j) {
         return (W[j & 0x0f] += this.sha256_sigma1(W[(j + 14) & 0x0f]) + W[(j + 9) & 0x0f] +
             this.sha256_sigma0(W[(j + 1) & 0x0f]));
     },
 
     /* Hash constant words K: */
-    K256 : new Array(
+    K256: new Array(
         0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,
         0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
         0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
@@ -9884,21 +9898,21 @@ lt_code.SHA256 = {
     ),
 
     /* global arrays */
-    ihash:[],
-    count:[],
-    buffer:[],
-    sha256_hex_digits : "0123456789ABCDEF",
+    ihash: [],
+    count: [],
+    buffer: [],
+    sha256_hex_digits: "0123456789ABCDEF",
 
     /* Add 32-bit integers with 16-bit operations (bug in some JS-interpreters: 
     overflow) */
-    safe_add:function(x, y) {
+    safe_add: function (x, y) {
         var lsw = (x & 0xffff) + (y & 0xffff);
         var msw = (x >> 16) + (y >> 16) + (lsw >> 16);
         return (msw << 16) | (lsw & 0xffff);
     },
 
     /* Initialise the SHA256 computation */
-    sha256_init:function() {
+    sha256_init: function () {
         this.ihash = new Array(8);
         this.count = new Array(2);
         this.buffer = new Array(64);
@@ -9914,7 +9928,7 @@ lt_code.SHA256 = {
     },
 
     /* Transform a 512-bit message block */
-    sha256_transform:function() {
+    sha256_transform: function () {
         var a, b, c, d, e, f, g, h, T1, T2;
         var W = new Array(16);
 
@@ -9960,7 +9974,7 @@ lt_code.SHA256 = {
     },
 
     /* Read the next chunk of data and update the SHA256 computation */
-    sha256_update:function(data, inputLen) {
+    sha256_update: function (data, inputLen) {
         var i, index, curpos = 0;
         /* Compute number of bytes mod 64 */
         index = ((this.count[0] >> 3) & 0x3f);
@@ -9984,7 +9998,7 @@ lt_code.SHA256 = {
     },
 
     /* Finish the computation by operations such as padding */
-    sha256_final:function() {
+    sha256_final: function () {
         var index = ((this.count[0] >> 3) & 0x3f);
         this.buffer[index++] = 0x80;
         if (index <= 56) {
@@ -10009,7 +10023,7 @@ lt_code.SHA256 = {
     },
 
     /* Split the internal hash values into an array of bytes */
-    sha256_encode_bytes:function() {
+    sha256_encode_bytes: function () {
         var j = 0;
         var output = new Array(32);
         for (var i = 0; i < 8; i++) {
@@ -10022,7 +10036,7 @@ lt_code.SHA256 = {
     },
 
     /* Get the internal hash as a hex string */
-    sha256_encode_hex:function() {
+    sha256_encode_hex: function () {
         var output = new String();
         for (var i = 0; i < 8; i++) {
             for (var j = 28; j >= 0; j -= 4)
@@ -10033,7 +10047,7 @@ lt_code.SHA256 = {
 
     /* Main function: returns a hex string representing the SHA256 value of the 
     given data */
-    sha256_digest:function(data) {
+    sha256_digest: function (data) {
         this.sha256_init();
         this.sha256_update(data, data.length);
         this.sha256_final();
@@ -10050,12 +10064,81 @@ lt_code.SHA256 = {
     },
 
     /* test if the JS-interpreter is working properly */
-    sha256_self_test:function() {
+    sha256_self_test: function () {
         return this.sha256_digest("message digest") ==
             "f7846f55cf23e14eebeab5b4e1550cad5b509e3348fbc4efa3a1413d393cb650";
     },
-}
+};
 
+/**7bit压缩算法(传输差,可读性差) */
+lt_code.bit7 = {
+
+    /**
+     * 压缩
+     * @param {string} input
+     */
+    encode: function (input) {
+        /**指针 */
+        var index = 0;
+        /**返回值 */
+        var ret = "";
+        while (index + 8 < input.length) {
+            /**压缩单元 */
+            var codeOne = input.slice(index, index + 8);
+            ret += this._encodeOne(codeOne);
+            index += 8;
+        }
+        ret += this._encodeOne(input.slice(index));
+        return ret;
+    },
+
+    /**
+     * 压缩一个单元
+     * @param {string} inputOne
+     */
+    _encodeOne: function (inputOne) {
+        /**返回值 */
+        var ret = "";
+        /**输出值 */
+        var out = "";
+        for (var i = 0; i < 8; i++) {
+            /**一位编码 */
+            var code = lt_code.from10To2(inputOne.charCodeAt(i)).toString();
+            code = this._complement(code);
+            out += code;
+        }
+        for (var i = 0; i < 7; i++) {
+            /**一位编码 */
+            var code = out.slice(i * 8, (i + 1) * 8);
+            ret += String.fromCharCode(lt_code.from2To10(lt_code.getNum(code)));
+        }
+        return ret;
+    },
+
+    /**
+     * 补位
+     * @param {String} input 输入
+     */
+    _complement: function (input) {
+        /**差值 */
+        var c = 6 - input.length;
+        /**返回值 */
+        var ret = "";
+        for (var i = 0; i < c; i++) {
+            ret += "0";
+        }
+        ret += input;
+        return ret;
+    },
+
+    /**
+     * 解压(没写)
+     * @param {any} input
+     */
+    decode: function (input) {
+
+    }
+}
 
 /**
  * 获取变量值为value值的变量变量名
@@ -10068,7 +10151,7 @@ lt_code.test.getNameOfValue = function (value) {
             return k.toString();
         }
     }
-}
+};
 
 /**
  * 把动态数组转字符串
@@ -10080,7 +10163,7 @@ lt_code.test.listToStr = function (list) {
         ret += i + ":" + lt_code.base64.encode(list[i].toString()) + ";";
     }
     return ret;
-}
+};
 
 /**
  * 把字符串转为动态数组
