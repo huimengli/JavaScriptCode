@@ -6979,6 +6979,7 @@ lt_code.test.imgToBase = function (imgUrl) {
  */
 lt_code.test.fileToBase = function (inputFile) {
     //console.trace(inputFile);
+    lt_code.test.fileToBase.getReturn = function () { };
     var oFReader = new FileReader();
     var ret;
     if (inputFile.value.length > 0) {
@@ -9241,6 +9242,56 @@ lt_code.image.from10To16 = function (num) {
     return this.num16[this.num10.indexOf(num)];
 };
 
+/**
+ * rgb色彩转hsv色彩
+ * @param {string} color rgb颜色
+ */
+lt_code.image.fromRGBToHSV = function (color) {
+    color = color.length > 7 ? color : lt_code.color_change(color);
+    var RGB = /(\d+),(\d+),(\d+)/.exec(color);
+    var R = RGB[1], G = RGB[2], B = RGB[3];
+    var Max = Math.max(R, G, B), Min = Math.min(R, G, B);
+    var V = Max, S = (Max - Min) / Max;
+    S = !S ? 0 : S;
+    var H = R == Max ? (G - B) / (Max - Min) * 60 :
+        G == Max ? 120 + (B - R) / (Max - Min) * 60 :
+            B == Max ? 240 + (R - G) / (Max - Min) * 60 :
+                console.error("color数据错误!");
+    H = H < 0 ? H + 360 : !H ? 0 : H;
+    H = lt_code.getNum(H * 1000) / 1000, S = lt_code.getNum(S * 1000) / 1000;
+    return "hsv(" + H.toString() + "," + S.toString() + "," + V.toString() + ")";
+};
+
+/**
+ * hsv色彩转rgb色彩
+ * @param {string} color hsv颜色
+ */
+lt_code.image.fromHSVToRGB = function (color) {
+    var HSV = /hsv/.test(color) ? /([\d\.]+),([\d\.]+),(\d+)/.exec(color) : console.error("输入颜色错误!");
+    var h = HSV[1], s = HSV[2], v = HSV[3],r,g,b;
+    if (s == 0) {
+        r = v, g = v, b = v;
+    } else {
+        h /= 60;
+        var i = lt_code.getNum(h),f = h-i;
+        var a = v * (1 - s), b = v * (1 - s * f), c = v * (1 - s * (1 - f));
+        switch (i) {
+            case 0: r = v; g = c; b = a; break;
+            case 1: r = b; g = v; b = a; break;
+            case 2: r = a; g = v; b = c; break;
+            case 3: r = a; g = b; b = v; break;
+            case 4: r = c; g = a; b = v; break;
+            case 5: r = v; g = a; b = b; break;
+            default:
+                console.error("数据错误!");
+        }
+        r = lt_code.getNum(r), g = lt_code.getNum(g), b = lt_code.getNum(b);
+    }
+    return "rgb(" + r.toString() + "," + g.toString() + "," + b.toString() + ")";
+};
+
+
+
 /**base64加密模块 */
 lt_code.base64 = {
 
@@ -9816,7 +9867,7 @@ lt_code.base64 = {
         },
 
         /**
-         * 解码
+         * 全码解码
          * @param {string} input
          * @param {string} key
          */
@@ -9830,16 +9881,39 @@ lt_code.base64 = {
         },
 
         /**
-         * 转码
+         * 全码转码
          * @param {string} input
-         * @param {string} [key]
+         * @param {string} key
          */
         encode: function (input, key) {
             input = input.split(",");
             var ret = input[0] + ",";
-            console.log(input[1].length);
             for (var i = 0; i < input[1].length; i++) {
                 ret += key[this._keyStr.indexOf(input[1][i])];
+            }
+            return ret;
+        },
+
+        /**
+         * 部分转码
+         * @param {String} input
+         */
+        setCode: function (input,key) {
+            let ret = "";
+            for (var i = 0; i < input.length; i++) {
+                ret += key[this._keyStr.indexOf(input[i])];
+            }
+            return ret;
+        },
+
+        /**
+         * 部分解码
+         * @param {String} input
+         */
+        getCode: function (input,key) {
+            let ret = "";
+            for (var i = 0; i < input.length; i++) {
+                ret += this._keyStr[key.indexOf(input[i])];
             }
             return ret;
         },
