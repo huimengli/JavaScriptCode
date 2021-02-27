@@ -10697,7 +10697,351 @@ lt_code.variable.currentDir = lt_code.variable.currentSrc.slice(0, this.length -
 
 /**非对称模块 */
 lt_code.RSA = {
+    /**
+     * 大数相加(慢速)
+     * @param {String} num1
+     * @param {String} num2
+     */
+    bigAddSlow: function (num1, num2) {
+        /**开始时间 */
+        var startTime = new Date().getTime();
+        num1 = num1.toString();
+        num2 = num2.toString();
 
+        /**数字1的长度 */
+        let count1 = num1.length;
+        /**数字2的长度 */
+        let count2 = num2.length;
+
+        /**长度最小值 */
+        let min = Math.min(count1, count2);
+
+        /**返回值 */
+        let ret = "";
+
+        /**分位计算数值1 */
+        let n1 = 0;
+        /**分位计算数值2 */
+        let n2 = 0;
+        /**暂时计算结果数值 */
+        let r = 0;
+
+        for (var i = 1; i <= min; i++) {
+            n1 += lt_code.getNum(num1[count1 - i]);
+            n2 = lt_code.getNum(num2[count2 - i]);
+            r = n1 + n2;
+            n1 = Math.floor(r/10);
+            ret += (r % 10).toString();
+        }
+
+        if (count1 < count2) {
+            for (var i = min+1; i <= count2; i++) {
+                n2 = lt_code.getNum(num2[count2 - i]);
+                r = n1 + n2;
+                n1 = Math.floor(r / 10);
+                ret += (r % 10).toString();
+            }
+        } else if (count1>count2) {
+            for (var i = min+1; i <= count1; i++) {
+                n1 += lt_code.getNum(num1[count1 - i]);
+                r = n1;
+                n1 = Math.floor(r / 10);
+                ret += (r % 10).toString();
+            }
+        } 
+        if (n1 == 1) {
+            ret += "1";
+        }
+
+        ret = function () {
+            let list = Array.prototype.slice.call(ret);
+            let retString = "";
+            for (var i = list.length - 1; i >= 0; i--) {
+                retString += list[i];
+            }
+            return retString;
+        }();
+
+        var stopTime = new Date().getTime();
+        lt_code.RSA.bigAddSlow.getTime = function () {
+            return stopTime - startTime;
+        };
+
+        return ret;
+    },
+
+    /**
+     * 大数相减(慢速)
+     * @param {String} num1
+     * @param {String} num2
+     */
+    bigSubtractSlow: function (num1, num2) {
+        num1 = num1.toString();
+        num2 = num2.toString();
+        if (/-/.test(num1)||/-/.test(num2)) {
+            console.error("不计算负数!");
+        }
+        var ret = "";
+        /**是否小于0 */
+        var isLess = false;
+        if (this.bigIsBigerSlow(num2,num1)) {
+            isLess = true;
+            let temp = num1;
+            num1 = num2;
+            num2 = temp;
+        }
+
+        /**数字1长度 */
+        const count1 = num1.length;
+        /**数字2长度 */
+        const count2 = num2.length;
+
+        /**分位计算1 */
+        var n1 = 0;
+        /**分位计算2 */
+        var n2 = 0;
+        /**暂时计算结果 */
+        var r = 0;
+
+        for (var i = 1; i <= count2; i++) {
+            n1 = n1 == 0 ? 10 : 9;
+            n1 = n1 + lt_code.getNum(num1[count1 - i]);
+            n2 = lt_code.getNum(num2[count2 - i]);
+            r = n1 - n2;
+            n1 = r < 10 ? 1 : 0;
+            ret += (r % 10).toString();
+        }
+
+        if (count1>count2) {
+            for (var i = count2+1; i <= count1; i++) {
+                n1 = n1 == 0 ? 10 : 9;
+                n1 = n1 + lt_code.getNum(num1[count1 - i]);
+                //n2 = lt_code.getNum(num2[count2 - i]);
+                r = n1;
+                n1 = r < 10 ? 1 : 0;
+                ret += (r % 10).toString();
+            }
+
+        }
+
+        if (isLess) {
+            ret += "-";
+        }
+
+        ret = function () {
+            let list = Array.prototype.slice.call(ret);
+            let retString = "";
+            for (var i = list.length - 1; i >= 0; i--) {
+                retString += list[i];
+            }
+            return retString;
+        }();
+
+        return ret;
+    },
+
+    /**
+     * 大数比较
+     * 数字1是否比数字2大
+     * @param {String} num1
+     * @param {String} num2
+     */
+    bigIsBigerSlow: function (num1, num2) {
+        num1 = num1.toString();
+        num2 = num2.toString();
+        
+        const count1 = num1.length;
+        const count2 = num2.length;
+
+        if (count1>count2) {
+            return true;
+        } else if(count1<count2) {
+            return false;
+        } else {
+            return num1 > num2;
+        }
+    },
+
+    /**
+     * 大数修正
+     * @param {String} num
+     */
+    bigNumberFixed: function (num) {
+        if (/-?0+/.test(num)) {
+
+        }
+    },
+    
+    /**
+     * 大数相乘(慢速)
+     * @param {String} num1
+     * @param {String} num2
+     */
+    bigMultiplySlow: function (num1, num2) {
+        var startTime = new Date().getTime();
+        var ret = num1;
+        if (num2 == 0 || num1 == 0) {
+            return "0";
+        }
+        for (var i = 1; i < num2; i++) {
+            ret = lt_code.RSA.bigAddSlow(ret, num1);
+        }
+        var stopTime = new Date().getTime();
+        lt_code.RSA.bigMultiplySlow.getTime = function () {
+            return stopTime - startTime;
+        }
+        return ret;
+    },
+
+    /**
+     * 大数相乘(分治算法)
+     * @param {String} num1
+     * @param {String} num2
+     */
+    bigMultiplyKaraSuba: function (num1, num2) {
+        if (num1==0||num2==0) {
+            return "0";
+        } else if (num1 <= 94906265 && num2 <= 94906265) {
+            //结果小于9007199136250225(js安全数据:9007199254740992)的计算直接返回计算结果
+            return num1 * num2;
+        }
+        num1 = num1.toString();
+        num2 = num2.toString();
+
+        const count1 = num1.length;
+        const count2 = num2.length;
+
+        const halfN = Math.floor(Math.max(count1, count2) / 2);
+
+        const first1 = count1 > halfN ? num1.slice(0, count1 - halfN) : "0";
+        const last1 = count1 > halfN ? num1.slice(count1 - halfN) : num1;
+        const first2 = count2 > halfN ? num2.slice(0, count2 - halfN) : "0";
+        const last2 = count2 > halfN ? num2.slice(count2 - halfN) : num2;
+
+        // 很多位的运算会导致数值溢出,暂时先用慢速相加
+        const plus1 = lt_code.RSA.bigAddSlow(first1, last1);
+        const plus2 = lt_code.RSA.bigAddSlow(first2, last2);
+
+        let c2 = this.bigMultiplyKaraSuba(first1, first2);
+        const c0 = this.bigMultiplyKaraSuba(last1, last2);
+        let c1 = this.bigSubtractSlow(this.bigSubtractSlow(this.bigMultiplyKaraSuba(plus1, plus2), c0), c2);
+
+        //console.log(c2 + " " + c0 + " " + c1);
+
+        for (var i = 0; i < halfN; i++) {
+            c2 += "00";
+            c1 += "0";
+        }
+
+        const ret = this.bigAddSlow(this.bigAddSlow(c2,c1),c0);
+
+        return ret.toString();
+    },
+
+    /**
+     * 大数求商(慢速)
+     * @param {String} num1
+     * @param {String} num2
+     */
+    bigQuotientSlow: function (num1, num2) {
+        var ret = num1.toString();
+        num2 = num2.toString();
+        while (this.bigIsBigerSlow(ret, num2)) {
+            ret = this.bigSubtractSlow(ret, num2);
+            console.log(ret);
+            if (ret<=0) {
+                break;
+            }
+        }
+        return ret;
+    },
+
+    /**
+     * 大数相除(慢速)
+     * @param {String} num1
+     * @param {String} num2
+     */
+    bitDividedSlow: function (num1, num2) {
+        num1 = num1.toString();
+        num2 = num2.toString();
+
+        if (this.bigIsBigerSlow(num1,num2)) {
+
+        }
+    },
+
+    /**
+     * 测试相加计算速度
+     * @param {number} count 计算项数
+     */
+    testAdd: function (count) {
+        /**开始时间 */
+        let startTime = new Date().getTime();
+        let num1 = lt_code.variable.random(10, 0, true);
+        let num2 = lt_code.variable.random(10, 0, true);
+        let ansewer = 0;
+
+        for (var i = 0; i < 9*count; i++) {
+            ansewer = num1 + num2;
+        }
+        let stopTime1 = new Date().getTime();
+        let time1 = stopTime1 - startTime;
+        startTime = stopTime1;
+
+        num1 = lt_code.variable.random(1000000000, 0, true);
+        num2 = lt_code.variable.random(1000000000, 0, true);
+        for (var i = 0; i < count; i++) {
+            ansewer = num1 + num2;
+        }
+        let stopTime2 = new Date().getTime();
+        let time2 = stopTime2 - startTime;
+        console.log(time1 + " " + time2);
+        return time1 < time2 ? "小位数计算快" : "大位数计算快";
+    },
+
+    /**
+     * 测试相乘计算速度
+     * @param {number} count 计算项数
+     */
+    testMultiply: function (count) {
+        /**开始时间 */
+        let startTime = new Date().getTime();
+        let num1 = lt_code.variable.random(10, 0, true);
+        let num2 = lt_code.variable.random(10, 0, true);
+        let ansewer = 0;
+
+        for (var i = 0; i < 9 * count; i++) {
+            ansewer = num1 * num2;
+        }
+        let stopTime1 = new Date().getTime();
+        let time1 = stopTime1 - startTime;
+        startTime = stopTime1;
+
+        num1 = lt_code.variable.random(1000000000, 0, true);
+        num2 = lt_code.variable.random(1000000000, 0, true);
+        for (var i = 0; i < count; i++) {
+            ansewer = num1 * num2;
+        }
+        let stopTime2 = new Date().getTime();
+        let time2 = stopTime2 - startTime;
+        console.log(time1 + " " + time2);
+        return time1 < time2 ? "小位数计算快" : "大位数计算快";
+    },
+
+    /**
+     * 测试分治算法计算速度
+     * @param {number} count 两项乘数位数
+     */
+    testKaraSubaTime: function (count) {
+        var num1 = "";
+        for (var i = 1; i <= count; i++) {
+            num1 += (i%10).toString();
+        }
+        var startTime = new Date().getTime();
+        var ret = this.bigMultiplyKaraSuba(num1, num1);
+        var stopTime = new Date().getTime();
+        return (stopTime - startTime).toString()+"ms answer:"+ret+" count:"+ret.length;
+    }
 }
 
 /**3D模块 */
