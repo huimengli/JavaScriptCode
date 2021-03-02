@@ -10713,6 +10713,19 @@ lt_code.RSA = {
         /**数字2的长度 */
         let count2 = num2.length;
 
+        /**数字1是否是负数 */
+        const isF1 = /-/.test(num1) ? true : false;
+        /**数字2是否是负数 */
+        const isF2 = /-/.test(num2) ? true : false;
+
+        if (isF1&&!isF2) {
+            return this.bigSubtractSlow(num2, num1.slice(1));
+        } else if (!isF1&&isF2) {
+            return this.bigSubtractSlow(num1, num2.slice(1));
+        } else if (isF1&&isF2) {
+            return "-" + this.bigAddSlow(num1.slice(1), num2.slice(1));
+        }
+
         /**长度最小值 */
         let min = Math.min(count1, count2);
 
@@ -10767,7 +10780,7 @@ lt_code.RSA = {
             return stopTime - startTime;
         };
 
-        return ret;
+        return this.bigNumberFixed(ret);
     },
 
     /**
@@ -10778,9 +10791,23 @@ lt_code.RSA = {
     bigSubtractSlow: function (num1, num2) {
         num1 = num1.toString();
         num2 = num2.toString();
-        if (/-/.test(num1)||/-/.test(num2)) {
-            console.error("不计算负数!");
+
+        /**数字1是否是负数 */
+        const isF1 = /-/.test(num1) ? true : false;
+        /**数字2是否是负数 */
+        const isF2 = /-/.test(num2) ? true : false;
+
+        /**返回值是否是负数 */
+        let retF = false;
+
+        if (isF1 && !isF2) {
+            return "-"+ this.bigAddSlow(num1.slice(1), num2);
+        } else if (!isF1&&isF2) {
+            return this.bigAddSlow(num1, num2.slice(1));
+        } else if (isF1&&isF2) {
+            return this.bigSubtractSlow(num2.slice(1), num1.slice(1));
         }
+
         var ret = "";
         /**是否小于0 */
         var isLess = false;
@@ -10837,7 +10864,7 @@ lt_code.RSA = {
             return retString;
         }();
 
-        return ret;
+        return this.bigNumberFixed(ret);
     },
 
     /**
@@ -10849,16 +10876,36 @@ lt_code.RSA = {
     bigIsBigerSlow: function (num1, num2) {
         num1 = num1.toString();
         num2 = num2.toString();
+
+        num1 = this.bigNumberFixed(num1);
+        num2 = this.bigNumberFixed(num2);
         
         const count1 = num1.length;
         const count2 = num2.length;
 
-        if (count1>count2) {
+        const isF1 = /-/.test(num1) ? true : false;
+        const isF2 = /-/.test(num2) ? true : false;
+
+        if (isF1&&!isF2) {
+            return false
+        } else if (!isF1&&isF2) {
             return true;
-        } else if(count1<count2) {
-            return false;
-        } else {
-            return num1 > num2;
+        } else if (!isF1&&!isF2) {
+            if (count1 > count2) {
+                return true;
+            } else if (count1 < count2) {
+                return false;
+            } else {
+                return num1 > num2;
+            }
+        } else if (isF1&&isF2) {
+            if (count1<count2) {
+                return true;
+            } else if (count1>count2) {
+                return false;
+            } else {
+                return num1 < num2;
+            }
         }
     },
 
@@ -10868,7 +10915,17 @@ lt_code.RSA = {
      */
     bigNumberFixed: function (num) {
         if (/-?0+/.test(num)) {
-
+            let match = /-?(0+)/.exec(num);
+            //console.log(match);
+            num = Array.prototype.slice.call(num);
+            num = num.remove(0, match[0].length);
+            let ret = match[0].length > match[1].length ? "-" : "";
+            for (var i = 0; i < num.length; i++) {
+                ret += num[i];
+            }
+            return ret;
+        } else {
+            return num;
         }
     },
     
@@ -10965,8 +11022,21 @@ lt_code.RSA = {
         num1 = num1.toString();
         num2 = num2.toString();
 
-        if (this.bigIsBigerSlow(num1,num2)) {
+        num1 = this.bigNumberFixed(num1);
+        num2 = this.bigNumberFixed(num2);
 
+        /**是否有小数 */
+        let haveF = false;
+
+        if (/-/.test(num1)||/-/.test(num2)) {
+            console.error("不支持计算负数");
+        }
+
+        if (this.bigIsBigerSlow(num1,num2)) {
+            const count1 = num1.length;
+            const count2 = num2.length;
+        } else {
+            console.error("不支持计算小数");
         }
     },
 
@@ -11050,8 +11120,8 @@ lt_code.RSA = {
 /**追加方法模块 */
 lt_code.addMethod = {};
 
-/**向数组模块添加方法 */
-lt_code.addMethod.ArrayAddMethod = function () {
+/**向模块中添加方法 */
+lt_code.addMethod.AddMethod = function () {
     /**
      * 删除一项
      * @param {number} index 索引
@@ -11068,7 +11138,7 @@ lt_code.addMethod.ArrayAddMethod = function () {
             }
         });
         return ret;
-    }
+    };
 
     /**
      * 删除内容
@@ -11078,7 +11148,7 @@ lt_code.addMethod.ArrayAddMethod = function () {
     Array.prototype.delete = function (obj, needAll) {
         var ret = [];
         var base = this;
-        if (Array.isArray(obj)===false) {
+        if (Array.isArray(obj) === false) {
             if (!needAll) {
                 var i = -1;
                 base.forEach(function (e, j) {
@@ -11109,7 +11179,79 @@ lt_code.addMethod.ArrayAddMethod = function () {
         //    }
         //}
         return ret;
+    };
+
+    /**
+     * 随机取出一个数据
+     */
+    Array.prototype.randomOne = function () {
+        let item = Math.random() * this.length;
+        item = Math.floor(item);
+        let ret = this[item];
+        return ret;
     }
+
+    /**
+     * 将整个列表随机化
+     */
+    Array.prototype.random = function () {
+        let list = this;
+        let ret = [];
+        let count = this.length;
+        let item;
+        for (let i = 0; i < count; i++) {
+            item = list.randomOne();
+            list = list.delete(item);
+            ret.push(item);
+        }
+        return ret;
+    }
+
+    /**
+     * 获取所有项
+     * @param {object} item 其中一项
+     */
+    Array.prototype.indexsOf = function (item) {
+        var ret = [];
+        this.forEach(function (e, i) {
+            if (e == item) {
+                ret.push(i);
+            }
+        });
+        return ret;
+    }
+
+    /**
+     * 顺序排列
+     * @param {boolean} isMinToMax 是否从小到大排列
+     */
+    Array.prototype.order = function (isMinToMax) {
+        var ret = [];
+        var list = this;
+        const count = this.length;
+        if (isMinToMax) {
+            do {
+                let min = Math.min.apply(null, list);
+                for (let i = 0; i < list.indexsOf(min).length; i++) {
+                    ret.push(min);
+                }
+                list = list.delete(min, true);
+                //console.log(list);
+            } while (list.length);
+        } else {
+            while (list.length > 0) {
+                let max = Math.max.apply(null, list);
+                for (let i = 0; i < list.indexsOf(max).length; i++) {
+                    ret.push(max);
+                }
+                list = list.delete(max, true);
+                //console.log(list);
+            }
+        }
+        return ret;
+    }
+
+    
 }();
 
 //加载图标
