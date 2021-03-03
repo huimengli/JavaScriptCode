@@ -10797,9 +10797,6 @@ lt_code.RSA = {
         /**数字2是否是负数 */
         const isF2 = /-/.test(num2) ? true : false;
 
-        /**返回值是否是负数 */
-        let retF = false;
-
         if (isF1 && !isF2) {
             return "-"+ this.bigAddSlow(num1.slice(1), num2);
         } else if (!isF1&&isF2) {
@@ -10811,7 +10808,7 @@ lt_code.RSA = {
         var ret = "";
         /**是否小于0 */
         var isLess = false;
-        if (this.bigIsBigerSlow(num2,num1)) {
+        if (this.bigIsBigerSlow(num2,num1)>=0) {
             isLess = true;
             let temp = num1;
             num1 = num2;
@@ -10887,24 +10884,24 @@ lt_code.RSA = {
         const isF2 = /-/.test(num2) ? true : false;
 
         if (isF1&&!isF2) {
-            return false
+            return -1
         } else if (!isF1&&isF2) {
-            return true;
+            return 1;
         } else if (!isF1&&!isF2) {
             if (count1 > count2) {
-                return true;
+                return 1;
             } else if (count1 < count2) {
-                return false;
+                return -1;
             } else {
-                return num1 > num2;
+                return num1 > num2?1:num1==num2?0:-1;
             }
         } else if (isF1&&isF2) {
             if (count1<count2) {
-                return true;
+                return 1;
             } else if (count1>count2) {
-                return false;
+                return -1;
             } else {
-                return num1 < num2;
+                return num1 < num2?1:num1==num2?0:-1;
             }
         }
     },
@@ -10914,17 +10911,29 @@ lt_code.RSA = {
      * @param {String} num
      */
     bigNumberFixed: function (num) {
-        if (/-?0+/.test(num)) {
-            let match = /-?(0+)/.exec(num);
-            //console.log(match);
-            num = Array.prototype.slice.call(num);
-            num = num.remove(0, match[0].length);
-            let ret = match[0].length > match[1].length ? "-" : "";
-            for (var i = 0; i < num.length; i++) {
-                ret += num[i];
+        num = num.toString();
+        if (/-0*/.test(num)) {
+            if (num.length==2&&num[1]=="0") {
+                return "0";
+            } else if (num.length == 1) {
+                return "0";
             }
-            return ret;
+            let match = /-(0*)/.exec(num);
+            return "-" + num.slice(match[0].length);
+        } else if (num[0] == "0") {
+            if (num.length==1&&num[0]=="0") {
+                return "0";
+            } else if (num.length == 0) {
+                return "0";
+            }
+            let match = /0+/.exec(num);
+            return num.slice(match[0].length);
         } else {
+            if (num.length == 1 && num[0] == "0") {
+                return "0";
+            } else if (num.length==0) {
+                return "0";
+            }
             return num;
         }
     },
@@ -11003,12 +11012,9 @@ lt_code.RSA = {
     bigQuotientSlow: function (num1, num2) {
         var ret = num1.toString();
         num2 = num2.toString();
-        while (this.bigIsBigerSlow(ret, num2)) {
+        while (this.bigIsBigerSlow(ret, num2)>=0) {
             ret = this.bigSubtractSlow(ret, num2);
-            console.log(ret);
-            if (ret<=0) {
-                break;
-            }
+            //console.log(ret);
         }
         return ret;
     },
@@ -11032,7 +11038,7 @@ lt_code.RSA = {
             console.error("不支持计算负数");
         }
 
-        if (this.bigIsBigerSlow(num1,num2)) {
+        if (this.bigIsBigerSlow(num1,num2)>=0) {
             const count1 = num1.length;
             const count2 = num2.length;
         } else {
