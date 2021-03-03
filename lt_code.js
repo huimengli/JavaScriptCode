@@ -11005,6 +11005,51 @@ lt_code.RSA = {
     },
 
     /**
+     * 大数相乘(分治算法)(测试用,可能导致内存溢出)
+     * @param {String} num1
+     * @param {String} num2
+     */
+    bigMultiplyKaraSubaSlow: function (num1, num2) {
+        if (num1==0||num2==0) {
+            return "0";
+        } else if (num1 <= 10 && num2 <= 10) {
+            //结果小于9007199136250225(js安全数据:9007199254740992)的计算直接返回计算结果
+            return num1 * num2;
+        }
+        num1 = num1.toString();
+        num2 = num2.toString();
+
+        const count1 = num1.length;
+        const count2 = num2.length;
+
+        const halfN = Math.floor(Math.max(count1, count2) / 2);
+
+        const first1 = count1 > halfN ? num1.slice(0, count1 - halfN) : "0";
+        const last1 = count1 > halfN ? num1.slice(count1 - halfN) : num1;
+        const first2 = count2 > halfN ? num2.slice(0, count2 - halfN) : "0";
+        const last2 = count2 > halfN ? num2.slice(count2 - halfN) : num2;
+
+        // 很多位的运算会导致数值溢出,暂时先用慢速相加
+        const plus1 = lt_code.RSA.bigAddSlow(first1, last1);
+        const plus2 = lt_code.RSA.bigAddSlow(first2, last2);
+
+        let c2 = this.bigMultiplyKaraSuba(first1, first2);
+        const c0 = this.bigMultiplyKaraSuba(last1, last2);
+        let c1 = this.bigSubtractSlow(this.bigSubtractSlow(this.bigMultiplyKaraSuba(plus1, plus2), c0), c2);
+
+        //console.log(c2 + " " + c0 + " " + c1);
+
+        for (var i = 0; i < halfN; i++) {
+            c2 += "00";
+            c1 += "0";
+        }
+
+        const ret = this.bigAddSlow(this.bigAddSlow(c2,c1),c0);
+
+        return ret.toString();
+    },
+
+    /**
      * 大数求商(慢速)
      * @param {String} num1
      * @param {String} num2
@@ -11020,11 +11065,42 @@ lt_code.RSA = {
     },
 
     /**
+     * 大数取中值(慢速)
+     * @param {String} num1 数1
+     * @param {String} [num2] 被减数
+     */
+    bigMidValueSlow: function (num1, num2) {
+        num1 = num1.toString();
+        let num = !num2 ? num1 : this.bigSubtractSlow(num1, num2);
+        let isF = /-/.test(num) ? function () {
+            num = num.slice(1);
+            return true;
+        }() : false;
+        let count = num.length;
+        if (count <= 1) {
+            return (lt_code.getNum(num) / 2).toString();
+        }
+        let each = 0;
+        let last = 0;
+        let ret = "";
+        for (var i = 0; i < count; i++) {
+            each = last == 0 ? lt_code.getNum(num[i]) / 2 : (lt_code.getNum(num[i]) + 10) / 2;
+            last = each % 1 == 0.5 ? 1 : 0;
+            ret += lt_code.getNum(each).toString();
+        }
+        ret += last == 0 ? "" : ".5";
+        ret = isF ? "-" + ret : ret;
+        return this.bigNumberFixed(ret);
+    },
+
+    /**
      * 大数相除(慢速)
+     * (实际上是猜算取中值法)
+     * 精度不高但是可以勉强算到个位数为止
      * @param {String} num1
      * @param {String} num2
      */
-    bitDividedSlow: function (num1, num2) {
+    bigDividedSlow: function (num1, num2) {
         num1 = num1.toString();
         num2 = num2.toString();
 
@@ -11038,9 +11114,66 @@ lt_code.RSA = {
             console.error("不支持计算负数");
         }
 
-        if (this.bigIsBigerSlow(num1,num2)>=0) {
+        if (this.bigIsBigerSlow(num1,num2)>0) {
             const count1 = num1.length;
             const count2 = num2.length;
+
+            /**差位 */
+            let cha = count1 - count2;
+
+            //商的值一般是差位+-1位
+            /**最小区间 */
+            let min = "1";
+            /**最大区间 */
+            let max = "9";
+
+            /**中值 */
+            let middle = "";
+
+            for (var i = 1; i < cha; i++) {
+                min += "0";
+                max += "9";
+            }
+
+            max += "9";
+
+            /**计算次数(上限10000次好了) */
+            let t = 0;
+
+            while (t<10000) {
+                t++;
+                let cut = this.bigMidValueSlow(max, min);
+                if (cut<1) {
+                    return {
+                        max: max,
+                        min: min,
+                        maxCut: this.bigSubtractSlow(this.bigMultiplyKaraSuba(max, num2), num1),
+                        minCut: this.bigSubtractSlow(num1, this.bigMultiplyKaraSuba(min, num2)),
+                        t:t,
+                    };
+                } 
+                //console.log(t+" "+cut);
+                middle = this.bigSubtractSlow(max, cut.split(".")[0]);
+                //console.log(middle);
+                cut = this.bigMultiplyKaraSuba(middle, num2);
+                if (this.bigIsBigerSlow(cut,num1)>0) {
+                    max = middle;
+                } else if (this.bigIsBigerSlow(cut,num1)<0) {
+                    min = middle;
+                } else {
+                    return middle;
+                }
+            }
+
+            return {
+                max: max,
+                min: min,
+                maxCut: this.bigSubtractSlow(this.bigMultiplyKaraSuba(max, num2), num1),
+                minCut: this.bigSubtractSlow(num1,this.bigMultiplyKaraSuba(min, num2)),
+            };
+
+        } else if (this.bigIsBigerSlow(num1,num2)==0) {
+            return 1;
         } else {
             console.error("不支持计算小数");
         }
@@ -11117,6 +11250,24 @@ lt_code.RSA = {
         var ret = this.bigMultiplyKaraSuba(num1, num1);
         var stopTime = new Date().getTime();
         return (stopTime - startTime).toString()+"ms answer:"+ret+" count:"+ret.length;
+    },
+
+    /**
+     * 测试相除
+     * @param {number} count
+     */
+    testDivided: function (count) {
+        var a = "";
+        for (var i = 0; i < count; i++) {
+            a += (i % 10).toString();
+        }
+        var b = this.bigAddSlow(a, 1);
+        var c = this.bigMultiplyKaraSuba(a, b);
+        console.log(a + " " + b + " " + c);
+        var startTime = new Date().getTime();
+        var q = this.bigDividedSlow(c, a);
+        var stopTime = new Date().getTime();
+        return q + " " + b + " " + this.bigIsBigerSlow(q, b).toString() + " " + (stopTime - startTime).toString();
     }
 }
 
