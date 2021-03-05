@@ -11099,8 +11099,9 @@ lt_code.RSA = {
      * 精度不高但是可以勉强算到个位数为止
      * @param {String} num1
      * @param {String} num2
+     * @param {boolean} [showCut] 是否显示cut值,默认不显示
      */
-    bigDividedSlow: function (num1, num2) {
+    bigDividedSlow: function (num1, num2,showCut) {
         num1 = num1.toString();
         num2 = num2.toString();
 
@@ -11140,28 +11141,55 @@ lt_code.RSA = {
             /**计算次数(上限10000次好了) */
             let t = 0;
 
-            while (t<10000) {
-                t++;
-                let cut = this.bigMidValueSlow(max, min);
-                if (cut<1) {
-                    return {
-                        max: max,
-                        min: min,
-                        maxCut: this.bigSubtractSlow(this.bigMultiplyKaraSuba(max, num2), num1),
-                        minCut: this.bigSubtractSlow(num1, this.bigMultiplyKaraSuba(min, num2)),
-                        t:t,
-                    };
-                } 
-                //console.log(t+" "+cut);
-                middle = this.bigSubtractSlow(max, cut.split(".")[0]);
-                //console.log(middle);
-                cut = this.bigMultiplyKaraSuba(middle, num2);
-                if (this.bigIsBigerSlow(cut,num1)>0) {
-                    max = middle;
-                } else if (this.bigIsBigerSlow(cut,num1)<0) {
-                    min = middle;
-                } else {
-                    return middle;
+            if (showCut) {
+                while (t < 10000) {
+                    t++;
+                    let cut = this.bigMidValueSlow(max, min);
+                    if (cut < 1) {
+                        return {
+                            max: max,
+                            min: min,
+                            maxCut: this.bigSubtractSlow(this.bigMultiplyKaraSuba(max, num2), num1),
+                            minCut: this.bigSubtractSlow(num1, this.bigMultiplyKaraSuba(min, num2)),
+                            t: t,
+                        };
+                    }
+                    console.log(t + " " + cut);
+                    middle = this.bigSubtractSlow(max, cut.split(".")[0]);
+                    //console.log(middle);
+                    cut = this.bigMultiplyKaraSuba(middle, num2);
+                    if (this.bigIsBigerSlow(cut, num1) > 0) {
+                        max = middle;
+                    } else if (this.bigIsBigerSlow(cut, num1) < 0) {
+                        min = middle;
+                    } else {
+                        return middle;
+                    }
+                }
+            } else {
+                while (t < 10000) {
+                    t++;
+                    let cut = this.bigMidValueSlow(max, min);
+                    if (cut < 1) {
+                        return {
+                            max: max,
+                            min: min,
+                            maxCut: this.bigSubtractSlow(this.bigMultiplyKaraSuba(max, num2), num1),
+                            minCut: this.bigSubtractSlow(num1, this.bigMultiplyKaraSuba(min, num2)),
+                            t: t,
+                        };
+                    }
+                    //console.log(t + " " + cut);
+                    middle = this.bigSubtractSlow(max, cut.split(".")[0]);
+                    //console.log(middle);
+                    cut = this.bigMultiplyKaraSuba(middle, num2);
+                    if (this.bigIsBigerSlow(cut, num1) > 0) {
+                        max = middle;
+                    } else if (this.bigIsBigerSlow(cut, num1) < 0) {
+                        min = middle;
+                    } else {
+                        return middle;
+                    }
                 }
             }
 
@@ -11188,7 +11216,6 @@ lt_code.RSA = {
         let startTime = new Date().getTime();
         let num1 = lt_code.variable.random(10, 0, true);
         let num2 = lt_code.variable.random(10, 0, true);
-        let ansewer = 0;
 
         for (var i = 0; i < 9*count; i++) {
             ansewer = num1 + num2;
@@ -11265,7 +11292,7 @@ lt_code.RSA = {
         var c = this.bigMultiplyKaraSuba(a, b);
         console.log(a + " " + b + " " + c);
         var startTime = new Date().getTime();
-        var q = this.bigDividedSlow(c, a);
+        var q = this.bigDividedSlow(c, a,true);
         var stopTime = new Date().getTime();
         return q + " " + b + " " + this.bigIsBigerSlow(q, b).toString() + " " + (stopTime - startTime).toString();
     }
