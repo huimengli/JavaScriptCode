@@ -12,7 +12,7 @@ document.head.innerHTML += "<style id=\"lt_code_css\"></style>";
  * @param {...any} arg 输入参数
  */
 var lt_code = function (...arg) {
-    return lt_code.getAllType(arg,true);
+    return lt_code.getAllType(arg, true);
 }
 
 /**关闭浏览器 */
@@ -72,7 +72,7 @@ lt_code.variable.online = false;
 lt_code.variable.newName = "_";
 
 /**随机值 */
-lt_code.variable.random = (max,min,noF) => {
+lt_code.variable.random = (max, min, noF) => {
     var ret = 0;
     if (max) {
         if (min) {
@@ -103,7 +103,7 @@ lt_code.variable.random = (max,min,noF) => {
  * @param {HTMLElement} [domFather] 父节点
  */
 lt_code.addChild = function (dom, domFather) {
-    domFather = domFather ? domFather:  lt_code.getAll();
+    domFather = domFather ? domFather : lt_code.getAll();
     domFather.appendChild(dom);
 };
 
@@ -162,7 +162,7 @@ lt_code.variable.Width = function () {
                     opacity: "0",
                     position: "fixed",
                     top: "0",
-                    left:"0",
+                    left: "0",
                 }
             });
             lt_code.addChild(ret);
@@ -258,9 +258,9 @@ lt_code.variable.roundColor = (max, min) => {
  * @param {number} alpha 透明度(没有则随机)
  * @return {string} 返回颜色
  */
-lt_code.variable.roundRgba = (max, min,alpha) => {
+lt_code.variable.roundRgba = (max, min, alpha) => {
     var chat = 255;
-    var r, g, b,a, return_value;
+    var r, g, b, a, return_value;
     if (!min && !max && !alpha) {
         r = lt_code.variable.random() * 255 + 1;
         r = lt_code.getNum(r);
@@ -271,7 +271,7 @@ lt_code.variable.roundRgba = (max, min,alpha) => {
         a = Math.floor(lt_code.variable.random() * 10 + 1);
         a /= 10;
         return_value = "rgba(" + r + "," + g + "," + b + "," + a + ")";
-    } else if (min && !max&&!alpha) {
+    } else if (min && !max && !alpha) {
         chat -= min;
         r = lt_code.variable.random() * chat + min;
         r = lt_code.getNum(r);
@@ -282,7 +282,7 @@ lt_code.variable.roundRgba = (max, min,alpha) => {
         a = Math.floor(lt_code.variable.random() * 10 + 1);
         a /= 10;
         return_value = "rgba(" + r + "," + g + "," + b + "," + a + ")";
-    } else if (!min && max&&!alpha) {
+    } else if (!min && max && !alpha) {
         chat = max;
         min = 1;
         r = lt_code.variable.random() * chat + min;
@@ -294,7 +294,7 @@ lt_code.variable.roundRgba = (max, min,alpha) => {
         a = Math.floor(lt_code.variable.random() * 10 + 1);
         a /= 10;
         return_value = "rgba(" + r + "," + g + "," + b + "," + a + ")";
-    } else if(min&&max&&!alpha){
+    } else if (min && max && !alpha) {
         chat = max - min;
         r = lt_code.variable.random() * chat + min;
         r = lt_code.getNum(r);
@@ -305,7 +305,7 @@ lt_code.variable.roundRgba = (max, min,alpha) => {
         a = Math.floor(lt_code.variable.random() * 10 + 1);
         a /= 10;
         return_value = "rgba(" + r + "," + g + "," + b + "," + a + ")";
-    } else if (!min&&!max&&alpha) {
+    } else if (!min && !max && alpha) {
         r = lt_code.variable.random() * 255 + 1;
         r = lt_code.getNum(r);
         g = lt_code.variable.random() * 255 + 1;
@@ -650,13 +650,13 @@ lt_code.getUrlData = function (href) {
  * @param {string} [href] 网页网址
  * @param {string} [url] 新的网址
  */
-lt_code.clearUrlData = function (href,url) {
+lt_code.clearUrlData = function (href, url) {
     href = href || window.location.href;
     if (/\?/.test(href)) {
         href = href.slice(0, /\?/.exec(href).index);
         url = url || href;
         var state = { title: '', url: href };
-        history.pushState(state, '',url);
+        history.pushState(state, '', url);
     }
 }
 
@@ -835,7 +835,7 @@ lt_code.variable.addRun = function (num, name) {
  */
 lt_code.variable.newUID = function (input) {
     var d = new Date().getTime();
-    input = !input?"": input.toString() ||
+    input = !input ? "" : input.toString() ||
         lt_code.getNum(lt_code.variable.random(
             d)
         ).toString();
@@ -938,12 +938,12 @@ lt_code.getChinese = function (text, types) {
                 return !value_return ? "没有找到汉字" : value_return;
             } else {
                 console.trace("getChinese函数暂时不支持该写法");
-                
+
                 return "";
             }
         default:
             console.trace("getChinese函数参数输入错误!");
-            
+
             return "";
     }
 };
@@ -996,12 +996,12 @@ lt_code.lt_css = document.getElementById("lt_code_css") ? document.getElementByI
  * @return {HTMLElement} dom
  */
 lt_code.getId = function (idName) {
-    var falseRet =  ()=> {
+    var falseRet = () => {
         console.trace("getId函数没有输入值!");
         //console.trace(this);
         //console.trace(arguments.callee.caller.name);
     };
-    return !document.getElementById(idName) ?falseRet() : document.getElementById(idName);
+    return !document.getElementById(idName) ? falseRet() : document.getElementById(idName);
 };
 
 /**
@@ -1025,10 +1025,10 @@ lt_code.getClass = function (className, few, dom_father, useFew) {
         default:
             if (arguments.length !== 0) {
                 console.trace("getClass函数输入错误!");
-                
+
             } else {
                 console.trace("getClass函数没有输入值!");
-                
+
             }
     }
 };
@@ -1058,10 +1058,10 @@ lt_code.getTage = function (tageName, dom_father, few, ISuseDom) {
         default:
             if (arguments.length !== 0) {
                 console.trace("getTage函数输入错误!");
-                
+
             } else {
                 console.trace("getTage函数没有输入值!");
-                
+
             }
     }
 };
@@ -1111,7 +1111,7 @@ lt_code.getAll = function (name, few, dom_father, useFew) {
                 if (exec_value[0] === "#") {
                     return_value = lt_code.getId(value_read);
                     console.trace("getAll函数读取id不需要输入few参数");
-                    
+
                 } else if (exec_value[0] === ".") {
                     return_value = lt_code.getClass(value_read, few);
                 }
@@ -1129,7 +1129,7 @@ lt_code.getAll = function (name, few, dom_father, useFew) {
                 if (exec_value[0] === "#") {
                     return_value = lt_code.getId(value_read);
                     console.trace("getAll函数读取id不需要输入few参数");
-                    
+
                 } else if (exec_value[0] === ".") {
                     return_value = lt_code.getClass(value_read, few, dom_father);
                 }
@@ -1151,7 +1151,7 @@ lt_code.getAll = function (name, few, dom_father, useFew) {
                 if (exec_value[0] === "#") {
                     return_value = lt_code.getId(value_read);
                     console.trace("getAll函数读取id不需要输入few参数");
-                    
+
                 } else if (exec_value[0] === ".") {
                     return_value = lt_code.getClass(value_read, few, dom_father);
                 }
@@ -1163,13 +1163,13 @@ lt_code.getAll = function (name, few, dom_father, useFew) {
 
     if (return_value === null) {
         console.trace("getAll函数name参数输入错误!");
-        
+
     } else if (return_value === undefined) {
         console.trace("本页面中没有找到此对象");
-        
+
     } else if (return_value.length === 0) {
         console.trace("没有此对象|此页面中没有使用此对象");
-        
+
     } else if (return_value.length === 1) {
         return_value = return_value[0];
     }
@@ -1222,7 +1222,7 @@ lt_code.getAll2 = function (name, dom_father, few, useFather) {
                 if (exec_value[0] === "#") {
                     return_value = lt_code.getId(value_read);
                     console.trace("js不支持读取父类对象的子类id");
-                    
+
                 } else if (exec_value[0] === ".") {
                     return_value = lt_code.getClass(value_read, null, dom_father, false);
                 }
@@ -1240,7 +1240,7 @@ lt_code.getAll2 = function (name, dom_father, few, useFather) {
                 if (exec_value[0] === "#") {
                     return_value = lt_code.getId(value_read);
                     console.trace("getAll2函数读取id不需要输入few参数");
-                    
+
                 } else if (exec_value[0] === ".") {
                     return_value = lt_code.getClass(value_read, few, dom_father);
                 }
@@ -1258,7 +1258,7 @@ lt_code.getAll2 = function (name, dom_father, few, useFather) {
                 if (exec_value[0] === "#") {
                     return_value = lt_code.getId(value_read);
                     console.trace("getAll2函数读取id不需要输入few参数");
-                    
+
                 } else if (exec_value[0] === ".") {
                     if (!useFather) {
                         return_value = lt_code.getClass(value_read, few);
@@ -1274,13 +1274,13 @@ lt_code.getAll2 = function (name, dom_father, few, useFather) {
 
     if (return_value === null) {
         console.trace("getAll2函数name参数输入错误!");
-        
+
     } else if (return_value === undefined) {
         console.trace("本页面中没有找到此对象");
-        
+
     } else if (return_value.length === 0) {
         console.trace("没有此对象|此页面中没有使用此对象");
-        
+
     } else if (return_value.length === 1) {
         return_value = return_value[0];
     }
@@ -1338,7 +1338,7 @@ lt_code.getAll3 = function (name, few, dom_father, useFew) {
                         if (exec_value[0] === "#") {
                             return_value = lt_code.getId(value_read);
                             console.trace("getAll函数读取id不需要输入few参数");
-                            
+
                         } else if (exec_value[0] === ".") {
                             return_value = lt_code.getClass(value_read, few);
                         }
@@ -1356,7 +1356,7 @@ lt_code.getAll3 = function (name, few, dom_father, useFew) {
                         if (exec_value[0] === "#") {
                             return_value = lt_code.getId(value_read);
                             console.trace("getAll函数读取id不需要输入few参数");
-                            
+
                         } else if (exec_value[0] === ".") {
                             return_value = lt_code.getClass(value_read, few, dom_father);
                         }
@@ -1379,7 +1379,7 @@ lt_code.getAll3 = function (name, few, dom_father, useFew) {
                         if (exec_value[0] === "#") {
                             return_value = lt_code.getId(value_read);
                             console.trace("getAll函数读取id不需要输入few参数");
-                            
+
                         } else if (exec_value[0] === ".") {
                             return_value = lt_code.getClass(value_read, few, dom_father);
                         }
@@ -1395,7 +1395,7 @@ lt_code.getAll3 = function (name, few, dom_father, useFew) {
             read_select[1] = /([\.\#]?)([\w]+)?(\:\:|[\<\>\:])(.+)/;
 
             exec_value = read_select[1].exec(name);
-            if (arguments.length ===1) {
+            if (arguments.length === 1) {
                 //获取父类
                 if (exec_value[3] === "<") {
                     //单纯父类
@@ -1488,7 +1488,7 @@ lt_code.getAll3 = function (name, few, dom_father, useFew) {
                     }
                 }
                 //获取伪类
-                if (exec_value[3]===":"||exec_value[3]==="::") {
+                if (exec_value[3] === ":" || exec_value[3] === "::") {
                     return_value = document.defaultView.getComputedStyle(
                         lt_code.getAll3(exec_value[4], few, dom_father)
                     );
@@ -1502,7 +1502,7 @@ lt_code.getAll3 = function (name, few, dom_father, useFew) {
                 //获取子类
                 if (exec_value[3] === ">") {
                     return_value = lt_code.getAll3(exec_value[4], few,
-                        lt_code.getAll3(exec_value[0]+exec_value[1],0,dom_father)
+                        lt_code.getAll3(exec_value[0] + exec_value[1], 0, dom_father)
                         , useFew);
                 }
                 //获取父类
@@ -1521,28 +1521,28 @@ lt_code.getAll3 = function (name, few, dom_father, useFew) {
                     }
                 }
                 //获取伪类
-                if (exec_value[3]===":"||exec_value[3]==="::") {
+                if (exec_value[3] === ":" || exec_value[3] === "::") {
                     return_value = document.defaultView.getComputedStyle(
                         lt_code.getAll3(exec_value[4], few, dom_father)
                     );
                 }
             }
-            if(arguments.length>4){
+            if (arguments.length > 4) {
                 console.trace("getAll3选择子类函数暂时不支持其他参数");
-                
+
             }
         }
     }
 
     if (return_value === null) {
         console.trace("getAll函数name参数输入错误!");
-        
+
     } else if (return_value === undefined) {
         console.trace("本页面中没有找到此对象");
-        
+
     } else if (return_value.length === 0) {
         console.trace("没有此对象|此页面中没有使用此对象");
-        
+
     } else if (return_value.length === 1) {
         return_value = return_value[0];
     }
@@ -1655,8 +1655,8 @@ lt_code.getAllToArray = function (...arg) {
  * @return {Window} 返回一个window(大概)
  */
 lt_code.getIframeWindow = function (dom) {
-    if (typeof(dom)=="string") {
-        return lt_code.getAll(idName,0).contentWindow;
+    if (typeof (dom) == "string") {
+        return lt_code.getAll(idName, 0).contentWindow;
     } else {
         return dom.contentWindow;
     }
@@ -1672,7 +1672,7 @@ lt_code.getIframe = function (dom, name) {
     var inner_value = dom.contentDocument.getElementsByTagName("body")[0];
     if (!inner_value) {
         console.trace("读取对象非iframe内联边框|没能读取到对象");
-        
+
         return;
     }
     return lt_code.getAll2(name, inner_value);
@@ -1712,7 +1712,7 @@ lt_code.color_change = function (color) {
 
     if (!color_exec) {
         console.trace("color_change函数输入的颜色值不正确!");
-        
+
     } else if (color_exec[0] === "#") {
         return_value = color.replace(/\#/, "");
         if (return_value.length === 3) {
@@ -1731,7 +1731,7 @@ lt_code.color_change = function (color) {
                     lt_code.from16To10(return_value[5])) + ")";
         } else {
             console.trace("color_change函数#类颜色值输入位数不正确!");
-            
+
             return_value = null;
         }
     } else if (color_exec[0] === "rgb") {
@@ -1745,7 +1745,7 @@ lt_code.color_change = function (color) {
                     return_values[i] = lt_code.from10To16(return_values[i]);
                 } else {
                     console.trace("color_change函数rgb输入的第" + i + "个数值有误!");
-                    
+
                     return_values[i] = "00";
                 }
             }
@@ -1756,14 +1756,14 @@ lt_code.color_change = function (color) {
                 return_values[2] + return_values[3];
         } else {
             console.trace("color_change函数,rgb()类颜色值输入错误");
-            
+
             return_value = null;
         }
     } else if (color_exec[0] === "rgba") {
         return_value = /(\d+)\,(\d+)\,(\d+)\,(\d\.\d+|\d)/.exec(color);
         if (lt_code.getNum(return_value[4]) > 1) {
             console.trace("color_change函数rgba()类颜色输入alpha参数有误");
-            
+
             return_value = null;
         } else {
             /**读取的透明值 */
@@ -1779,7 +1779,7 @@ lt_code.color_change = function (color) {
                         return_values[i] = lt_code.from10To16(return_values[i]);
                     } else {
                         console.trace("color_change函数rgb输入的第" + i + "个数值有误!");
-                        
+
                         return_values[i] = "00";
                     }
                 }
@@ -1790,7 +1790,7 @@ lt_code.color_change = function (color) {
                     return_values[2] + return_values[3];
             } else {
                 console.trace("color_change函数,rgba()类颜色值输入值错误");
-                
+
                 return_value = null;
             }
         }
@@ -6034,7 +6034,7 @@ lt_code.scrollTop = function (dom, timer) {
     lt_code.scrollTop.run = setInterval(function () {
         $(dom).scrollTop(now_scroll - every_scroll);
         now_scroll = now_scroll - every_scroll;
-        if (now_scroll<=0) {
+        if (now_scroll <= 0) {
             clearInterval(lt_code.scrollTop.run);
             //console.trace("回到顶部");
         }
@@ -6175,9 +6175,9 @@ lt_code.Version = function () {
                 }
             }
             return fmt;
-        }       
+        }
     });
-   
+
     return 16;
 }();
 
@@ -6310,12 +6310,12 @@ lt_code.math.min = function (numbers) {
     var min = numbers[0];
     var i = 0;
     for (var j = 0; j < numbers.length; j++) {
-        if (min>numbers[j]) {
+        if (min > numbers[j]) {
             min = numbers[j];
             i = j;
         }
     }
-    if (this!=lt_code.math) {
+    if (this != lt_code.math) {
         this.minIndex = i;
     }
     return min;
@@ -6330,9 +6330,9 @@ lt_code.math.max = function (numbers) {
     var max = numbers[0];
     var i = 0;
     for (var j = 0; j < numbers.length; j++) {
-        if (max<numbers[j]) {
+        if (max < numbers[j]) {
             max = numbers[j];
-            i =j;
+            i = j;
         }
     }
     if (this != lt_code.math) {
@@ -6349,7 +6349,7 @@ lt_code.math.max = function (numbers) {
  * @param {number} count 图片数
  * @param {string} imgName 图片路径名+名字开头(不含数字)
  */
-lt_code.trunGroupImg = function (imgBox, imgLoadBox, cut, count,imgName) {
+lt_code.trunGroupImg = function (imgBox, imgLoadBox, cut, count, imgName) {
     /**当前图片 */
     var nowImg = "";
     /**当前是第几张图 */
@@ -6406,7 +6406,7 @@ lt_code.trunGroupImg = function (imgBox, imgLoadBox, cut, count,imgName) {
     /**改变图片 */
     var changeImage = function () {
         cutImgBox.forEach(function (e, i) {
-            if ((i+runAround) % 2 == 0) {
+            if ((i + runAround) % 2 == 0) {
                 e.style.transform = "rotateZ(360deg)";
             } else {
                 e.style.transform = "rotateZ(-360deg)";
@@ -6621,7 +6621,7 @@ lt_code.test.changeLtCode = function (newName) {
  * @param {number} types 导航样式
  * @param {string[]} pageName 每个页面的名字
  */
-lt_code.test.fullpage = function (backgrounds, times, dom_father,chackType, useDaohang, types, pageName) {
+lt_code.test.fullpage = function (backgrounds, times, dom_father, chackType, useDaohang, types, pageName) {
     //设定body没有滚动条
     document.body.style.overflow = "hidden";
 
@@ -6648,7 +6648,7 @@ lt_code.test.fullpage = function (backgrounds, times, dom_father,chackType, useD
         dom_father.style.width = "0px";
         dom_father.style.height = "0px";
     }
-    
+
     /**
      * 当前页面的页数
      * */
@@ -6826,7 +6826,7 @@ lt_code.test.fullpage = function (backgrounds, times, dom_father,chackType, useD
         var chackWindow = function () {
             height = window.innerHeight;
             width = window.innerWidth;
-            if (lt_code.getNum(pages[0].style.height)!==height||lt_code.getNum(pages[0].style.width)!==width) {
+            if (lt_code.getNum(pages[0].style.height) !== height || lt_code.getNum(pages[0].style.width) !== width) {
                 for (var i = 0; i < pages.length; i++) {
                     pages[i].style.height = height + "px";
                     pages[i].style.width = width + "px";
@@ -7966,7 +7966,7 @@ lt_code.test.cutImages = function (img, img2, input) {
 
             //console.trace(obj); 
             //console.trace(file);
-            console.trace("图片大小为: " + file.size+" byte");  //file.size 单位为byte
+            console.trace("图片大小为: " + file.size + " byte");  //file.size 单位为byte
 
             if (file.size > 5242880) {
                 console.trace("图片过大!");
@@ -7974,7 +7974,7 @@ lt_code.test.cutImages = function (img, img2, input) {
             }
 
             var reader = new FileReader();
-            
+
             //读取文件过程方法
             reader.onloadstart = function (e) {
                 console.trace("开始读取....");
@@ -8058,7 +8058,7 @@ lt_code.test.cutImages = function (img, img2, input) {
         clear_2();
         img.src = "";
     };
-    
+
     /**裁切函数 */
     var input_chick = function () {
         //console.trace("开始裁切");
@@ -8077,15 +8077,15 @@ lt_code.test.cutImages = function (img, img2, input) {
         lt_code.getAll().removeChild(lt_code.getAll("#else_img"));
 
         ctx2.drawImage(img,
-            chack_box.offsetLeft*img_width,
-            chack_box.offsetTop*img_height,
+            chack_box.offsetLeft * img_width,
+            chack_box.offsetTop * img_height,
             chack_box.offsetWidth * img_width,
             chack_box.offsetHeight * img_height,
             0,
             0,
             300,
             300);
-        
+
         var a = {
             img: img,
             1: chack_box.offsetLeft * img_width,
@@ -8097,9 +8097,9 @@ lt_code.test.cutImages = function (img, img2, input) {
             7: 300,
             8: 300,
             9: img_width,
-            10:img_height
+            10: img_height
         };
-        
+
         //console.trace(a);
 
         //读取base64码
@@ -8148,7 +8148,7 @@ lt_code.test.cutImages.cutImages = function () { };
  * @param {HTMLInputElement} input 输入框
  * @param {HTMLCanvasElement} cas 输出框
  */
-lt_code.test.getImgInput = function (input,cas) {
+lt_code.test.getImgInput = function (input, cas) {
     var img_data = "";
     var img = document.createElement("img");
     //文件上传完成
@@ -8278,7 +8278,7 @@ lt_code.test.downFile = function (data, fileName) {
  * @param {Function} fuc 函数(函数不能有参数！！！)
  */
 lt_code.test.on = function (doms, e, fuc) {
-    lt_code.test.on._time = "a"+Date.now();
+    lt_code.test.on._time = "a" + Date.now();
     lt_code.test.on._doms = doms;
     //暂时废弃
     !function () {
@@ -8310,7 +8310,7 @@ lt_code.test.on = function (doms, e, fuc) {
     eval("var " + lt_code.test.on._time + " = lt_code.test.on._doms;");
     lt_code.test.on._doms = null;
     for (var i = 0; i < doms.length; i++) {
-        eval(lt_code.test.on._time+"[" + i + "]." + e + " = " + fuc);
+        eval(lt_code.test.on._time + "[" + i + "]." + e + " = " + fuc);
     }
 }
 //给挂载函数的接口
@@ -8436,7 +8436,7 @@ lt_code.cookie = function () {
  * @param {string} cookieValue 保存的cookie值
  * @param {number} cookieDates 保存的有效时间长度
  */
-lt_code.cookie.saveCookie = function(cookieName, cookieValue, cookieDates){
+lt_code.cookie.saveCookie = function (cookieName, cookieValue, cookieDates) {
     var d = new Date();
     cookieValue = lt_code.chineseToUtf8(lt_code.test.textToChinese(cookieValue));
     d.setDate(d.getDate() + cookieDates);
@@ -8454,7 +8454,7 @@ lt_code.cookie.getCookie = function (cookieName) {
     var cookieValue = "";
     for (var i = 0; i < arr.length; i++) {
         var temp = arr[i].split("=");
-        if (temp[0]==cookieName) {
+        if (temp[0] == cookieName) {
             cookieValue = temp[1];
             break;
         }
@@ -8469,7 +8469,7 @@ lt_code.cookie.getCookie = function (cookieName) {
  * @param {any} cookieName
  */
 lt_code.cookie.removeCookie = function (cookieName) {
-    document.cookie = encodeURIComponent(cookieName) +"=; expires =" + new Date(0).toUTCString();
+    document.cookie = encodeURIComponent(cookieName) + "=; expires =" + new Date(0).toUTCString();
 }
 
 /**删除所有的cookie */
@@ -8508,7 +8508,7 @@ lt_code.iframe.getWindow = function () {
 
 /**获取内联边框的document */
 lt_code.iframe.getDocument = function () {
-    if (this.iframe!==null) {
+    if (this.iframe !== null) {
         if (this.window !== null) {
             try {
                 this.document = this.window.parent.document;
@@ -8532,7 +8532,7 @@ lt_code.iframe.getDocument = function () {
 lt_code.iframe.init = function (iframeDom) {
     if (typeof (iframeDom) == "string") {
         console.trace("不建议使用这种方法");
-        this.iframe = lt_code.getAll(iframeDom,0);
+        this.iframe = lt_code.getAll(iframeDom, 0);
     } else {
         this.iframe = iframeDom;
     }
@@ -9268,12 +9268,12 @@ lt_code.image.fromRGBToHSV = function (color) {
  */
 lt_code.image.fromHSVToRGB = function (color) {
     var HSV = /hsv/.test(color) ? /([\d\.]+),([\d\.]+),(\d+)/.exec(color) : console.error("输入颜色错误!");
-    var h = HSV[1], s = HSV[2], v = HSV[3],r,g,b;
+    var h = HSV[1], s = HSV[2], v = HSV[3], r, g, b;
     if (s == 0) {
         r = v, g = v, b = v;
     } else {
         h /= 60;
-        var i = lt_code.getNum(h),f = h-i;
+        var i = lt_code.getNum(h), f = h - i;
         var a = v * (1 - s), b = v * (1 - s * f), c = v * (1 - s * (1 - f));
         switch (i) {
             case 0: r = v; g = c; b = a; break;
@@ -9898,7 +9898,7 @@ lt_code.base64 = {
          * 部分转码
          * @param {String} input
          */
-        setCode: function (input,key) {
+        setCode: function (input, key) {
             let ret = "";
             for (var i = 0; i < input.length; i++) {
                 ret += key[this._keyStr.indexOf(input[i])];
@@ -9910,7 +9910,7 @@ lt_code.base64 = {
          * 部分解码
          * @param {String} input
          */
-        getCode: function (input,key) {
+        getCode: function (input, key) {
             let ret = "";
             for (var i = 0; i < input.length; i++) {
                 ret += this._keyStr[key.indexOf(input[i])];
@@ -10718,11 +10718,11 @@ lt_code.RSA = {
         /**数字2是否是负数 */
         const isF2 = /-/.test(num2) ? true : false;
 
-        if (isF1&&!isF2) {
+        if (isF1 && !isF2) {
             return this.bigSubtractSlow(num2, num1.slice(1));
-        } else if (!isF1&&isF2) {
+        } else if (!isF1 && isF2) {
             return this.bigSubtractSlow(num1, num2.slice(1));
-        } else if (isF1&&isF2) {
+        } else if (isF1 && isF2) {
             return "-" + this.bigAddSlow(num1.slice(1), num2.slice(1));
         }
 
@@ -10743,25 +10743,25 @@ lt_code.RSA = {
             n1 += lt_code.getNum(num1[count1 - i]);
             n2 = lt_code.getNum(num2[count2 - i]);
             r = n1 + n2;
-            n1 = Math.floor(r/10);
+            n1 = Math.floor(r / 10);
             ret += (r % 10).toString();
         }
 
         if (count1 < count2) {
-            for (var i = min+1; i <= count2; i++) {
+            for (var i = min + 1; i <= count2; i++) {
                 n2 = lt_code.getNum(num2[count2 - i]);
                 r = n1 + n2;
                 n1 = Math.floor(r / 10);
                 ret += (r % 10).toString();
             }
-        } else if (count1>count2) {
-            for (var i = min+1; i <= count1; i++) {
+        } else if (count1 > count2) {
+            for (var i = min + 1; i <= count1; i++) {
                 n1 += lt_code.getNum(num1[count1 - i]);
                 r = n1;
                 n1 = Math.floor(r / 10);
                 ret += (r % 10).toString();
             }
-        } 
+        }
         if (n1 == 1) {
             ret += "1";
         }
@@ -10798,17 +10798,17 @@ lt_code.RSA = {
         const isF2 = /-/.test(num2) ? true : false;
 
         if (isF1 && !isF2) {
-            return "-"+ this.bigAddSlow(num1.slice(1), num2);
-        } else if (!isF1&&isF2) {
+            return "-" + this.bigAddSlow(num1.slice(1), num2);
+        } else if (!isF1 && isF2) {
             return this.bigAddSlow(num1, num2.slice(1));
-        } else if (isF1&&isF2) {
+        } else if (isF1 && isF2) {
             return this.bigSubtractSlow(num2.slice(1), num1.slice(1));
         }
 
         var ret = "";
         /**是否小于0 */
         var isLess = false;
-        if (this.bigIsBigerSlow(num2,num1)>=0) {
+        if (this.bigIsBigerSlow(num2, num1) >= 0) {
             isLess = true;
             let temp = num1;
             num1 = num2;
@@ -10836,8 +10836,8 @@ lt_code.RSA = {
             ret += (r % 10).toString();
         }
 
-        if (count1>count2) {
-            for (var i = count2+1; i <= count1; i++) {
+        if (count1 > count2) {
+            for (var i = count2 + 1; i <= count1; i++) {
                 n1 = n1 == 0 ? 10 : 9;
                 n1 = n1 + lt_code.getNum(num1[count1 - i]);
                 //n2 = lt_code.getNum(num2[count2 - i]);
@@ -10865,7 +10865,7 @@ lt_code.RSA = {
     },
 
     /**
-     * 大数比较
+     * 大数比较(包含小数)
      * 数字1是否比数字2大
      * @param {String} num1
      * @param {String} num2
@@ -10876,32 +10876,89 @@ lt_code.RSA = {
 
         num1 = this.bigNumberFixed(num1);
         num2 = this.bigNumberFixed(num2);
-        
-        const count1 = num1.length;
-        const count2 = num2.length;
+
+        num1 = num1.split(".").length > 2 ? function () {
+            let ret = num1.split(".");
+            for (var i = 2; i < ret.length; i++) {
+                ret[1] += ret[i];
+            }
+            return [ret[0], ret[1]];
+        } : num1.split(".").length < 2 ? [num1, 0] : num1.split(".");
+        num2 = num2.split(".").length > 2 ? function () {
+            let ret = num2.split(".");
+            for (var i = 2; i < ret.length; i++) {
+                ret[1] += ret[i];
+            }
+            return [ret[0], ret[1]];
+        } : num2.split(".").length < 2 ? [num2, 0] : num2.split(".");
+
+        const count1 = num1[0].length;
+        const count2 = num2[0].length;
 
         const isF1 = /-/.test(num1) ? true : false;
         const isF2 = /-/.test(num2) ? true : false;
 
-        if (isF1&&!isF2) {
+        if (isF1 && !isF2) {
             return -1
-        } else if (!isF1&&isF2) {
+        } else if (!isF1 && isF2) {
             return 1;
-        } else if (!isF1&&!isF2) {
+        } else if (!isF1 && !isF2) {
             if (count1 > count2) {
                 return 1;
             } else if (count1 < count2) {
                 return -1;
             } else {
-                return num1 > num2?1:num1==num2?0:-1;
+                if (num1[0] > num2[0]) {
+                    return 1;
+                } else if (num1[0] < num2[0]) {
+                    return -1;
+                } else {
+                    if (num1.length > num2.length) {
+                        return 1;
+                    } else if (num1.length < num2.length) {
+                        return -1;
+                    } else {
+                        let last1 = num1[1];
+                        let last2 = num2[1];
+                        let maxC = Math.max(last1.length, last2.length);
+                        for (var i = last1.length; i < maxC; i++) {
+                            last1 += "0";
+                        }
+                        for (var i = last2.length; i < maxC; i++) {
+                            last2 += "0";
+                        }
+                        return last1 > last2 ? 1 : last1 < last2 ? -1 : 0;
+                    }
+                }
             }
-        } else if (isF1&&isF2) {
-            if (count1<count2) {
-                return 1;
-            } else if (count1>count2) {
+        } else if (isF1 && isF2) {
+            if (count1 > count2) {
                 return -1;
+            } else if (count1 < count2) {
+                return 1;
             } else {
-                return num1 < num2?1:num1==num2?0:-1;
+                if (num1[0] > num2[0]) {
+                    return -1;
+                } else if (num1[0] < num2[0]) {
+                    return 1;
+                } else {
+                    if (num1.length > num2.length) {
+                        return -1;
+                    } else if (num1.length < num2.length) {
+                        return 1;
+                    } else {
+                        let last1 = num1[1];
+                        let last2 = num2[1];
+                        let maxC = Math.max(last1.length, last2.length);
+                        for (var i = last1.length; i < maxC; i++) {
+                            last1 += "0";
+                        }
+                        for (var i = last2.length; i < maxC; i++) {
+                            last2 += "0";
+                        }
+                        return last1 > last2 ? -1 : last1 < last2 ? 1 : 0;
+                    }
+                }
             }
         }
     },
@@ -10913,7 +10970,7 @@ lt_code.RSA = {
     bigNumberFixed: function (num) {
         num = num.toString();
         if (/-0*/.test(num)) {
-            if (num.length==2&&num[1]=="0") {
+            if (num.length == 2 && num[1] == "0") {
                 return "0";
             } else if (num.length == 1) {
                 return "0";
@@ -10921,7 +10978,7 @@ lt_code.RSA = {
             let match = /-(0*)/.exec(num);
             return "-" + num.slice(match[0].length);
         } else if (num[0] == "0") {
-            if (num.length==1&&num[0]=="0") {
+            if (num.length == 1 && num[0] == "0") {
                 return "0";
             } else if (num.length == 0) {
                 return "0";
@@ -10931,13 +10988,13 @@ lt_code.RSA = {
         } else {
             if (num.length == 1 && num[0] == "0") {
                 return "0";
-            } else if (num.length==0) {
+            } else if (num.length == 0) {
                 return "0";
             }
             return num;
         }
     },
-    
+
     /**
      * 大数相乘(慢速)
      * @param {String} num1
@@ -10965,14 +11022,20 @@ lt_code.RSA = {
      * @param {String} num2
      */
     bigMultiplyKaraSuba: function (num1, num2) {
-        if (num1==0||num2==0) {
+        if (num1 == 0 || num2 == 0) {
             return "0";
         } else if (num1 <= 94906265 && num2 <= 94906265) {
             //结果小于9007199136250225(js安全数据:9007199254740992)的计算直接返回计算结果
             return num1 * num2;
         }
-        num1 = num1.toString();
-        num2 = num2.toString();
+
+        try {
+            num1 = num1.toString();
+            num2 = num2.toString();
+        } catch (e) {
+            console.log(num1 + " " + num2);
+            console.error(e);
+        }
 
         const count1 = num1.length;
         const count2 = num2.length;
@@ -10999,7 +11062,7 @@ lt_code.RSA = {
             c1 += "0";
         }
 
-        const ret = this.bigAddSlow(this.bigAddSlow(c2,c1),c0);
+        const ret = this.bigAddSlow(this.bigAddSlow(c2, c1), c0);
 
         return ret.toString();
     },
@@ -11010,7 +11073,7 @@ lt_code.RSA = {
      * @param {String} num2
      */
     bigMultiplyKaraSubaSlow: function (num1, num2) {
-        if (num1==0||num2==0) {
+        if (num1 == 0 || num2 == 0) {
             return "0";
         } else if (num1 <= 10 && num2 <= 10) {
             //结果小于9007199136250225(js安全数据:9007199254740992)的计算直接返回计算结果
@@ -11044,9 +11107,99 @@ lt_code.RSA = {
             c1 += "0";
         }
 
-        const ret = this.bigAddSlow(this.bigAddSlow(c2,c1),c0);
+        const ret = this.bigAddSlow(this.bigAddSlow(c2, c1), c0);
 
         return ret.toString();
+    },
+
+    /**
+     * 大数相乘(分位算法)(慢速,测试用)
+     * @param {String} num1
+     * @param {String} num2
+     */
+    bigMultiplyCutSlow: function (num1, num2) {
+        if (num1 == 0 || num2 == 0) {
+            return "0";
+        }
+
+        num1 = num1.toString();
+        num2 = num2.toString();
+
+        //const count1 = num1.length;
+        const count2 = num2.length;
+
+        var list = [];
+        var ret = "0";
+
+        for (var i = count2 - 1; i >= 0; i--) {
+            var each = num1;
+            if (num2[i] == "0") {
+                each = "0";
+            } else {
+                for (var j = 1; j < num2[i]; j++) {
+                    each = this.bigAddSlow(each, num1);
+                }
+            }
+            for (var j = 0; j < count2 - 1 - i; j++) {
+                each += "0";
+            }
+            list.push(each);
+        }
+
+        //console.log(list);
+
+        for (var i = 0; i < list.length; i++) {
+            ret = this.bigAddSlow(ret, list[i]);
+        }
+
+        return this.bigNumberFixed(ret);
+    },
+
+    /**
+     * 大数相乘(分位算法)
+     * @param {String} num1
+     * @param {String} num2
+     */
+    bigMultiplyCut: function (num1, num2) {
+        if (num1 == 0 || num2 == 0) {
+            return "0";
+        }
+
+        num1 = num1.toString();
+        num2 = num2.toString();
+
+        //const count1 = num1.length;
+        const count2 = num2.length;
+
+        var list = [];
+        /**每位测试值 */
+        let eachValue = [num1];
+        for (var i = 1; i < 9; i++) {
+            eachValue.push(this.bigAddSlow(eachValue[eachValue.length - 1], num1));
+        }
+        var ret = "0";
+
+        for (var i = count2 - 1; i >= 0; i--) {
+            var each = num1;
+            if (num2[i] == "0") {
+                each = "0";
+            } else {
+                each = eachValue[num2[i] - 1];
+            }
+            for (var j = 0; j < count2 - 1 - i; j++) {
+                each += "0";
+            }
+            list.push(each);
+        }
+
+        //console.log(list);
+        //console.log(eachValue);
+
+        for (var i = 0; i < list.length; i++) {
+            ret = this.bigAddSlow(ret, list[i]);
+        }
+
+        return this.bigNumberFixed(ret);
     },
 
     /**
@@ -11057,7 +11210,7 @@ lt_code.RSA = {
     bigQuotientSlow: function (num1, num2) {
         var ret = num1.toString();
         num2 = num2.toString();
-        while (this.bigIsBigerSlow(ret, num2)>=0) {
+        while (this.bigIsBigerSlow(ret, num2) >= 0) {
             ret = this.bigSubtractSlow(ret, num2);
             //console.log(ret);
         }
@@ -11065,7 +11218,26 @@ lt_code.RSA = {
     },
 
     /**
-     * 大数取中值(慢速)
+     * 大数求商
+     * @param {String} num1
+     * @param {String} num2
+     */
+    bigQuotient: function (num1, num2) {
+        num1 = num1.toString(), num2 = num2.toString();
+        if (this.bigIsBigerSlow(num1,num2)<0) {
+            return num1;
+        } else if(this.bigIsBigerSlow(num1,num2)==0) {
+            return "0";
+        }
+        if (num2=="0") {
+            return NaN;
+        }
+        var divided = this.bigDividedCutSlow(num1, num2);
+        return this.bigNumberFixed(this.bigSubtractSlow(num1, this.bigMultiplyKaraSuba(divided, num2)));
+    },
+
+    /**
+     * 大数减中值(慢速)
      * @param {String} num1 数1
      * @param {String} [num2] 被减数
      */
@@ -11094,6 +11266,36 @@ lt_code.RSA = {
     },
 
     /**
+     * 大数取中值(慢速)
+     * @param {String} num1 数1
+     * @param {String} [num2] 数2
+     */
+    bigMiddleValueSlow: function (num1, num2) {
+        num1 = num1.toString();
+        let num = !num2 ? num1 : this.bigAddSlow(num1, num2);
+        let isF = /-/.test(num) ? function () {
+            num = num.slice(1);
+            return true;
+        }() : false;
+        let count = num.length;
+        if (count <= 1) {
+            return (lt_code.getNum(num) / 2).toString();
+        }
+        let each = 0;
+        let last = 0;
+        let ret = "";
+        for (var i = 0; i < count; i++) {
+            each = last == 0 ? lt_code.getNum(num[i]) / 2 : (lt_code.getNum(num[i]) + 10) / 2;
+            last = each % 1 == 0.5 ? 1 : 0;
+            ret += lt_code.getNum(each).toString();
+        }
+        //ret = this.bigAddSlow(ret, num2 ? num2 : "0");
+        ret += last == 0 ? "" : ".5";
+        ret = isF ? "-" + ret : ret;
+        return this.bigNumberFixed(ret);
+    },
+
+    /**
      * 大数相除(慢速)
      * (实际上是猜算取中值法)
      * 精度不高但是可以勉强算到个位数为止
@@ -11101,7 +11303,7 @@ lt_code.RSA = {
      * @param {String} num2
      * @param {boolean} [showCut] 是否显示cut值,默认不显示
      */
-    bigDividedSlow: function (num1, num2,showCut) {
+    bigDividedSlow: function (num1, num2, showCut) {
         num1 = num1.toString();
         num2 = num2.toString();
 
@@ -11111,11 +11313,11 @@ lt_code.RSA = {
         /**是否有小数 */
         let haveF = false;
 
-        if (/-/.test(num1)||/-/.test(num2)) {
+        if (/-/.test(num1) || /-/.test(num2)) {
             console.error("不支持计算负数");
         }
 
-        if (this.bigIsBigerSlow(num1,num2)>0) {
+        if (this.bigIsBigerSlow(num1, num2) > 0) {
             const count1 = num1.length;
             const count2 = num2.length;
 
@@ -11197,14 +11399,360 @@ lt_code.RSA = {
                 max: max,
                 min: min,
                 maxCut: this.bigSubtractSlow(this.bigMultiplyKaraSuba(max, num2), num1),
-                minCut: this.bigSubtractSlow(num1,this.bigMultiplyKaraSuba(min, num2)),
+                minCut: this.bigSubtractSlow(num1, this.bigMultiplyKaraSuba(min, num2)),
             };
 
-        } else if (this.bigIsBigerSlow(num1,num2)==0) {
+        } else if (this.bigIsBigerSlow(num1, num2) == 0) {
             return 1;
         } else {
             console.error("不支持计算小数");
         }
+    },
+
+    /**
+     * 大数相除(慢速)(测试版)
+     * @param {String} num1
+     * @param {String} num2
+     * @param {boolean} [showRet] 是否显示ret值,默认不显示
+     */
+    bigDividedCutSlow: function (num1, num2,showRet) {
+        num1 = num1.toString();
+        num2 = num2.toString();
+
+        num1 = this.bigNumberFixed(num1);
+        num2 = this.bigNumberFixed(num2);
+
+        /**是否有小数 */
+        let haveF = false;
+
+        if (/-/.test(num1) || /-/.test(num2)) {
+            console.error("不支持计算负数");
+        }
+
+        /**所有值 */
+        let eachValue = function () {
+            let ret = [num2];
+            for (var i = 1; i < 9; i++) {
+                ret.push(this.bigAddSlow(ret[ret.length - 1], num2));
+            }
+            return ret;
+        }.bind(this)();
+
+        //console.log(eachValue);
+
+        if (this.bigIsBigerSlow(num1, num2) > 0) {
+            const count1 = num1.length;
+            const count2 = num2.length;
+
+            /**差位 */
+            let cha = count1 - count2;
+
+            /**每位值 */
+            let each;
+            /**是否直接跳位 */
+            let next = false;
+            /**残存数据 */
+            let num = num1;
+            /**返回值 */
+            let ret = "0";
+
+            if (showRet) {
+                console.log(eachValue);
+                for (var i = cha; i >= 0; i--) {
+                    next = false;
+                    for (var j = eachValue.length - 1; j >= 0; j--) {
+                        each = eachValue[j];
+                        for (var k = 0; k < i; k++) {
+                            each += "0";
+                        }
+                        if (this.bigIsBigerSlow(each, num) > 0) {
+                            next = false;
+                        } else {
+                            next = true;
+                            num = this.bigSubtractSlow(num, each);
+                            ret += (j + 1).toString();
+                            break;
+                        }
+                    }
+                    if (next) {
+
+                    } else {
+                        ret += "0";
+                    }
+                    console.log(ret);
+                }
+            } else {
+                for (var i = cha; i >= 0; i--) {
+                    next = false;
+                    for (var j = eachValue.length - 1; j >= 0; j--) {
+                        each = eachValue[j];
+                        for (var k = 0; k < i; k++) {
+                            each += "0";
+                        }
+                        if (this.bigIsBigerSlow(each, num) > 0) {
+                            next = false;
+                        } else {
+                            next = true;
+                            num = this.bigSubtractSlow(num, each);
+                            ret += (j + 1).toString();
+                            break;
+                        }
+                    }
+                    if (next) {
+
+                    } else {
+                        ret += "0";
+                    }
+                }
+            }
+
+            return this.bigNumberFixed(ret);
+        } else {
+            //暂不支持小数除法
+            return "0";
+        }
+    },
+
+    /**
+     * 大数求随机数
+     * @param {String} num
+     */
+    bigRandom: function (num) {
+        num = num.toString();
+        var key = Math.random();
+        key = Math.floor(key * 10000000000000000);
+        console.log(key);
+        var ret = this.bigMultiplyKaraSuba(num, key);
+        return this.bigNumberFixed(ret.slice(0, num.length));
+    },
+
+    /**
+     * 大数开根号
+     * @param {String} num
+     * @param {boolean} [showCut] 是否显示切割值
+     */
+    bigSqrtSlow: function (num ,showCut) {
+        num = num.toString();
+
+        let count = num.length;
+
+        let min = "1";
+        let max = "3";
+
+        if (count%2==1) {
+            for (var i = 1; i <= Math.floor(count/2); i++) {
+                min += "0";
+                max += "3";
+            }
+        } else {
+            for (var i = 1; i < Math.floor(count/2); i++) {
+                min += "0";
+                max += "3";
+            }
+        }
+
+        console.log(min + " " + max);
+
+        let t = 0;
+        let center;
+        let cut;
+
+        if (showCut) {
+            while (t < 10000) {
+                t++;
+                if (this.bigMultiplyKaraSuba(min, min) == num) {
+                    return min;
+                } else {
+                    cut = this.bigSubtractSlow(max, min);
+                    if (cut <= 1) {
+                        return {
+                            max: max,
+                            min: min,
+                            maxCut: this.bigSubtractSlow(this.bigMultiplyKaraSuba(max, max), num),
+                            minCut: this.bigSubtractSlow(num, this.bigMultiplyKaraSuba(min, min)),
+                            t: t,
+                        };
+                    }
+                    console.log(t + " " + cut);
+                    center = this.bigMiddleValueSlow(max, min).split(".")[0];
+                    //console.log(center);
+                    cut = this.bigSubtractSlow(this.bigMultiplyKaraSuba(center, center), num);
+                    if (this.bigIsBigerSlow(cut, 0) <= 0) {
+                        min = center;
+                    } else {
+                        max = center;
+                    }
+                }
+            }
+        } else {
+            while (t < 10000) {
+                t++;
+                if (this.bigMultiplyKaraSuba(min, min) == num) {
+                    return min;
+                } else {
+                    cut = this.bigSubtractSlow(max, min);
+                    if (cut <= 1) {
+                        return {
+                            max: max,
+                            min: min,
+                            maxCut: this.bigSubtractSlow(this.bigMultiplyKaraSuba(max, max), num),
+                            minCut: this.bigSubtractSlow(num, this.bigMultiplyKaraSuba(min, min)),
+                            t: t,
+                        };
+                    }
+                    center = this.bigMiddleValueSlow(max, min).split(".")[0];
+                    //console.log(center);
+                    cut = this.bigSubtractSlow(this.bigMultiplyKaraSuba(center, center), num);
+                    if (this.bigIsBigerSlow(cut, 0) <= 0) {
+                        min = center;
+                    } else {
+                        max = center;
+                    }
+                }
+            }
+        }
+    },
+
+    /** 
+     * 素数合集 
+     */
+    numbers: [
+        4253,
+        4423,
+        9689,
+        9941,
+        11213,
+        //19937,
+    ],
+
+    /**
+     * 获取密匙
+     */
+    getKey: function () {
+        let P = this.numbers[lt_code.variable.random(this.numbers.length, 0, true)];  
+        P = this.getPrime(P);
+        let Q = this.numbers[lt_code.variable.random(this.numbers.length, 0, true)];
+        Q = this.getPrime(Q);
+
+        console.log(P + "\n" + Q);
+
+        let N = this.bigMultiplyKaraSuba(P, Q);
+
+        let O = this.bigMultiplyKaraSuba(this.bigSubtractSlow(P, 1), this.bigMultiplyKaraSuba(Q, 1));
+
+        let E = this.bigRandom(O);
+
+        console.log(E);
+
+        return this.testMutualityA(E, O);
+    },
+
+    /**
+     * n是否为素数(未完成)
+     * @param {any} n
+     */
+    isPrime: function (n) {
+        if (this.bigIsBigerSlow(n,2)<0) {
+            return false;
+        } else if (n==2) {
+            return true;
+        } else if(/./.test(this.bigMidValueSlow(n))) {
+            return false;
+        }
+
+    },
+
+    /**
+     * 测试互质(未知错误,或者是数据错误)
+     * 辗转相除法
+     * @param {any} num1
+     * @param {any} num2
+     */
+    testMutualityA: function (num1, num2) {
+        num1 = num1.toString();
+        num2 = num2.toString();
+        if (this.bigIsBigerSlow(num1,num2)<0) {
+            let temp = num1;
+            num1 = num2;
+            num2 = temp;
+        }
+        if (num1==1||num2==1) {
+            return true;
+        }
+        while (true) {
+            let t = this.bigQuotient(num1, num2);
+            console.log(t);
+            if (t=="0") {
+                break;
+            } else {
+                num1 = num2;
+                num2 = t;
+            }
+        }
+        if (this.bigIsBigerSlow(num2, 1) > 0) {
+            console.log(num1+" "+num2);
+            return false;
+        } else {
+            console.log(num1 + " " + num2);
+            return true;
+        }
+    },
+
+    /**
+     * 测试互质(别用,傻逼算法)
+     * 更相减损法
+     * @param {any} num1
+     * @param {any} num2
+     */
+    testMutualityB: function (num1, num2) {
+        num1 = num1.toString();
+        num2 = num2.toString();
+        if (this.bigIsBigerSlow(num1,num2)<0) {
+            let temp = num1;
+            num1 = num2;
+            num2 = temp;
+        }
+        if (num1==1||num2==1) {
+            return true;
+        }
+        while (true) {
+            let t = this.bigSubtractSlow(num1, num2);
+            console.log(t);
+            if (this.bigIsBigerSlow(t,num2)==0) {
+                break;
+            } else {
+                if (this.bigIsBigerSlow(t,num2)>0) {
+                    num1 = t;
+                } else {
+                    num1 = num2;
+                    num2 = t;
+                }
+            }
+        }
+        if (this.bigIsBigerSlow(num2, 1) > 0) {
+            console.log(num1+" "+num2);
+            return false;
+        } else {
+            console.log(num1 + " " + num2);
+            return true;
+        }
+    },
+
+    /**
+     * 测试互质
+     * 辗转相除法(另一种)
+     * @param {any} num1
+     * @param {any} num2
+     */
+    testMutualityC: function (num1, num2) {
+        num1 = num1.toString();
+        num2 = num2.toString();
+        if (this.bigIsBigerSlow(num1,num2)<0) {
+            let temp = num1;
+            num1 = num2;
+            num2 = temp;
+        }
+        return this.bigQuotient(num1,num2)==0?num2:this.testMutualityC(num2,this.bigQuotient(num1,num2));
     },
 
     /**
@@ -11217,7 +11765,7 @@ lt_code.RSA = {
         let num1 = lt_code.variable.random(10, 0, true);
         let num2 = lt_code.variable.random(10, 0, true);
 
-        for (var i = 0; i < 9*count; i++) {
+        for (var i = 0; i < 9 * count; i++) {
             ansewer = num1 + num2;
         }
         let stopTime1 = new Date().getTime();
@@ -11271,12 +11819,42 @@ lt_code.RSA = {
     testKaraSubaTime: function (count) {
         var num1 = "";
         for (var i = 1; i <= count; i++) {
-            num1 += (i%10).toString();
+            num1 += (i % 10).toString();
         }
         var startTime = new Date().getTime();
         var ret = this.bigMultiplyKaraSuba(num1, num1);
         var stopTime = new Date().getTime();
-        return (stopTime - startTime).toString()+"ms answer:"+ret+" count:"+ret.length;
+        return (stopTime - startTime).toString() + "ms answer:" + ret + " count:" + ret.length;
+    },
+
+    /**
+     * 测试分割算法(测试版)计算速度
+     * @param {number} count 两项乘数位数
+     */
+    testCutSlowTime: function (count) {
+        var num1 = "";
+        for (var i = 1; i <= count; i++) {
+            num1 += (i % 10).toString();
+        }
+        var startTime = new Date().getTime();
+        var ret = this.bigMultiplyCutSlow(num1, num1);
+        var stopTime = new Date().getTime();
+        return (stopTime - startTime).toString() + "ms answer:" + ret + " count:" + ret.length;
+    },
+
+    /**
+     * 测试分割算法计算速度
+     * @param {number} count 两项乘数位数
+     */
+    testCutTime: function (count) {
+        var num1 = "";
+        for (var i = 1; i <= count; i++) {
+            num1 += (i % 10).toString();
+        }
+        var startTime = new Date().getTime();
+        var ret = this.bigMultiplyCut(num1, num1);
+        var stopTime = new Date().getTime();
+        return (stopTime - startTime).toString() + "ms answer:" + ret + " count:" + ret.length;
     },
 
     /**
@@ -11292,9 +11870,39 @@ lt_code.RSA = {
         var c = this.bigMultiplyKaraSuba(a, b);
         console.log(a + " " + b + " " + c);
         var startTime = new Date().getTime();
-        var q = this.bigDividedSlow(c, a,true);
+        var q = this.bigDividedSlow(c, a, true);
         var stopTime = new Date().getTime();
         return q + " " + b + " " + this.bigIsBigerSlow(q, b).toString() + " " + (stopTime - startTime).toString();
+    },
+
+    /**
+     * 测试相除
+     * @param {number} count
+     */
+    testDividedCut: function (count) {
+        var a = "";
+        for (var i = 0; i < count; i++) {
+            a += (i % 10).toString();
+        }
+        var b = this.bigAddSlow(a, 1);
+        var c = this.bigMultiplyKaraSuba(a, b);
+        console.log(a + " " + b + " " + c);
+        var startTime = new Date().getTime();
+        var q = this.bigDividedCutSlow(c, a,true);
+        var stopTime = new Date().getTime();
+        return q + " " + b + " " + this.bigIsBigerSlow(q, b).toString() + " " + (stopTime - startTime).toString()+"ms";
+    },
+
+    /**
+     * 获取素数(获取已知素数用)
+     * @param {number} count 叠成方次数
+     */
+    getPrime: function (count) {
+        var ret = "2";
+        for (var i = 1; i < count; i++) {
+            ret = this.bigAddSlow(ret,ret);
+        }
+        return this.bigNumberFixed(this.bigSubtractSlow(ret, 1));
     }
 }
 
@@ -11435,7 +12043,7 @@ lt_code.addMethod.AddMethod = function () {
         return ret;
     }
 
-    
+
 }();
 
 //加载图标
@@ -11446,7 +12054,7 @@ lt_code.addMethod.AddMethod = function () {
 //加载图片
 !function () {
     var headportrait = lt_code.newDom("script", {
-        src: lt_code.variable.currentDir+"images/headPortrait.js",
+        src: lt_code.variable.currentDir + "images/headPortrait.js",
     });
     lt_code.addChild(headportrait, lt_code.getAll("head"));
 }();
