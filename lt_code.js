@@ -11224,12 +11224,12 @@ lt_code.RSA = {
      */
     bigQuotient: function (num1, num2) {
         num1 = num1.toString(), num2 = num2.toString();
-        if (this.bigIsBigerSlow(num1,num2)<0) {
+        if (this.bigIsBigerSlow(num1, num2) < 0) {
             return num1;
-        } else if(this.bigIsBigerSlow(num1,num2)==0) {
+        } else if (this.bigIsBigerSlow(num1, num2) == 0) {
             return "0";
         }
-        if (num2=="0") {
+        if (num2 == "0") {
             return NaN;
         }
         var divided = this.bigDividedCutSlow(num1, num2);
@@ -11415,7 +11415,7 @@ lt_code.RSA = {
      * @param {String} num2
      * @param {boolean} [showRet] 是否显示ret值,默认不显示
      */
-    bigDividedCutSlow: function (num1, num2,showRet) {
+    bigDividedCutSlow: function (num1, num2, showRet) {
         num1 = num1.toString();
         num2 = num2.toString();
 
@@ -11531,7 +11531,7 @@ lt_code.RSA = {
      * @param {String} num
      * @param {boolean} [showCut] 是否显示切割值
      */
-    bigSqrtSlow: function (num ,showCut) {
+    bigSqrtSlow: function (num, showCut) {
         num = num.toString();
 
         let count = num.length;
@@ -11539,13 +11539,13 @@ lt_code.RSA = {
         let min = "1";
         let max = "3";
 
-        if (count%2==1) {
-            for (var i = 1; i <= Math.floor(count/2); i++) {
+        if (count % 2 == 1) {
+            for (var i = 1; i <= Math.floor(count / 2); i++) {
                 min += "0";
                 max += "3";
             }
         } else {
-            for (var i = 1; i < Math.floor(count/2); i++) {
+            for (var i = 1; i < Math.floor(count / 2); i++) {
                 min += "0";
                 max += "3";
             }
@@ -11629,18 +11629,20 @@ lt_code.RSA = {
      * 获取密匙
      */
     getKey: function () {
-        let P = this.numbers[lt_code.variable.random(this.numbers.length, 0, true)];  
+        let P = this.numbers[0];
+        //let P = this.numbers[lt_code.variable.random(this.numbers.length, 0, true)];  
         P = this.getPrime(P);
-        let Q = this.numbers[lt_code.variable.random(this.numbers.length, 0, true)];
+        let Q = this.numbers[1];
+        //let Q = this.numbers[lt_code.variable.random(this.numbers.length, 0, true)];
         Q = this.getPrime(Q);
 
         console.log(P + "\n" + Q);
 
         let N = this.bigMultiplyKaraSuba(P, Q);
 
-        let O = this.bigMultiplyKaraSuba(this.bigSubtractSlow(P, 1), this.bigMultiplyKaraSuba(Q, 1));
+        let O = this.bigMultiplyKaraSuba(this.bigSubtractSlow(P, 1), this.bigSubtractSlow(Q, 1));
 
-        let E = this.bigRandom(O);
+        let E = this.getPrime(this.numbers[2]);
 
         console.log(E);
 
@@ -11652,11 +11654,11 @@ lt_code.RSA = {
      * @param {any} n
      */
     isPrime: function (n) {
-        if (this.bigIsBigerSlow(n,2)<0) {
+        if (this.bigIsBigerSlow(n, 2) < 0) {
             return false;
-        } else if (n==2) {
+        } else if (n == 2) {
             return true;
-        } else if(/./.test(this.bigMidValueSlow(n))) {
+        } else if (/./.test(this.bigMidValueSlow(n))) {
             return false;
         }
 
@@ -11671,18 +11673,18 @@ lt_code.RSA = {
     testMutualityA: function (num1, num2) {
         num1 = num1.toString();
         num2 = num2.toString();
-        if (this.bigIsBigerSlow(num1,num2)<0) {
+        if (this.bigIsBigerSlow(num1, num2) < 0) {
             let temp = num1;
             num1 = num2;
             num2 = temp;
         }
-        if (num1==1||num2==1) {
+        if (num1 == 1 || num2 == 1) {
             return true;
         }
         while (true) {
             let t = this.bigQuotient(num1, num2);
             console.log(t);
-            if (t=="0") {
+            if (t == "0") {
                 break;
             } else {
                 num1 = num2;
@@ -11690,7 +11692,7 @@ lt_code.RSA = {
             }
         }
         if (this.bigIsBigerSlow(num2, 1) > 0) {
-            console.log(num1+" "+num2);
+            console.log(num1 + " " + num2);
             return false;
         } else {
             console.log(num1 + " " + num2);
@@ -11707,21 +11709,21 @@ lt_code.RSA = {
     testMutualityB: function (num1, num2) {
         num1 = num1.toString();
         num2 = num2.toString();
-        if (this.bigIsBigerSlow(num1,num2)<0) {
+        if (this.bigIsBigerSlow(num1, num2) < 0) {
             let temp = num1;
             num1 = num2;
             num2 = temp;
         }
-        if (num1==1||num2==1) {
+        if (num1 == 1 || num2 == 1) {
             return true;
         }
         while (true) {
             let t = this.bigSubtractSlow(num1, num2);
             console.log(t);
-            if (this.bigIsBigerSlow(t,num2)==0) {
+            if (this.bigIsBigerSlow(t, num2) == 0) {
                 break;
             } else {
-                if (this.bigIsBigerSlow(t,num2)>0) {
+                if (this.bigIsBigerSlow(t, num2) > 0) {
                     num1 = t;
                 } else {
                     num1 = num2;
@@ -11730,7 +11732,7 @@ lt_code.RSA = {
             }
         }
         if (this.bigIsBigerSlow(num2, 1) > 0) {
-            console.log(num1+" "+num2);
+            console.log(num1 + " " + num2);
             return false;
         } else {
             console.log(num1 + " " + num2);
@@ -11747,12 +11749,12 @@ lt_code.RSA = {
     testMutualityC: function (num1, num2) {
         num1 = num1.toString();
         num2 = num2.toString();
-        if (this.bigIsBigerSlow(num1,num2)<0) {
+        if (this.bigIsBigerSlow(num1, num2) < 0) {
             let temp = num1;
             num1 = num2;
             num2 = temp;
         }
-        return this.bigQuotient(num1,num2)==0?num2:this.testMutualityC(num2,this.bigQuotient(num1,num2));
+        return this.bigQuotient(num1, num2) == 0 ? num2 : this.testMutualityC(num2, this.bigQuotient(num1, num2));
     },
 
     /**
@@ -11888,9 +11890,9 @@ lt_code.RSA = {
         var c = this.bigMultiplyKaraSuba(a, b);
         console.log(a + " " + b + " " + c);
         var startTime = new Date().getTime();
-        var q = this.bigDividedCutSlow(c, a,true);
+        var q = this.bigDividedCutSlow(c, a, true);
         var stopTime = new Date().getTime();
-        return q + " " + b + " " + this.bigIsBigerSlow(q, b).toString() + " " + (stopTime - startTime).toString()+"ms";
+        return q + " " + b + " " + this.bigIsBigerSlow(q, b).toString() + " " + (stopTime - startTime).toString() + "ms";
     },
 
     /**
@@ -11900,7 +11902,7 @@ lt_code.RSA = {
     getPrime: function (count) {
         var ret = "2";
         for (var i = 1; i < count; i++) {
-            ret = this.bigAddSlow(ret,ret);
+            ret = this.bigAddSlow(ret, ret);
         }
         return this.bigNumberFixed(this.bigSubtractSlow(ret, 1));
     }
