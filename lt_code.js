@@ -12534,7 +12534,7 @@ lt_code.addMethod.AddMethod = function () {
      * @returns {Array}
      */
     var matchAll =  function (regex) {
-        if (regex.flags) {
+        if (!regex.flags) {
             return regex.exec(this);
         } else if (/g/.test(regex.flags)) {
             let ret = [];
