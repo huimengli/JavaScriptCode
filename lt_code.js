@@ -12466,7 +12466,7 @@ lt_code.addMethod.AddMethod = function () {
         item = Math.floor(item);
         let ret = this[item];
         return ret;
-    }
+    };
 
     /**
      * 将整个列表随机化
@@ -12482,7 +12482,7 @@ lt_code.addMethod.AddMethod = function () {
             ret.push(item);
         }
         return ret;
-    }
+    };
 
     /**
      * 获取所有项
@@ -12496,7 +12496,7 @@ lt_code.addMethod.AddMethod = function () {
             }
         });
         return ret;
-    }
+    };
 
     /**
      * 顺序排列
@@ -12526,9 +12526,28 @@ lt_code.addMethod.AddMethod = function () {
             }
         }
         return ret;
-    }
+    };
 
+    /**
+     * 全部匹配
+     * @param {RegExp} regex 正则表达式
+     * @returns {Array}
+     */
+    var matchAll =  function (regex) {
+        if (regex.flags) {
+            return regex.exec(this);
+        } else if (/g/.test(regex.flags)) {
+            let ret = [];
+            let match;
+            while ((match = regex.exec(this))!==null) {
+                ret.push(match);
+            }
+            return ret;
+        }
+    };
 
+    /**如果string没有matchAll则使用自己写的函数 */
+    String.prototype.matchAll = String.prototype.matchAll ? String.prototype.matchAll : matchAll;
 }();
 
 //加载图标
