@@ -11419,6 +11419,10 @@ lt_code.RSA = {
         num1 = num1.toString();
         num2 = num2.toString();
 
+        if (num2 == "1") {
+            return num1;
+        }
+
         num1 = this.bigNumberFixed(num1);
         num2 = this.bigNumberFixed(num2);
 
