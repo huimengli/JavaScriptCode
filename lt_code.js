@@ -830,6 +830,18 @@ lt_code.variable.addRun = function (num, name) {
 };
 
 /**
+ * 关闭挂载
+ * @param {string} name 挂载名称
+ */
+lt_code.variable.delRun = function (name) {
+    lt_code.variable.runer.forEach(function (e) {
+        if (e.name == name) {
+            clearInterval(e.num);
+        }
+    });
+}
+
+/**
  * 生成新UID
  * @param {string} [input] 输入
  */
@@ -6678,6 +6690,8 @@ lt_code.test.fullpage = function (backgrounds, times, dom_father, chackType, use
     /**
      * 读取所有的目标对象*/
     var pages = lt_code.getAll(".lt_for_page");
+
+    console.log(pages);
 
     //是否存在pages
     if (pages.length !== 0) {
