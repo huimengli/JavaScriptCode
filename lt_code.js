@@ -11851,6 +11851,22 @@ lt_code.RSA = {
         return this.bigQuotient(this.bigPower(num1, exp), num2);
     },
 
+    /**
+     * 大数阶乘
+     * @param {any} num 乘数
+     */
+    bigFactorial: function (num) {
+        if (num=="0" || num=="1") {
+            return '1';
+        }
+        num = num.toString();
+        ret = num;
+        for (var i = num - 1; i > 1; i--) {
+            ret = this.bigMultiplyKaraSuba(ret, i);
+        }
+        return ret.toString();
+    },
+
     /** 
      * 素数合集 
      */
