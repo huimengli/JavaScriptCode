@@ -6140,7 +6140,7 @@ lt_code.Version = function () {
         var ico = document.getElementsByTagName("link");
         var have = false;
         for (var i in ico) {
-            if (i.type == "image/x-icon") {
+            if (/icon/.test(i.type)) {
                 have = true;
             }
         }
@@ -6196,122 +6196,6 @@ lt_code.Version = function () {
 
 /**计算性函数 */
 lt_code.math = {};
-
-/**
- * 计算线性方程的函数
- * @param {string|string[]} funs 输入的方程式
- * @returns {string|string[]} 返回的值
- */
-lt_code.math.lineFunc = function (funs) {
-    /**总函数返回值 */
-    var retrun_val = null;
-    /**读取函数计算式的正则 */
-    var read_funs = /([\d]*[xyz]*)([\+\-\*\/])([\d]*[xyz]*)\=([\d]*[xyz]*)/;
-
-    /**读取xyz变量的正则 */
-    var read_xyz = /[xyz]/;
-
-    if (!Array.isArray(funs)) {
-        /**读取函数数组 */
-        var func = read_funs.exec(funs);
-        console.trace(func);
-        /**函数的第一项 */
-        var a1 = func[1];
-        /**函数的计算符号 */
-        var jisuan = func[2];
-        /**函数的第二项 */
-        var a2 = func[3];
-        /**函数的第三项 */
-        var a3 = func[4];
-
-        /**未知数1 */
-        var a1_var = read_xyz_fun(a1);
-        /**未知数2 */
-        var a2_var = read_xyz_fun(a2);
-        /**未知数3 */
-        var a3_var = read_xyz_fun(a3);
-
-        //检查是否只有一个未知数
-        if (!chack_three_var(a1_var, a2_var, a3_var)) {
-            retrun_val = "";
-        } else {
-            retrun_val = "";
-        }
-    }
-
-
-
-    /**
-     * 读取xyz变量的函数
-     * @param {string} str 函数的某一项
-     * @returns {null|string} 返回值
-     */
-    var read_xyz_fun = function (str) {
-        var return_value = read_xyz.exec(str);
-        if (!return_value) {
-            return null;
-        } else {
-            return return_value[0];
-        }
-    };
-
-    /**
-     * 检查项是否相同或者为null
-     * @param {string} x 第一项
-     * @param {string} y 第二项
-     * @param {string} z 第三项
-     * @return {boolean} 返回值
-     */
-    var chack_three_var = function (x, y, z) {
-        /**返回值 */
-        var retrun_value;
-
-        //第一种情况,全都不为null
-        if (x && y && z) {
-            if (z !== x || z !== y || y !== x) {
-                retrun_value = false;
-            } else {
-                retrun_value = true;
-            }
-        }
-
-        //第二种情况
-        //(最后那个为null)
-        if (x && y && !z) {
-            if (x !== y) {
-                retrun_value = true;
-            } else {
-                retrun_value = false;
-            }
-        }
-        //(中间那个为null)
-        if (x && !y && z) {
-            if (x !== z) {
-                retrun_value = false;
-            } else {
-                retrun_value = true;
-            }
-        }
-        //(第一个为null)
-        if (!x && y && z) {
-            if (y !== z) {
-                retrun_value = false;
-            } else {
-                retrun_value = true;
-            }
-        }
-
-        //第三种情况
-        if ((!x && !y && z) || (!x && y && !z) || (x && !y && !z)) {
-            retrun_value = true;
-        }
-
-        return retrun_value;
-    };
-
-    //返回返回值
-    return retrun_val;
-};
 
 /**
  * 求取数组中最小值
@@ -12597,10 +12481,10 @@ lt_code.addMethod.AddMethod = function () {
     lt_code.addChild(headportrait, lt_code.getAll("head"));
 }();
 
-//加载工具
-//!function () {
-//    var threeD = lt_code.newDom("script", {
-//        src: lt_code.variable.currentDir+"item/threeD.js",
-//    });
-//    lt_code.addChild(threeD, lt_code.getAll("head"));
-//}();
+加载工具
+!function () {
+    var threeD = lt_code.newDom("script", {
+        src: lt_code.variable.currentDir+"item/threeD.js",
+    });
+    lt_code.addChild(threeD, lt_code.getAll("head"));
+}();
