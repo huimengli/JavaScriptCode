@@ -6188,6 +6188,35 @@ lt_code.Version = function () {
             }
             return fmt;
         }
+
+        /**
+         * 初始化一些特殊模块
+         * @param {string} object 模块名称
+         */
+        lt_code.init = function (object) {
+            switch (object) {
+                //伪3D模块
+                case "PTD":
+                case "pseudoThreeD":
+                    /**伪3D模块 */
+                    var pseudoThreeD = lt_code.newDom("script", {
+                        src: lt_code.variable.currentDir + "item/pseudoThreeD.js"
+                    });
+                    lt_code.addChild(pseudoThreeD, lt_code.getAll("head"));
+                    break;
+                //3D模块
+                case "TD":
+                case "threeD":
+                    /**3D模块 */
+                    var threeD = lt_code.newDom("script", {
+                        src: lt_code.variable.currentDir + "item/threeD.js",
+                    });
+                    lt_code.addChild(threeD, lt_code.getAll("head"));
+                    break;
+                default:
+                    console.trace("没有这个模块!");
+            }
+        }
     });
 
     return 16;
@@ -12479,12 +12508,4 @@ lt_code.addMethod.AddMethod = function () {
         src: lt_code.variable.currentDir + "images/headPortrait.js",
     });
     lt_code.addChild(headportrait, lt_code.getAll("head"));
-}();
-
-加载工具
-!function () {
-    var threeD = lt_code.newDom("script", {
-        src: lt_code.variable.currentDir+"item/threeD.js",
-    });
-    lt_code.addChild(threeD, lt_code.getAll("head"));
 }();
