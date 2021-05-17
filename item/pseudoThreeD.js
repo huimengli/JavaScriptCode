@@ -65,6 +65,29 @@
 
     /**伪3D对象 */
     Tobject: class {
+        /**
+         * 构造函数
+         * @param {number} x 
+         * @param {number} y
+         * @param {number} z
+         * @param {number} ex 欧拉角
+         * @param {number} ey 欧拉角
+         * @param {number} ez 欧拉角
+         * @param {number} sx 缩放比
+         * @param {number} sy 缩放比
+         * @param {number} sz 缩放比
+         */
+        constructor(x, y, z, ex, ey, ez, sx, sy, sz) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.eulerAngleX = ex;
+            this.eulerAngleY = ey;
+            this.eulerAngleZ = ez;
+            this.scaleX = sx;
+            this.scaleY = sy;
+            this.scaleZ = sz;
+        }
 
     },
 
@@ -86,12 +109,12 @@
         //以下是特殊参数
 
         /**坐标中心点 */
-        None() {
+        static None() {
             return new lt_code.pseudoThreeD.vector3(0, 0, 0);
         }
 
         /**坐标最大值(超过即不计算也不显示) */
-        Infinity() {
+        static Infinity() {
             var max = lt_code.pseudoThreeD.MAXVALUE;
             return new lt_code.pseudoThreeD.vector3(max, max, max);
         }
@@ -131,11 +154,30 @@
             var dof = lt_code.pseudoThreeD.DOF;
             /**坐标轴中心位置 */
             var aPos = lt_code.pseudoThreeD.AXISPOS;
+            //如果超过景深直接显示超过上限
+            if (this.z > lt_code.pseudoThreeD.MAXVALUE) {
+                return lt_code.pseudoThreeD.vector2.Infinity();
+            }
             
             switch (aPos) {
                 case lt_code.pseudoThreeD.axisPos.leftTop:
-                    //var zTransform = 
-                    break;
+                    if (this.z) {
+                        /**深度百分比 */
+                        var deep = this.z / dof;
+                        /**初始x */
+                        var startX = deep * this.MaxWidth();
+                        /**初始y */
+                        var startY = deep * this.MaxHeight();
+                        /**横向偏移 */
+                        var width = (1 - deep) * this.x / this.MaxWidth();
+                        /**纵向偏移 */
+                        var height = (1 - deep) * this.y / this.MaxHeight();
+                        return new lt_code.pseudoThreeD.vector2(startX + width, startY + height);
+                    } else {
+                        return new lt_code.pseudoThreeD.vector2(this.x, this.y);
+                    }
+                case lt_code.pseudoThreeD.axisPos.top:
+                    var deep = this.z / this.MaxHeight();
                 default:
                     console.trace("模块中没有这个参数\n或者尚未写完!");
             }
@@ -157,12 +199,12 @@
         //以下是特殊坐标点
 
         /**坐标中心点 */
-        None() {
+        static None() {
             return new lt_code.pseudoThreeD.vector2(0, 0);
         }
 
         /**坐标最大值(超过即既不计算也不显示) */
-        Infinity() {
+        static Infinity() {
             var max = lt_code.pseudoThreeD.MAXVALUE;
             return new lt_code.pseudoThreeD.vector2(max, max);
         }
