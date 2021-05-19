@@ -589,7 +589,7 @@ lt_code.searchTime = function (time) {
 }
 
 /**
- * utf-8转字符串
+ * utf-8转字符串(傻逼算法,这个算法有错误)
  * @param {any} szInput
  */
 lt_code.utf8ToChinese = function (szInput) {
@@ -8361,12 +8361,13 @@ lt_code.cookie = function () {
  * 保存cookie
  * @param {string} cookieName 保存的cookie名称
  * @param {string} cookieValue 保存的cookie值
- * @param {number} cookieDates 保存的有效时间长度
+ * @param {number} [cookieDates] 保存的有效时间长度(默认7天)
  */
 lt_code.cookie.saveCookie = function (cookieName, cookieValue, cookieDates) {
-    var d = new Date();
-    cookieValue = lt_code.chineseToUtf8(lt_code.test.textToChinese(cookieValue));
-    d.setDate(d.getDate() + cookieDates);
+    var d = new Date(new Date().getTime() + (cookieDates ? cookieDates * 1000 * 60 * 60 * 24 : 7 * 1000 * 60 * 60 * 24));
+    //由于base64编码中含有=符号导致cookie存储出错,因此这里使用八进制存储
+    cookieValue = lt_code.RSA.project.encode(cookieValue);
+    console.log(cookieValue);
     document.cookie = cookieName + "=" + cookieValue + ";expires=" +
         d.toUTCString();
 }
@@ -8386,7 +8387,7 @@ lt_code.cookie.getCookie = function (cookieName) {
             break;
         }
     }
-    cookieValue = lt_code.test.chineseToText(lt_code.utf8ToChinese(cookieValue));
+    cookieValue = lt_code.RSA.project.decode(cookieValue);
     return cookieValue;
 }
 
