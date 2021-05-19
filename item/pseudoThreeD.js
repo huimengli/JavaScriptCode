@@ -78,16 +78,25 @@
          * @param {number} sz 缩放比
          */
         constructor(x, y, z, ex, ey, ez, sx, sy, sz) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            this.eulerAngleX = ex;
-            this.eulerAngleY = ey;
-            this.eulerAngleZ = ez;
-            this.scaleX = sx;
-            this.scaleY = sy;
-            this.scaleZ = sz;
+            this.x = x?x:0;
+            this.y = y?y:0;
+            this.z = z?z:0;
+            this.eulerAngleX = ex?ex:0;
+            this.eulerAngleY = ey?ey:0;
+            this.eulerAngleZ = ez?ez:0;
+            this.scaleX = sx?sx:0;
+            this.scaleY = sy?sy:0;
+            this.scaleZ = sz?sz:0;
         }
+
+        /**对象初始化 */
+        init() {
+            lt_code.pseudoThreeD.objects.push(this);
+        }
+
+        /**对象绘制 */
+        draw() { }
+
 
     },
 
@@ -157,30 +166,76 @@
             //如果超过景深直接显示超过上限
             if (this.z > lt_code.pseudoThreeD.MAXVALUE) {
                 return lt_code.pseudoThreeD.vector2.Infinity();
+            } else if (this.z ==0) {
+                return new lt_code.pseudoThreeD.vector2(this.x, this.y);
             }
-            
+
+            /**深度百分比 */
+            var deep = this.z;
+            /**x轴是否负计算 */
+            var XisF = false;
+            /**y轴是否负计算 */
+            var YisF = false;
+
             switch (aPos) {
                 case lt_code.pseudoThreeD.axisPos.leftTop:
-                    if (this.z) {
-                        /**深度百分比 */
-                        var deep = this.z / dof;
-                        /**初始x */
-                        var startX = deep * this.MaxWidth();
-                        /**初始y */
-                        var startY = deep * this.MaxHeight();
-                        /**横向偏移 */
-                        var width = (1 - deep) * this.x / this.MaxWidth();
-                        /**纵向偏移 */
-                        var height = (1 - deep) * this.y / this.MaxHeight();
-                        return new lt_code.pseudoThreeD.vector2(startX + width, startY + height);
-                    } else {
-                        return new lt_code.pseudoThreeD.vector2(this.x, this.y);
-                    }
+                    deep = this.z / dof;
+                    XisF = false;
+                    YisF = false;
+                    break;
                 case lt_code.pseudoThreeD.axisPos.top:
-                    var deep = this.z / this.MaxHeight();
+                    deep = this.z / this.MaxHeight();
+                    XisF = this.x<this.MaxWidth()/2?true:false;
+                    YisF = false;
+                    break;
+                case lt_code.pseudoThreeD.axisPos.rightTop:
+                    deep = this.z / dof;
+                    XisF = true;
+                    YisF = false;
+                    break;
+                case lt_code.pseudoThreeD.axisPos.rigth:
+                    deep = this.z / this.MaxWidth();
+                    YisF = this.y < this.MaxHeight() / 2 ? true : false;
+                    XisF = true;
+                    break;
+                case lt_code.pseudoThreeD.axisPos.rightBottom:
+                    deep = this.z / dof;
+                    XisF = true;
+                    YisF = true;
+                    break;
+                case lt_code.pseudoThreeD.axisPos.bottom:
+                    deep = this.z / this.MaxHeight();
+                    XisF = this.z < this.MaxWidth() / 2 ? true: false;
+                    YisF = true;
+                    break;
+                case lt_code.pseudoThreeD.axisPos.leftBottom:
+                    deep = this.z / dof;
+                    XisF = false;
+                    YisF = true;
+                    break;
+                case lt_code.pseudoThreeD.axisPos.left:
+                    deep = this.z / this.MaxWidth();
+                    XisF = false;
+                    YisF = this.y < this.MaxHeight() / 2 ? true : false;
+                    break;
+                case lt_code.pseudoThreeD.axisPos.center:
+                    deep = this.z / (dof / 2);
+                    XisF = this.x < this.MaxWidth() / 2 ? true : false;
+                    YisF = this.y < this.MaxHeight() / 2 ? true : false;
+                    break;
                 default:
                     console.trace("模块中没有这个参数\n或者尚未写完!");
+                    break;
             }
+            /**初始x */
+            var startX = deep * this.MaxWidth();
+            /**初始y */
+            var startY = deep * this.MaxHeight();
+            /**横向偏移 */
+            var width = XisF==false?(1 - deep) * this.x / this.MaxWidth():(deep-1)*this.x/this.MaxWidth();
+            /**纵向偏移 */
+            var height = YisF==false?(1 - deep) * this.y / this.MaxHeight():(deep-1)*this.y/this.MaxHeight();
+            return new lt_code.pseudoThreeD.vector2(startX + width, startY + height);
         }
     },
 
@@ -251,12 +306,54 @@
         //场景父类
         this.domFather = df ? df : document.body;
         //设定景深
-        this.DOF = dof?dof:900;
+        this.DOF = dof?dof:Math.sqrt(Math.pow(lt_code.variable.height,2)+Math.pow(lt_code.variable.width,2));
         //设定坐标轴位置
         this.AXISPOS = this.axisPos.center;
         lt_code.addChild(this.cas, this.domFather);
-
     },
 
-    
+    /**所有对象 */
+    objects : [],
+}
+
+//以下为追加类
+
+/**正方形对象类 */
+lt_code.pseudoThreeD.SquareTobject = (x, y, z, ex, ey, ez, sx, sy, sz) => new lt_code.pseudoThreeD.Tobject(x, y, z, ex, ey, ez, sx, sy, sz);
+//继承于空对象类
+lt_code.pseudoThreeD.SquareTobject.prototype = lt_code.pseudoThreeD.Tobject.prototype;
+//重写初始化
+lt_code.pseudoThreeD.SquareTobject.prototype.init = function (d) {
+    lt_code.pseudoThreeD.objects.push(this);
+    /**正方形边长 */
+    this.side = d;
+    /**结构点 */
+    this.points = [];
+    d = d / 2;
+    this.points.push(new lt_code.pseudoThreeD.vector3(-d, -d, -d));
+    this.points.push(new lt_code.pseudoThreeD.vector3(-d, -d, d));
+    this.points.push(new lt_code.pseudoThreeD.vector3(-d, d, -d));
+    this.points.push(new lt_code.pseudoThreeD.vector3(-d, d, d));
+    this.points.push(new lt_code.pseudoThreeD.vector3(d, -d, -d));
+    this.points.push(new lt_code.pseudoThreeD.vector3(d, -d, d));
+    this.points.push(new lt_code.pseudoThreeD.vector3(d, d, -d));
+    this.points.push(new lt_code.pseudoThreeD.vector3(d, d, d));
+}
+//重写绘制
+lt_code.pseudoThreeD.SquareTobject.prototype.draw = function (c, w) {
+    console.log(this);
+    for (var i = 0; i < this.points.length; i++) {
+        var e = this.points[i];
+        for (var j = i; j < this.points.length; j++) {
+            var ctx = lt_code.pseudoThreeD.ctx;
+            var v1 = e.toVector2(), v2 = this.points[j].toVector2();
+            ctx.beginPath();
+            ctx.moveTo(v1.x, v1.y);
+            ctx.lineTo(v2, x, v2.y);
+            ctx.strokeStyle = c ? c : "black";
+            ctx.lineWidth = w ? w : 2;
+            ctx.stroke();
+            ctx.closePath();
+        }
+    };
 }
