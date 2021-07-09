@@ -65,7 +65,20 @@ window.onload = function(){
     ACCURACY: 5,
 
     /**是否初始化*/
-    ISINIT:false,
+    ISINIT: false,
+
+    /**固定参数 */
+    DEFAULT: {
+        WIDTH: {
+            POINT: 0.3,
+            LINE:0.3,
+        },
+        COLOR: {
+            POINT: "red",
+            LINE: "black",
+            SURFACE:"#999",
+        }
+    },
 
     //以下为枚举类
 
@@ -110,7 +123,7 @@ window.onload = function(){
         constructor(x, y, z, ex, ey, ez, sx, sy, sz) {
             var Tx, Ty, Tz, TeulerAngleX, TeulerAngleY, TeulerAngleZ, TscaleX, TscaleY, TscaleZ;
             if (x==null) {
-                Tx = 0, Ty = 0, Tz = 0, TeulerAngleX = 0, TeulerAngleY = 0, TeulerAngleZ = 0, TscaleX = 0, TscaleY = 0, TscaleZ = 0;
+                Tx = 0, Ty = 0, Tz = 0, TeulerAngleX = 0, TeulerAngleY = 0, TeulerAngleZ = 0, TscaleX = 1, TscaleY = 1, TscaleZ = 1;
             } else if (typeof(x)=="number") {
                 Tx = x;
                 Ty = y;
@@ -144,10 +157,19 @@ window.onload = function(){
             this.activity = true;
             /**定位点 */
             this.points = [];
+            /**所有线 */
+            this.lines = [];
+            /**所有面 */
+            this.surface = [];
             /**物体的唯一识别ID */
             this.UUID = lt_code.pseudoThreeD.newUUID();
+            /**物体对象 */
+            this.type = "Tobject";
+            /**物体的根 */
+            this.base = null;
             //将物体添加的到根目录中
-            lt_code.pseudoThreeD.objects.push(this);
+            //lt_code.pseudoThreeD.objects.push(this);
+            lt_code.pseudoThreeD.objects[this.UUID] = this;
         }
 
         /**
@@ -169,9 +191,18 @@ window.onload = function(){
             }
             var pos = new lt_code.pseudoThreeD.vector3(Tx, Ty, Tz);
             this.transform.position = pos;
+            //移动点
             this.points.forEach(function (e) {
                 e.transform(pos);
-            })
+            });
+            //移动线
+            this.lines.forEach(function (e) {
+                e.setPosition(x, y, z);
+            });
+            //移动面
+            this.surface.forEach(function (e) {
+                e.setPosition(x, y, z);
+            });
         }
 
         /**
@@ -192,6 +223,12 @@ window.onload = function(){
                 TeulerAngleZ = ex.z;
             }
             this.transform.eulerAngle = new lt_code.pseudoThreeD.vector3(TeulerAngleX, TeulerAngleY, TeulerAngleZ);
+            this.lines.forEach(function (e) {
+                e.setEulerAngle(this.transform.eulerAngle);
+            }.bind(this));
+            this.surface.forEach(function (e) {
+                e.setEulerAngle(this.transform.eulerAngle);
+            }.bind(this));
         }
 
         /**
@@ -255,6 +292,21 @@ window.onload = function(){
             return new lt_code.pseudoThreeD.vector3(max, max, max);
         }
 
+        //以下是坐标计算函数
+
+        /**
+         * 获取两个坐标的中间值
+         * @param {lt_code.pseudoThreeD.vector3} v1
+         * @param {lt_code.pseudoThreeD.vector3} v2
+         */
+        static getCenter(v1, v2) {
+            var center = lt_code.pseudoThreeD.vector3.None();
+            center.x = (v1.x + v2.x) / 2;
+            center.y = (v1.y + v2.y) / 2;
+            center.z = (v1.z + v2.z) / 2;
+            return center;
+        }
+
         /**场景最大宽度 */
         MaxWidth() { return lt_code.pseudoThreeD.cas.width };
         /**场景最大高度 */
@@ -278,6 +330,37 @@ window.onload = function(){
                 this.y += x.y;
                 this.z += x.z;
             }
+        }
+
+        /**
+         * 坐标旋转
+         * @param {any} c 中心点
+         * @param {number|lt_code.pseudoThreeD.vector3} x
+         * @param {number} y
+         * @param {number} z
+         */
+        rotate(c, x, y, z) {
+            var rotate = lt_code.pseudoThreeD.vector3.None();
+            var ret = new lt_code.pseudoThreeD.vector3(this.x, this.y, this.z);
+            if (typeof (x) == "number") {
+                rotate.x = x;
+                rotate.y = y;
+                rotate.z = z;
+            } else {
+                rotate.x = x.x;
+                rotate.y = x.y;
+                rotate.z = x.z;
+            }
+            var l1 = Math.sqrt(this.x * this.x + this.y * this.y);
+            var l2 = Math.sqrt(this.z * this.z + this.y * this.y);
+            var l3 = Math.sqrt(this.x * this.x + this.z * this.z);
+            ret.x = l1 * Math.sin(rotate.z / 360 * Math.PI * 2);
+            ret.y = l1 * Math.cos(rotate.z / 360 * Math.PI * 2);
+            ret.y = l2 * Math.sin(rotate.x / 360 * Math.PI * 2);
+            ret.z = l2 * Math.cos(rotate.x / 360 * Math.PI * 2);
+            ret.z = l3 * Math.sin(rotate.y / 360 * Math.PI * 2);
+            ret.x = l3 * Math.cos(rotate.y / 360 * Math.PI * 2);
+            return ret;
         }
 
         /**
@@ -346,7 +429,15 @@ window.onload = function(){
             }
         }
 
-
+        /**重载转为字符串 */
+        toString() {
+            var ret = {
+                x: this.x,
+                y: this.y,
+                z: this.z,
+            };
+            return JSON.stringify(ret);
+        }
     },
 
     /**二维向量*/
@@ -374,6 +465,20 @@ window.onload = function(){
             return new lt_code.pseudoThreeD.vector2(max, max);
         }
 
+        //以下是坐标计算函数
+
+        /**
+         * 获取两个坐标的中间值
+         * @param {lt_code.pseudoThreeD.vector2} v1
+         * @param {lt_code.pseudoThreeD.vector2} v2
+         */
+        static getCenter(v1, v2) {
+            var center = lt_code.pseudoThreeD.vector2.None();
+            center.x = (v1.x + v2.x) / 2;
+            center.y = (v1.y + v2.y) / 2;
+            return center;
+        }
+
         /**场景最大宽度 */
         MaxWidth() { return lt_code.pseudoThreeD.cas.width };
         /**场景最大高度 */
@@ -395,7 +500,27 @@ window.onload = function(){
             }
         }
 
+        /**
+         * 旋转(二维坐标点应该只能根据一个z轴旋转)
+         * @param {any} c 中心点(尚未完成)
+         * @param {number} z 
+         */
+        rotate(c, z) {
+            var l = Math.sqrt(this.x * this.x + this.y * this.y);
+            var ret = new lt_code.pseudoThreeD.vector2(this.x, this.y);
+            ret.x = Math.sin(z / 360 * Math.PI * 2)*l;
+            ret.y = Math.cos(z / 360 * Math.PI * 2) * l;
+            return ret;
+        }
 
+        /**重载转为字符串 */
+        toString() {
+            var ret = {
+                x: this.x,
+                y: this.y,
+            };
+            return JSON.stringify(ret);
+        }
     },
 
     /*
@@ -407,6 +532,260 @@ window.onload = function(){
      * 但是记录所有数据等等,因此需要一个更加优秀的UUID生成模块
      * (前提是现在的UUID生成模块有问题)
      */
+
+    /**
+     * 线条类
+     * (线条类可以做的比较简单,但是之后可能需要修改)
+     */
+    Tline: class {
+        /**
+         * 构造函数
+         * @param {uuid} n 父类UUID
+         * @param {number} w 线条宽度
+         * @param {color} c 线条颜色
+         * @param {number|lt_code.pseudoThreeD.vector3} x0
+         * @param {number|lt_code.pseudoThreeD.vector3} y0
+         * @param {number} z0
+         * @param {number} x1
+         * @param {number} y1
+         * @param {number} z1
+         */
+        constructor(n, w, c, x0, y0, z0, x1, y1, z1) {
+            /**父类UUID */
+            this.n = n;
+            this.w = w;
+            this.c = c;
+            this.points = [];
+            this.eulerAngle = lt_code.pseudoThreeD.vector3.None();
+            this.scale = lt_code.pseudoThreeD.vector3.None();
+            var p1, p2;
+            if (typeof(x0)=="number") {
+                p1 = new lt_code.pseudoThreeD.vector3(x0, y0, z0);
+                p2 = new lt_code.pseudoThreeD.vector3(x1, y1, z1);
+            } else {
+                p1 = new lt_code.pseudoThreeD.vector3(x0.x,x0.y,x0.z);
+                p2 = new lt_code.pseudoThreeD.vector3(y0.x, y0.y, y0.z);
+            }
+            this.points.push(p1, p2);
+            this.UUID = lt_code.pseudoThreeD.newUUID(this.toString());
+            //记录
+            lt_code.pseudoThreeD.lines[this.UUID] = this;
+        }
+
+        /**
+         * 设置颜色
+         * @param {color} c
+         */
+        setColor(c) {
+            this.c = c;
+        }
+
+        /**
+         * 设置宽度
+         * @param {number} w 
+         */
+        setWidth(w) {
+            this.w = w;
+        }
+
+        /**获取中点 */
+        getCenter() {
+            return lt_code.pseudoThreeD.vector3.getCenter(this.points[0], this.points[1]);
+        }
+
+        /**
+         * 设置位置
+         * @param {number|lt_code.pseudoThreeD.vector3} x
+         * @param {number} y
+         * @param {number} z
+         */
+        setPosition(x, y, z) {
+            var Tx, Ty, Tz;
+            if (typeof (x) == "number") {
+                Tx = x;
+                Ty = y;
+                Tz = z;
+            } else {
+                Tx = x.x;
+                Ty = x.y;
+                Tz = x.z;
+            }
+            var pos = new lt_code.pseudoThreeD.vector3(Tx, Ty, Tz);
+            this.points.forEach(function (e) {
+                e.transform(pos);
+            });
+        }
+
+        /**
+         * 设置欧拉角
+         * @param {number|lt_code.pseudoThreeD.vector3} ex
+         * @param {number} ey
+         * @param {number} ez
+         */
+        setEulerAngle(ex, ey, ez) {
+            var TeulerAngleX, TeulerAngleY, TeulerAngleZ;
+            if (typeof (ex) == "number") {
+                TeulerAngleX = ex;
+                TeulerAngleY = ey;
+                TeulerAngleZ = ez;
+            } else {
+                TeulerAngleX = ex.x;
+                TeulerAngleY = ex.y;
+                TeulerAngleZ = ex.z;
+            }
+            this.eulerAngle = new lt_code.pseudoThreeD.vector3(TeulerAngleX, TeulerAngleY, TeulerAngleZ);
+        }
+
+
+        /**
+         * 绘制线条
+         * @param w 线条宽度
+         * @param c 线条颜色
+         */
+        drawObject(w,c) {
+            /**获取画布 */
+            var ctx = lt_code.pseudoThreeD.ctx;
+
+            //开始绘制
+            ctx.beginPath();
+            var p1 = this.points[0].rotate(null,this.eulerAngle).toVector2();
+            var p2 = this.points[1].rotate(null,this.eulerAngle).toVector2();
+            ctx.moveTo(p1.x,p1.y);
+            ctx.lineTo(p2.x,p2.y);
+            ctx.strokeStyle =c?c: this.c;
+            ctx.lineWidth =w?w: this.w;
+            ctx.stroke();
+            ctx.closePath();
+        }
+
+        /**重载转为字符串 */
+        toString() {
+            var ret = {
+                "n": this.n, 
+                "c": this.c,
+                "w": this.w,
+                "points": [this.points[0].toString(), this.points[1].toString()],
+            };
+            return JSON.stringify(ret);
+        }
+    },
+
+    /**
+     * 面类
+     */
+    Tsurface: class {
+        /**
+         * 构造函数
+         * @param {any} c
+         * @param {uuid} n 父类UUID
+         * @param {...any} arg
+         */
+        constructor(n, c, ...arg) {
+            this.n = n;
+            this.c = c;
+            this.points = [];
+            this.eulerAngle = lt_code.pseudoThreeD.vector3.None();
+            this.scale = lt_code.pseudoThreeD.vector3.None();
+            if (arg.length%3==0&&typeof(arg[0])=="number") {
+                for (var i = 0; i < arg.length ; i++) {
+                    var p = new lt_code.pseudoThreeD.vector3(arg[i], arg[++i], arg[++i]);
+                    console.log(p);
+                    this.points.push(p);
+                }
+            } else {
+                for (var i = 0; i < arg.length; i++) {
+                    var p = new lt_code.pseudoThreeD.vector3(arg[i].x, arg[i].y, arg[i].z);
+                    this.points.push(p);
+                }
+            }
+            this.UUID = lt_code.pseudoThreeD.newUUID(this.toString());
+            //记录
+            lt_code.pseudoThreeD.surface[this.UUID] = this;
+        }
+
+        /**
+         * 设置颜色
+         * @param {color} c
+         */
+        setColor(c) {
+            this.c = c;
+        }
+        
+        /**
+         * 设置位置
+         * @param {number|lt_code.pseudoThreeD.vector3} x
+         * @param {number} y
+         * @param {number} z
+         */
+        setPosition(x, y, z) {
+            var Tx, Ty, Tz;
+            if (typeof (x) == "number") {
+                Tx = x;
+                Ty = y;
+                Tz = z;
+            } else {
+                Tx = x.x;
+                Ty = x.y;
+                Tz = x.z;
+            }
+            var pos = new lt_code.pseudoThreeD.vector3(Tx, Ty, Tz);
+            this.points.forEach(function (e) {
+                e.transform(pos);
+            });
+        }
+
+        /**
+         * 设置欧拉角
+         * @param {number|lt_code.pseudoThreeD.vector3} ex
+         * @param {number} ey
+         * @param {number} ez
+         */
+        setEulerAngle(ex, ey, ez) {
+            var TeulerAngleX, TeulerAngleY, TeulerAngleZ;
+            if (typeof (ex) == "number") {
+                TeulerAngleX = ex;
+                TeulerAngleY = ey;
+                TeulerAngleZ = ez;
+            } else {
+                TeulerAngleX = ex.x;
+                TeulerAngleY = ex.y;
+                TeulerAngleZ = ex.z;
+            }
+            this.eulerAngle = new lt_code.pseudoThreeD.vector3(TeulerAngleX, TeulerAngleY, TeulerAngleZ);
+        }
+
+
+        /**绘制 */
+        drawObject(c) {
+            /**画布 */
+            var ctx = lt_code.pseudoThreeD.ctx;
+
+            //开始绘制
+            ctx.beginPath();
+            var start = this.points[0].rotate(null,this.eulerAngle).toVector2();
+            ctx.moveTo(start.x, start.y);
+            for (var i = 1; i < this.points.length; i++) {
+                var p = this.points[i].rotate(null,this.eulerAngle).toVector2();
+                ctx.lineTo(p.x, p.y);
+            }
+            ctx.closePath();
+            ctx.fillStyle =c?c: this.c;
+            ctx.fill();
+        }
+
+        /**重载为字符串 */
+        toString() {
+            var ret = {
+                "n": this.n,
+                "c": this.c,
+                "points": [],
+            };
+            for (var i = 0; i < this.points.length; i++) {
+                ret["points"].push(this.points[i].toString());
+            }
+            return JSON.stringify(ret);
+        }
+    },
 
     //以下为衍生类
 
@@ -430,10 +809,15 @@ window.onload = function(){
         constructor(l, w, h, x, y, z, ex, ey, ez, sx, sy, sz) {
             var ret = new lt_code.pseudoThreeD.Tobject(x, y, z, ex, ey, ez, sx, sy, sz);
 
+            //设置状态
+            ret.type = "cubeTobject";
+            ret.base = this;
+
             l = l == null && l <= 0.00001 ? 0.00001 : l;
             w = w == null ? l : w;
             h = h == null ? l : h;
 
+            //设置点
             ret.points.push(new lt_code.pseudoThreeD.vector3(l / 2, w / 2, -h / 2));
             ret.points.push(new lt_code.pseudoThreeD.vector3(l / 2, -w / 2, -h / 2));
             ret.points.push(new lt_code.pseudoThreeD.vector3(-l / 2, -w / 2, -h / 2));
@@ -442,6 +826,28 @@ window.onload = function(){
             ret.points.push(new lt_code.pseudoThreeD.vector3(l / 2, -w / 2, h / 2));
             ret.points.push(new lt_code.pseudoThreeD.vector3(-l / 2, -w / 2, h / 2));
             ret.points.push(new lt_code.pseudoThreeD.vector3(-l / 2, w / 2, h / 2));
+
+            //设置线
+            ret.lines.push(new lt_code.pseudoThreeD.Tline(ret.UUID,lt_code.pseudoThreeD.DEFAULT.WIDTH.LINE,lt_code.pseudoThreeD.DEFAULT.COLOR.LINE,ret.points[0], ret.points[1]));
+            ret.lines.push(new lt_code.pseudoThreeD.Tline(ret.UUID,lt_code.pseudoThreeD.DEFAULT.WIDTH.LINE,lt_code.pseudoThreeD.DEFAULT.COLOR.LINE,ret.points[2], ret.points[1]));
+            ret.lines.push(new lt_code.pseudoThreeD.Tline(ret.UUID,lt_code.pseudoThreeD.DEFAULT.WIDTH.LINE,lt_code.pseudoThreeD.DEFAULT.COLOR.LINE,ret.points[2], ret.points[3]));
+            ret.lines.push(new lt_code.pseudoThreeD.Tline(ret.UUID,lt_code.pseudoThreeD.DEFAULT.WIDTH.LINE,lt_code.pseudoThreeD.DEFAULT.COLOR.LINE,ret.points[3], ret.points[0]));
+            ret.lines.push(new lt_code.pseudoThreeD.Tline(ret.UUID,lt_code.pseudoThreeD.DEFAULT.WIDTH.LINE,lt_code.pseudoThreeD.DEFAULT.COLOR.LINE,ret.points[0], ret.points[4]));
+            ret.lines.push(new lt_code.pseudoThreeD.Tline(ret.UUID,lt_code.pseudoThreeD.DEFAULT.WIDTH.LINE,lt_code.pseudoThreeD.DEFAULT.COLOR.LINE,ret.points[5], ret.points[1]));
+            ret.lines.push(new lt_code.pseudoThreeD.Tline(ret.UUID,lt_code.pseudoThreeD.DEFAULT.WIDTH.LINE,lt_code.pseudoThreeD.DEFAULT.COLOR.LINE,ret.points[2], ret.points[6]));
+            ret.lines.push(new lt_code.pseudoThreeD.Tline(ret.UUID,lt_code.pseudoThreeD.DEFAULT.WIDTH.LINE,lt_code.pseudoThreeD.DEFAULT.COLOR.LINE,ret.points[3], ret.points[7]));
+            ret.lines.push(new lt_code.pseudoThreeD.Tline(ret.UUID,lt_code.pseudoThreeD.DEFAULT.WIDTH.LINE,lt_code.pseudoThreeD.DEFAULT.COLOR.LINE,ret.points[4], ret.points[5]));
+            ret.lines.push(new lt_code.pseudoThreeD.Tline(ret.UUID,lt_code.pseudoThreeD.DEFAULT.WIDTH.LINE,lt_code.pseudoThreeD.DEFAULT.COLOR.LINE,ret.points[5], ret.points[6]));
+            ret.lines.push(new lt_code.pseudoThreeD.Tline(ret.UUID,lt_code.pseudoThreeD.DEFAULT.WIDTH.LINE,lt_code.pseudoThreeD.DEFAULT.COLOR.LINE,ret.points[6], ret.points[7]));
+            ret.lines.push(new lt_code.pseudoThreeD.Tline(ret.UUID,lt_code.pseudoThreeD.DEFAULT.WIDTH.LINE,lt_code.pseudoThreeD.DEFAULT.COLOR.LINE,ret.points[7], ret.points[4]));
+
+            //设置面
+            ret.surface.push(new lt_code.pseudoThreeD.Tsurface(ret.UUID, lt_code.pseudoThreeD.DEFAULT.COLOR.SURFACE, ret.points[0], ret.points[1], ret.points[2], ret.points[3]));
+            ret.surface.push(new lt_code.pseudoThreeD.Tsurface(ret.UUID, lt_code.pseudoThreeD.DEFAULT.COLOR.SURFACE, ret.points[0], ret.points[1], ret.points[5], ret.points[4]));
+            ret.surface.push(new lt_code.pseudoThreeD.Tsurface(ret.UUID, lt_code.pseudoThreeD.DEFAULT.COLOR.SURFACE, ret.points[1], ret.points[2], ret.points[6], ret.points[5]));
+            ret.surface.push(new lt_code.pseudoThreeD.Tsurface(ret.UUID, lt_code.pseudoThreeD.DEFAULT.COLOR.SURFACE, ret.points[2], ret.points[3], ret.points[7], ret.points[6]));
+            ret.surface.push(new lt_code.pseudoThreeD.Tsurface(ret.UUID, lt_code.pseudoThreeD.DEFAULT.COLOR.SURFACE, ret.points[3], ret.points[0], ret.points[4], ret.points[7]));
+            ret.surface.push(new lt_code.pseudoThreeD.Tsurface(ret.UUID, lt_code.pseudoThreeD.DEFAULT.COLOR.SURFACE, ret.points[4], ret.points[5], ret.points[6], ret.points[7]));
 
             //继承(但不继承函数)
             this.Tobject = ret;
@@ -453,11 +859,30 @@ window.onload = function(){
         /**
          * 绘制图形...
          * (算法错误,只是暂时使用和演示,应根据线面方式绘制三维图像)
-         * (算法尚未修改)
+         * (算法正在修改)
          * @param {number} w 线条宽度
          * @param {color} c 线条颜色
          */
         drawObject(w,c) {
+            /**获取画布 */
+            var ctx = lt_code.pseudoThreeD.ctx;
+
+            for (var i = 0; i < this.Tobject.surface.length; i++) {
+                this.Tobject.surface[i].drawObject(c);
+            }
+
+            for (var i = 0; i < this.Tobject.lines.length; i++) {
+                this.Tobject.lines[i].drawObject(w,c);
+            }
+        }
+
+        /**
+         * 老的错误的绘制图像方案
+         * (测试用)
+         * @param {any} w
+         * @param {any} c
+         */
+        drawObject2(w, c) {
             /**获取所有点 */
             var points = this.Tobject.points;
             /**获取画布 */
@@ -470,7 +895,8 @@ window.onload = function(){
              * @param {any} w
              * @param {any} c
              */
-            var drawLine = function (x, y,w,c) {
+            var drawLine = function (x, y, w, c) {
+                console.log(x.toString(), y.toString());
                 ctx.beginPath();
 
                 ctx.moveTo(x.x, x.y);
@@ -515,7 +941,11 @@ window.onload = function(){
         this.AXISPOS = this.axisPos.leftBottom;
         lt_code.addChild(this.cas, this.domFather);
         /**整个模块所有的对象*/
-        this.objects = [];
+        this.objects = {};
+        /**整个模块所有的线 */
+        this.lines = {};
+        /**整个模块所有的面 */
+        this.surface = {};
         /**模块是否已经初始化 */
         this.ISINIT = true;
     },
@@ -574,41 +1004,56 @@ window.onload = function(){
         w = w ? w : lt_code.pseudoThreeD.cas.width;
         h = h ? h : lt_code.pseudoThreeD.cas.height;
         lt_code.pseudoThreeD.ctx.clearRect(x, y, w, h);
-    }
+    },
+
+    /**
+     * 绘制点
+     * @param {number} r 点绘制半径
+     * @param {color} c 点颜色
+     * @param {number|lt_code.pseudoThreeD.vector3} x 
+     * @param {number} y
+     * @param {number} z
+     */
+    drawPoint: function (r, c, x, y, z) {
+        var p;
+        if (typeof (x) == "number") {
+            p = new lt_code.pseudoThreeD.vector3(x, y, z);
+        } else {
+            p = new lt_code.pseudoThreeD.vector3(x.x, x.y, x.z);
+        }
+        p = p.toVector2();
+        this.ctx.beginPath();
+        lt_code.pseudoThreeD.ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+        this.ctx.fillStyle = c;
+        this.ctx.fill();
+    },
+
+    /**
+     * 绘制线条
+     * @param {any} x
+     * @param {any} y
+     * @param {any} w 线条宽度
+     * @param {any} c 线条颜色
+     */
+    drawLine: function (w, c, x, y,x1,y1) {
+        lt_code.pseudoThreeD.ctx.beginPath();
+
+        if (typeof(x)!="number") {
+            lt_code.pseudoThreeD.ctx.moveTo(x.x, x.y);
+            lt_code.pseudoThreeD.ctx.lineTo(y.x, y.y);
+        } else {
+            lt_code.pseudoThreeD.ctx.moveTo(x,y);
+            lt_code.pseudoThreeD.ctx.lineTo(x1,y1);
+        }
+
+        lt_code.pseudoThreeD.ctx.lineWidth = w;
+        lt_code.pseudoThreeD.ctx.strokeStyle = c;
+
+        lt_code.pseudoThreeD.ctx.stroke();
+
+        lt_code.pseudoThreeD.ctx.closePath();
+    },
+
 };
 
 //以下是追加类
-
-///**
-// * 新建立方体
-// * @param {number} l 长
-// * @param {number} w 宽
-// * @param {number} h 高
-// * @param {number|lt_code.pseudoThreeD.vector3} x
-// * @param {number|lt_code.pseudoThreeD.vector3} y
-// * @param {number|lt_code.pseudoThreeD.vector3} z
-// * @param {number} ex 欧拉角
-// * @param {number} ey 欧拉角
-// * @param {number} ez 欧拉角
-// * @param {number} sx 缩放比
-// * @param {number} sy 缩放比
-// * @param {number} sz 缩放比
-// */
-//lt_code.pseudoThreeD.cubeTobject = function (l,w,h,x, y, z, ex, ey, ez, sx, sy, sz) {
-//    var ret = new lt_code.pseudoThreeD.Tobject(x, y, z, ex, ey, ez, sx, sy, sz);
-
-//    l = l == null && l <= 0.00001 ? 0.00001 : l;
-//    w = w == null ? l : w;
-//    h = h == null ? l : h;
-
-//    ret.points.push(new lt_code.pseudoThreeD.vector3(l / 2, w / 2, -h / 2));
-//    ret.points.push(new lt_code.pseudoThreeD.vector3(l / 2, -w / 2, -h / 2));
-//    ret.points.push(new lt_code.pseudoThreeD.vector3(-l / 2, -w / 2, -h / 2));
-//    ret.points.push(new lt_code.pseudoThreeD.vector3(-l / 2, w / 2, -h / 2));
-//    ret.points.push(new lt_code.pseudoThreeD.vector3(l / 2, w / 2, h / 2));
-//    ret.points.push(new lt_code.pseudoThreeD.vector3(l / 2, -w / 2, h / 2));
-//    ret.points.push(new lt_code.pseudoThreeD.vector3(-l / 2, -w / 2, h / 2));
-//    ret.points.push(new lt_code.pseudoThreeD.vector3(-l / 2, w / 2, h / 2));
-
-//    return ret;
-//}
