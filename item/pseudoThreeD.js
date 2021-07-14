@@ -974,10 +974,10 @@ window.onload = function(){
         input = input ? input : time.toString();
         input = lt_code.md5(input);
         var sha = lt_code.SHA256.decode(input);
-        var dex;
+        var dex = "";
         var uuid = 'uuxxxuuy-1xxx-7xxx-yxxx-xxx0xxxy'.replace(/[uxy]/g, function (e, i) {
             return e == "u" ? function () {
-                var ret = sha[i];
+                var ret = sha[2*i];
                 dex += ret;
                 return ret;
             }() : e == "x" ? function () {
