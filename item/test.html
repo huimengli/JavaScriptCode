@@ -42,28 +42,36 @@ window.onload = function(){
             //    lt_code.pseudoThreeD.cas.onmousemove = null;
             //}
 
-            //var line = new lt_code.pseudoThreeD.Tline("", 1, "black", 0, 0, 0, 100, 100, 100);
-            ////var line1 = new lt_code.pseudoThreeD.Tline("", 1, "black", -lt_code.variable.width, 0, 0, lt_code.variable.width, 0, 0);
-            ////var line2 = new lt_code.pseudoThreeD.Tline("", 1, "black", 0, -lt_code.variable.height, 0, 0, lt_code.variable.height, 0);
-            //var i = 0;
-            //lt_code.variable.addRun(setInterval(function () {
-            //    line.setEulerAngle(new lt_code.pseudoThreeD.vector3(i,0,0));
-            //    lt_code.pseudoThreeD.clear();
-            //    line.drawObject();
-            //    //line1.drawObject();
-            //    //line2.drawObject();
-            //    i++;
-            //}, 20), "线条旋转");
-
-            surface = new lt_code.pseudoThreeD.Tsurface("", "red", 0, 0, 0, 100, 100, 0, 100, 0, 0);
+            line = new lt_code.pseudoThreeD.Tline("", 1, "black", 0, 0, 0, 100, 100, 100);
+            //var line1 = new lt_code.pseudoThreeD.Tline("", 1, "black", -lt_code.variable.width, 0, 0, lt_code.variable.width, 0, 0);
+            //var line2 = new lt_code.pseudoThreeD.Tline("", 1, "black", 0, -lt_code.variable.height, 0, 0, lt_code.variable.height, 0);
             var i = 0;
-            //lt_code.variable.addRun(setInterval(function () {
-            //    surface.setEulerAngle(new lt_code.pseudoThreeD.vector3(2*i,i, 0));
-            //    lt_code.pseudoThreeD.clear();
-            //    surface.drawObject();
-            //    i++;
-            //}, 20), "面旋转");
-            surface.drawObject();
+            lt_code.variable.addRun(setInterval(function () {
+                if (Math.floor(i/360)%3==0) {
+                    line.setEulerAngle(new lt_code.pseudoThreeD.vector3(i%360, 0, 0));
+                } else if (Math.floor(i / 360) % 3 == 1) {
+                    line.setEulerAngle(new lt_code.pseudoThreeD.vector3(0, i%360, 0));
+                } else if (Math.floor(i/360)%3==2){
+                    line.setEulerAngle(new lt_code.pseudoThreeD.vector3(0, 0,i % 360));
+                }
+                console.log(line.eulerAngle);
+                console.log(Math.floor(i/360)%3);
+                lt_code.pseudoThreeD.clear();
+                line.drawObject();
+                //line1.drawObject();
+                //line2.drawObject();
+                i++;
+            }, 20), "线条旋转");
+
+            //surface = new lt_code.pseudoThreeD.Tsurface("", "red", 0, 0, 0, 100, 100, 0, 100, 0, 0);
+            //var i = 0;
+            ////lt_code.variable.addRun(setInterval(function () {
+            ////    surface.setEulerAngle(new lt_code.pseudoThreeD.vector3(2*i,i, 0));
+            ////    lt_code.pseudoThreeD.clear();
+            ////    surface.drawObject();
+            ////    i++;
+            ////}, 20), "面旋转");
+            //surface.drawObject();
 
 
             //以下测试有问题

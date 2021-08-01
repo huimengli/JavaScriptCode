@@ -392,12 +392,12 @@ window.onload = function(){
             //先转z轴
             ret.x = l1 * Math.sin(rotate.z / 360 * Math.PI * 2);
             ret.y = l1 * Math.cos(rotate.z / 360 * Math.PI * 2);
-            console.log(ret);
+            //console.log(ret);
             l2 = lt_code.pseudoThreeD.getAccuracy(Math.sqrt(ret.z * ret.z + ret.y * ret.y));
             //再转x轴
             ret.y = l2 * Math.sin(rotate.x / 360 * Math.PI * 2);
             ret.z = l2 * Math.cos(rotate.x / 360 * Math.PI * 2);
-            console.log(ret);
+            //console.log(ret);
             l3 = lt_code.pseudoThreeD.getAccuracy(Math.sqrt(ret.x * ret.x + ret.z * ret.z));
             //最后转y轴
             ret.z = l3 * Math.sin(rotate.y / 360 * Math.PI * 2);
@@ -423,8 +423,55 @@ window.onload = function(){
          * (尚未写完...)
          * @param {any} center
          */
-        getAngle(center) {
+        get3DAngle(center) {
 
+        }
+
+        /**
+         * 获取两个向量之间的夹角
+         * @param {lt_code.pseudoThreeD.vector3} v1
+         * @param {lt_code.pseudoThreeD.vector3} v2
+         */
+        static getAngle(v1, v2) {
+            `
+            若向量用坐标表示，a = (x1, y1, z1), b = (x2, y2, z2) ，则，a.b = (x1x2 + y1y2 + z1z2) 。
+
+            | a|=√(x1 ^ 2 + y1 ^ 2 + z1 ^ 2) ，| b|=√(x2 ^ 2 + y2 ^ 2 + z2 ^ 2) 。
+
+            将这些代人公式(Ⅰ), 得到：
+
+            cos = (x1x2 + y1y2 + z1z2) / [√(x1 ^ 2 + y1 ^ 2 + z1 ^ 2) *√(x2 ^ 2 + y2 ^ 2 + z2 ^ 2)]。
+
+            上述公式是以空间三维坐标给出的，令坐标中的z = 0,
+            则得平面向量的计算公式。两个向量夹角的取值范围是：[0, π]。
+
+            夹角为锐角时，cosθ > 0；夹角为钝角时, cosθ < 0。
+            `
+            var nul = lt_code.pseudoThreeD.vector3.None();
+            if (v1==nul||v2==nul) {
+                return NaN;
+            } else {
+                var c = v1.x, d = v1.y, e = v1.z;
+                var f = v2.x, g = v2.y, h = v2.z;
+                var s = (c * f) + (d * g) + (e * h);
+                var p = (c * c) + (d * d) + (e * e);
+                var t = Math.sqrt(p);
+                var m = (g * g) + (f * f) + (h * h);
+                var r = Math.sqrt(m);
+                var u = s / (t * r)
+                var inv = Math.acos(u) * 360 / (Math.PI * 2);
+                return lt_code.pseudoThreeD.getAccuracy(inv,2);
+            }
+        }
+
+        /**获取向量的绝对值 */
+        getAbs() {
+            return new lt_code.pseudoThreeD(Math.abs(this.x), Math.abs(this.y), Math.abs(this.z));
+        }
+
+        /**获取向量的长度 */
+        getLength() {
+            return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
         }
 
         /**
@@ -1042,10 +1089,12 @@ window.onload = function(){
     /**
      * 获取精度
      * @param {number} num
+     * @param {number} [ACC] 精度
      */
-    getAccuracy: function (num) {
+    getAccuracy: function (num, ACC) {
+        ACC = ACC!=null ? ACC : this.ACCURACY;
         var exp = "1";
-        for (var i = 0; i < this.ACCURACY; i++) {
+        for (var i = 0; i < ACC; i++) {
             exp += "0";
         }
         exp = lt_code.getNum(exp);
