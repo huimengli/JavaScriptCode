@@ -71,12 +71,12 @@ window.onload = function(){
     DEFAULT: {
         WIDTH: {
             POINT: 0.3,
-            LINE:0.3,
+            LINE: 0.3,
         },
         COLOR: {
             POINT: "red",
             LINE: "black",
-            SURFACE:"#999",
+            SURFACE: "#999",
         }
     },
 
@@ -122,9 +122,9 @@ window.onload = function(){
          */
         constructor(x, y, z, ex, ey, ez, sx, sy, sz) {
             var Tx, Ty, Tz, TeulerAngleX, TeulerAngleY, TeulerAngleZ, TscaleX, TscaleY, TscaleZ;
-            if (x==null) {
+            if (x == null) {
                 Tx = 0, Ty = 0, Tz = 0, TeulerAngleX = 0, TeulerAngleY = 0, TeulerAngleZ = 0, TscaleX = 1, TscaleY = 1, TscaleZ = 1;
-            } else if (typeof(x)=="number") {
+            } else if (typeof (x) == "number") {
                 Tx = x;
                 Ty = y;
                 Tz = z;
@@ -147,12 +147,12 @@ window.onload = function(){
             }
             this.Tobject = this;
             this.transform = {
-                Tobjct:this,
-                parent:null,
+                Tobjct: this,
+                parent: null,
                 position: new lt_code.pseudoThreeD.vector3(Tx, Ty, Tz),
                 eulerAngle: new lt_code.pseudoThreeD.vector3(TeulerAngleX, TeulerAngleY, TeulerAngleZ),
                 scale: new lt_code.pseudoThreeD.vector3(TscaleX, TscaleY, TscaleZ),
-                child:[],
+                child: [],
             };
             this.activity = true;
             /**定位点 */
@@ -180,7 +180,7 @@ window.onload = function(){
          */
         setPosition(x, y, z) {
             var Tx, Ty, Tz;
-            if (typeof(x)=="number") {
+            if (typeof (x) == "number") {
                 Tx = x;
                 Ty = y;
                 Tz = z;
@@ -211,9 +211,9 @@ window.onload = function(){
          * @param {number} ey
          * @param {number} ez
          */
-        setEulerAngle(ex,ey, ez) {
+        setEulerAngle(ex, ey, ez) {
             var TeulerAngleX, TeulerAngleY, TeulerAngleZ;
-            if (typeof(ex)=="number") {
+            if (typeof (ex) == "number") {
                 TeulerAngleX = ex;
                 TeulerAngleY = ey;
                 TeulerAngleZ = ez;
@@ -239,7 +239,7 @@ window.onload = function(){
          */
         setScale(sx, sy, sz) {
             var TscaleX, TscaleY, TscaleZ;
-            if (typeof(sx)=="number") {
+            if (typeof (sx) == "number") {
                 TscaleX = sx;
                 TscaleY = sy;
                 TscaleZ = sz;
@@ -292,6 +292,42 @@ window.onload = function(){
             return new lt_code.pseudoThreeD.vector3(max, max, max);
         }
 
+        /**z轴轴向 */
+        static forward() {
+            return new lt_code.pseudoThreeD.vector3(0, 0, 1);
+        }
+
+        /**z轴反轴向 */
+        static back() {
+            return new lt_code.pseudoThreeD.vector3(0, 0, -1);
+        }
+
+        /**x轴轴向 */
+        static right() {
+            return new lt_code.pseudoThreeD.vector3(1, 0, 0);
+        }
+
+        /**x轴反轴向 */
+        static left() {
+            return new lt_code.pseudoThreeD.vector3(-1, 0, 0);
+        }
+
+        /**y轴轴向 */
+        static down() {
+            return new lt_code.pseudoThreeD.vector3(0, 1, 0);
+        }
+
+        /**y轴反轴向 */
+        static up() {
+            return new lt_code.pseudoThreeD.vector3(0, -1, 0);
+        }
+
+        /**全单位量 */
+        static One() {
+            return new lt_code.pseudoThreeD.vector3(1, 1, 1);
+        }
+
+        
         //以下是坐标计算函数
 
         /**
@@ -351,16 +387,44 @@ window.onload = function(){
                 rotate.y = x.y;
                 rotate.z = x.z;
             }
-            var l1 = Math.sqrt(this.x * this.x + this.y * this.y);
-            var l2 = Math.sqrt(this.z * this.z + this.y * this.y);
-            var l3 = Math.sqrt(this.x * this.x + this.z * this.z);
+            var l1, l2, l3;
+            l1 = lt_code.pseudoThreeD.getAccuracy(Math.sqrt(ret.x * ret.x + ret.y * ret.y));
+            //先转z轴
             ret.x = l1 * Math.sin(rotate.z / 360 * Math.PI * 2);
             ret.y = l1 * Math.cos(rotate.z / 360 * Math.PI * 2);
+            console.log(ret);
+            l2 = lt_code.pseudoThreeD.getAccuracy(Math.sqrt(ret.z * ret.z + ret.y * ret.y));
+            //再转x轴
             ret.y = l2 * Math.sin(rotate.x / 360 * Math.PI * 2);
             ret.z = l2 * Math.cos(rotate.x / 360 * Math.PI * 2);
+            console.log(ret);
+            l3 = lt_code.pseudoThreeD.getAccuracy(Math.sqrt(ret.x * ret.x + ret.z * ret.z));
+            //最后转y轴
             ret.z = l3 * Math.sin(rotate.y / 360 * Math.PI * 2);
             ret.x = l3 * Math.cos(rotate.y / 360 * Math.PI * 2);
+            console.log(ret);
             return ret;
+        }
+
+        /**
+         * 获取坐标差值
+         * @param {lt_code.variable.vector3} another 另一个坐标
+         */
+        getDifference(another) {
+            var ret = lt_code.variable.vector3.None();
+            ret.x = this.x - another.x;
+            ret.y = this.y - another.y;
+            ret.z = this.z - another.z;
+            return ret;
+        }
+
+        /**
+         * 获取坐标角度
+         * (尚未写完...)
+         * @param {any} center
+         */
+        getAngle(center) {
+
         }
 
         /**
@@ -465,6 +529,31 @@ window.onload = function(){
             return new lt_code.pseudoThreeD.vector2(max, max);
         }
 
+        /**x轴轴向 */
+        static right() {
+            return new lt_code.pseudoThreeD.vector2(1, 0);
+        }
+
+        /**x轴反轴向 */
+        static left() {
+            return new lt_code.pseudoThreeD.vector2(-1, 0);
+        }
+
+        /**y轴轴向 */
+        static down() {
+            return new lt_code.pseudoThreeD.vector2(0, 1);
+        }
+
+        /**y轴反轴向 */
+        static up() {
+            return new lt_code.pseudoThreeD.vector2(0, -1);
+        }
+
+        /**全单位量 */
+        static One() {
+            return new lt_code.pseudoThreeD.vector2(1, 1);
+        }
+
         //以下是坐标计算函数
 
         /**
@@ -508,7 +597,7 @@ window.onload = function(){
         rotate(c, z) {
             var l = Math.sqrt(this.x * this.x + this.y * this.y);
             var ret = new lt_code.pseudoThreeD.vector2(this.x, this.y);
-            ret.x = Math.sin(z / 360 * Math.PI * 2)*l;
+            ret.x = Math.sin(z / 360 * Math.PI * 2) * l;
             ret.y = Math.cos(z / 360 * Math.PI * 2) * l;
             return ret;
         }
@@ -557,13 +646,13 @@ window.onload = function(){
             this.c = c;
             this.points = [];
             this.eulerAngle = lt_code.pseudoThreeD.vector3.None();
-            this.scale = lt_code.pseudoThreeD.vector3.None();
+            this.scale = new lt_code.pseudoThreeD.vector3(1, 1, 1);
             var p1, p2;
-            if (typeof(x0)=="number") {
+            if (typeof (x0) == "number") {
                 p1 = new lt_code.pseudoThreeD.vector3(x0, y0, z0);
                 p2 = new lt_code.pseudoThreeD.vector3(x1, y1, z1);
             } else {
-                p1 = new lt_code.pseudoThreeD.vector3(x0.x,x0.y,x0.z);
+                p1 = new lt_code.pseudoThreeD.vector3(x0.x, x0.y, x0.z);
                 p2 = new lt_code.pseudoThreeD.vector3(y0.x, y0.y, y0.z);
             }
             this.points.push(p1, p2);
@@ -642,18 +731,18 @@ window.onload = function(){
          * @param w 线条宽度
          * @param c 线条颜色
          */
-        drawObject(w,c) {
+        drawObject(w, c) {
             /**获取画布 */
             var ctx = lt_code.pseudoThreeD.ctx;
 
             //开始绘制
             ctx.beginPath();
-            var p1 = this.points[0].rotate(null,this.eulerAngle).toVector2();
-            var p2 = this.points[1].rotate(null,this.eulerAngle).toVector2();
-            ctx.moveTo(p1.x,p1.y);
-            ctx.lineTo(p2.x,p2.y);
-            ctx.strokeStyle =c?c: this.c;
-            ctx.lineWidth =w?w: this.w;
+            var p1 = this.points[0].rotate(null, this.eulerAngle).toVector2();
+            var p2 = this.points[1].rotate(null, this.eulerAngle).toVector2();
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.strokeStyle = c ? c : this.c;
+            ctx.lineWidth = w ? w : this.w;
             ctx.stroke();
             ctx.closePath();
         }
@@ -661,7 +750,7 @@ window.onload = function(){
         /**重载转为字符串 */
         toString() {
             var ret = {
-                "n": this.n, 
+                "n": this.n,
                 "c": this.c,
                 "w": this.w,
                 "points": [this.points[0].toString(), this.points[1].toString()],
@@ -685,9 +774,9 @@ window.onload = function(){
             this.c = c;
             this.points = [];
             this.eulerAngle = lt_code.pseudoThreeD.vector3.None();
-            this.scale = lt_code.pseudoThreeD.vector3.None();
-            if (arg.length%3==0&&typeof(arg[0])=="number") {
-                for (var i = 0; i < arg.length ; i++) {
+            this.scale = new lt_code.pseudoThreeD.vector3(1, 1, 1);
+            if (arg.length % 3 == 0 && typeof (arg[0]) == "number") {
+                for (var i = 0; i < arg.length; i++) {
                     var p = new lt_code.pseudoThreeD.vector3(arg[i], arg[++i], arg[++i]);
                     console.log(p);
                     this.points.push(p);
@@ -710,7 +799,7 @@ window.onload = function(){
         setColor(c) {
             this.c = c;
         }
-        
+
         /**
          * 设置位置
          * @param {number|lt_code.pseudoThreeD.vector3} x
@@ -762,14 +851,14 @@ window.onload = function(){
 
             //开始绘制
             ctx.beginPath();
-            var start = this.points[0].rotate(null,this.eulerAngle).toVector2();
+            var start = this.points[0].rotate(null, this.eulerAngle).toVector2();
             ctx.moveTo(start.x, start.y);
             for (var i = 1; i < this.points.length; i++) {
-                var p = this.points[i].rotate(null,this.eulerAngle).toVector2();
+                var p = this.points[i].rotate(null, this.eulerAngle).toVector2();
                 ctx.lineTo(p.x, p.y);
             }
             ctx.closePath();
-            ctx.fillStyle =c?c: this.c;
+            ctx.fillStyle = c ? c : this.c;
             ctx.fill();
         }
 
@@ -790,7 +879,7 @@ window.onload = function(){
     //以下为衍生类
 
     /**立方体类 */
-    cubeTobject : class {
+    cubeTobject: class {
         /**
          * 新建立方体
          * @param {number} l 长
@@ -828,18 +917,18 @@ window.onload = function(){
             ret.points.push(new lt_code.pseudoThreeD.vector3(-l / 2, w / 2, h / 2));
 
             //设置线
-            ret.lines.push(new lt_code.pseudoThreeD.Tline(ret.UUID,lt_code.pseudoThreeD.DEFAULT.WIDTH.LINE,lt_code.pseudoThreeD.DEFAULT.COLOR.LINE,ret.points[0], ret.points[1]));
-            ret.lines.push(new lt_code.pseudoThreeD.Tline(ret.UUID,lt_code.pseudoThreeD.DEFAULT.WIDTH.LINE,lt_code.pseudoThreeD.DEFAULT.COLOR.LINE,ret.points[2], ret.points[1]));
-            ret.lines.push(new lt_code.pseudoThreeD.Tline(ret.UUID,lt_code.pseudoThreeD.DEFAULT.WIDTH.LINE,lt_code.pseudoThreeD.DEFAULT.COLOR.LINE,ret.points[2], ret.points[3]));
-            ret.lines.push(new lt_code.pseudoThreeD.Tline(ret.UUID,lt_code.pseudoThreeD.DEFAULT.WIDTH.LINE,lt_code.pseudoThreeD.DEFAULT.COLOR.LINE,ret.points[3], ret.points[0]));
-            ret.lines.push(new lt_code.pseudoThreeD.Tline(ret.UUID,lt_code.pseudoThreeD.DEFAULT.WIDTH.LINE,lt_code.pseudoThreeD.DEFAULT.COLOR.LINE,ret.points[0], ret.points[4]));
-            ret.lines.push(new lt_code.pseudoThreeD.Tline(ret.UUID,lt_code.pseudoThreeD.DEFAULT.WIDTH.LINE,lt_code.pseudoThreeD.DEFAULT.COLOR.LINE,ret.points[5], ret.points[1]));
-            ret.lines.push(new lt_code.pseudoThreeD.Tline(ret.UUID,lt_code.pseudoThreeD.DEFAULT.WIDTH.LINE,lt_code.pseudoThreeD.DEFAULT.COLOR.LINE,ret.points[2], ret.points[6]));
-            ret.lines.push(new lt_code.pseudoThreeD.Tline(ret.UUID,lt_code.pseudoThreeD.DEFAULT.WIDTH.LINE,lt_code.pseudoThreeD.DEFAULT.COLOR.LINE,ret.points[3], ret.points[7]));
-            ret.lines.push(new lt_code.pseudoThreeD.Tline(ret.UUID,lt_code.pseudoThreeD.DEFAULT.WIDTH.LINE,lt_code.pseudoThreeD.DEFAULT.COLOR.LINE,ret.points[4], ret.points[5]));
-            ret.lines.push(new lt_code.pseudoThreeD.Tline(ret.UUID,lt_code.pseudoThreeD.DEFAULT.WIDTH.LINE,lt_code.pseudoThreeD.DEFAULT.COLOR.LINE,ret.points[5], ret.points[6]));
-            ret.lines.push(new lt_code.pseudoThreeD.Tline(ret.UUID,lt_code.pseudoThreeD.DEFAULT.WIDTH.LINE,lt_code.pseudoThreeD.DEFAULT.COLOR.LINE,ret.points[6], ret.points[7]));
-            ret.lines.push(new lt_code.pseudoThreeD.Tline(ret.UUID,lt_code.pseudoThreeD.DEFAULT.WIDTH.LINE,lt_code.pseudoThreeD.DEFAULT.COLOR.LINE,ret.points[7], ret.points[4]));
+            ret.lines.push(new lt_code.pseudoThreeD.Tline(ret.UUID, lt_code.pseudoThreeD.DEFAULT.WIDTH.LINE, lt_code.pseudoThreeD.DEFAULT.COLOR.LINE, ret.points[0], ret.points[1]));
+            ret.lines.push(new lt_code.pseudoThreeD.Tline(ret.UUID, lt_code.pseudoThreeD.DEFAULT.WIDTH.LINE, lt_code.pseudoThreeD.DEFAULT.COLOR.LINE, ret.points[2], ret.points[1]));
+            ret.lines.push(new lt_code.pseudoThreeD.Tline(ret.UUID, lt_code.pseudoThreeD.DEFAULT.WIDTH.LINE, lt_code.pseudoThreeD.DEFAULT.COLOR.LINE, ret.points[2], ret.points[3]));
+            ret.lines.push(new lt_code.pseudoThreeD.Tline(ret.UUID, lt_code.pseudoThreeD.DEFAULT.WIDTH.LINE, lt_code.pseudoThreeD.DEFAULT.COLOR.LINE, ret.points[3], ret.points[0]));
+            ret.lines.push(new lt_code.pseudoThreeD.Tline(ret.UUID, lt_code.pseudoThreeD.DEFAULT.WIDTH.LINE, lt_code.pseudoThreeD.DEFAULT.COLOR.LINE, ret.points[0], ret.points[4]));
+            ret.lines.push(new lt_code.pseudoThreeD.Tline(ret.UUID, lt_code.pseudoThreeD.DEFAULT.WIDTH.LINE, lt_code.pseudoThreeD.DEFAULT.COLOR.LINE, ret.points[5], ret.points[1]));
+            ret.lines.push(new lt_code.pseudoThreeD.Tline(ret.UUID, lt_code.pseudoThreeD.DEFAULT.WIDTH.LINE, lt_code.pseudoThreeD.DEFAULT.COLOR.LINE, ret.points[2], ret.points[6]));
+            ret.lines.push(new lt_code.pseudoThreeD.Tline(ret.UUID, lt_code.pseudoThreeD.DEFAULT.WIDTH.LINE, lt_code.pseudoThreeD.DEFAULT.COLOR.LINE, ret.points[3], ret.points[7]));
+            ret.lines.push(new lt_code.pseudoThreeD.Tline(ret.UUID, lt_code.pseudoThreeD.DEFAULT.WIDTH.LINE, lt_code.pseudoThreeD.DEFAULT.COLOR.LINE, ret.points[4], ret.points[5]));
+            ret.lines.push(new lt_code.pseudoThreeD.Tline(ret.UUID, lt_code.pseudoThreeD.DEFAULT.WIDTH.LINE, lt_code.pseudoThreeD.DEFAULT.COLOR.LINE, ret.points[5], ret.points[6]));
+            ret.lines.push(new lt_code.pseudoThreeD.Tline(ret.UUID, lt_code.pseudoThreeD.DEFAULT.WIDTH.LINE, lt_code.pseudoThreeD.DEFAULT.COLOR.LINE, ret.points[6], ret.points[7]));
+            ret.lines.push(new lt_code.pseudoThreeD.Tline(ret.UUID, lt_code.pseudoThreeD.DEFAULT.WIDTH.LINE, lt_code.pseudoThreeD.DEFAULT.COLOR.LINE, ret.points[7], ret.points[4]));
 
             //设置面
             ret.surface.push(new lt_code.pseudoThreeD.Tsurface(ret.UUID, lt_code.pseudoThreeD.DEFAULT.COLOR.SURFACE, ret.points[0], ret.points[1], ret.points[2], ret.points[3]));
@@ -863,7 +952,7 @@ window.onload = function(){
          * @param {number} w 线条宽度
          * @param {color} c 线条颜色
          */
-        drawObject(w,c) {
+        drawObject(w, c) {
             /**获取画布 */
             var ctx = lt_code.pseudoThreeD.ctx;
 
@@ -872,7 +961,7 @@ window.onload = function(){
             }
 
             for (var i = 0; i < this.Tobject.lines.length; i++) {
-                this.Tobject.lines[i].drawObject(w,c);
+                this.Tobject.lines[i].drawObject(w, c);
             }
         }
 
@@ -977,7 +1066,7 @@ window.onload = function(){
         var dex = "";
         var uuid = 'uuxxxuuy-1xxx-7xxx-yxxx-xxx0xxxy'.replace(/[uxy]/g, function (e, i) {
             return e == "u" ? function () {
-                var ret = sha[2*i];
+                var ret = sha[2 * i];
                 dex += ret;
                 return ret;
             }() : e == "x" ? function () {
@@ -999,7 +1088,7 @@ window.onload = function(){
      * @param {number} h
      */
     clear: function (x, y, w, h) {
-        x = x ? y:0;
+        x = x ? y : 0;
         y = y ? y : 0;
         w = w ? w : lt_code.pseudoThreeD.cas.width;
         h = h ? h : lt_code.pseudoThreeD.cas.height;
@@ -1035,15 +1124,15 @@ window.onload = function(){
      * @param {any} w 线条宽度
      * @param {any} c 线条颜色
      */
-    drawLine: function (w, c, x, y,x1,y1) {
+    drawLine: function (w, c, x, y, x1, y1) {
         lt_code.pseudoThreeD.ctx.beginPath();
 
-        if (typeof(x)!="number") {
+        if (typeof (x) != "number") {
             lt_code.pseudoThreeD.ctx.moveTo(x.x, x.y);
             lt_code.pseudoThreeD.ctx.lineTo(y.x, y.y);
         } else {
-            lt_code.pseudoThreeD.ctx.moveTo(x,y);
-            lt_code.pseudoThreeD.ctx.lineTo(x1,y1);
+            lt_code.pseudoThreeD.ctx.moveTo(x, y);
+            lt_code.pseudoThreeD.ctx.lineTo(x1, y1);
         }
 
         lt_code.pseudoThreeD.ctx.lineWidth = w;

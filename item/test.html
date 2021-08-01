@@ -1,0 +1,82 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <script src="../lt_code.js"></script>
+    <script src="pseudoThreeD.js"></script>
+</head>
+<body>
+</body>
+</html>
+<script>
+//alert(lt_code.variable.currentSrc());
+window.onload = function(){
+	lt_code.init("PTD");
+    lt_code.variable.addRun(setInterval(function () {
+        if (lt_code.pseudoThreeD) {
+            lt_code.variable.delRun("PTD初始化");
+            lt_code.pseudoThreeD.init();
+        }
+    }, 20), "PTD初始化");
+};
+</script>
+<script>
+    var surface,line,cube;
+    lt_code.variable.addRun(setInterval(function () {
+        if (lt_code.pseudoThreeD && lt_code.pseudoThreeD.ISINIT) {
+            lt_code.variable.delRun("动画前置启动");
+            //var cube = new lt_code.pseudoThreeD.cubeTobject(100, 100, 100);
+            //cube.drawObject();
+            //lt_code.pseudoThreeD.cas.onmousedown = function (e) {
+            //    var x = e.clientX;
+            //    var y = e.clientY;
+            //    lt_code.pseudoThreeD.cas.onmousemove = function (e) {
+            //        var t = new lt_code.pseudoThreeD.vector3(e.clientX - x, e.clientY - y);
+            //        x = e.clientX;
+            //        y = e.clientY;
+            //        cube.Tobject.setPosition(t);
+            //        lt_code.pseudoThreeD.clear();
+            //        cube.drawObject();
+            //    }
+            //}
+            //lt_code.pseudoThreeD.cas.onmouseup = function () {
+            //    lt_code.pseudoThreeD.cas.onmousemove = null;
+            //}
+
+            //var line = new lt_code.pseudoThreeD.Tline("", 1, "black", 0, 0, 0, 100, 100, 100);
+            ////var line1 = new lt_code.pseudoThreeD.Tline("", 1, "black", -lt_code.variable.width, 0, 0, lt_code.variable.width, 0, 0);
+            ////var line2 = new lt_code.pseudoThreeD.Tline("", 1, "black", 0, -lt_code.variable.height, 0, 0, lt_code.variable.height, 0);
+            //var i = 0;
+            //lt_code.variable.addRun(setInterval(function () {
+            //    line.setEulerAngle(new lt_code.pseudoThreeD.vector3(i,0,0));
+            //    lt_code.pseudoThreeD.clear();
+            //    line.drawObject();
+            //    //line1.drawObject();
+            //    //line2.drawObject();
+            //    i++;
+            //}, 20), "线条旋转");
+
+            surface = new lt_code.pseudoThreeD.Tsurface("", "red", 0, 0, 0, 100, 100, 0, 100, 0, 0);
+            var i = 0;
+            //lt_code.variable.addRun(setInterval(function () {
+            //    surface.setEulerAngle(new lt_code.pseudoThreeD.vector3(2*i,i, 0));
+            //    lt_code.pseudoThreeD.clear();
+            //    surface.drawObject();
+            //    i++;
+            //}, 20), "面旋转");
+            surface.drawObject();
+
+
+            //以下测试有问题
+            //var cube = new lt_code.pseudoThreeD.cubeTobject(100, 100, 100);
+            //var i = 0;
+            //lt_code.variable.addRun(setInterval(function () {
+            //    cube.Tobject.setEulerAngle(new lt_code.pseudoThreeD.vector3(2*i,i, 0));
+            //    lt_code.pseudoThreeD.clear();
+            //    cube.drawObject();
+            //    i++;
+            //}, 100), "方块旋转");
+        }
+    }, 20), "动画前置启动");
+</script>
+<script>
+</script>
