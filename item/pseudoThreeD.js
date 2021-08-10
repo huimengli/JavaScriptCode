@@ -421,10 +421,13 @@ window.onload = function(){
         /**
          * 获取坐标角度
          * (尚未写完...)
-         * @param {any} center
          */
-        get3DAngle(center) {
-
+        get3DAngle() {
+            var v3 = lt_code.pseudoThreeD.vector3;
+            var x = v3.getAngle(v3.right(), this),
+                y = v3.getAngle(v3.down(), this),
+                z = v3.getAngle(v3.forward(), this);
+            return new v3(x, y, z);
         }
 
         /**

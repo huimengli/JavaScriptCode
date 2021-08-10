@@ -9846,6 +9846,162 @@ lt_code.base64 = {
             return ret;
         },
     },
+
+    /** 
+     * 转码为图片
+     * 如果没有意外千万别用这个算法...
+     */
+    imageRGBA: {
+
+        /** 加密 */
+        encode : function (input) {
+            var ret = [];
+            var i = 0;
+            var newImage = new Uint8ClampedArray();
+            input = lt_code.base64._utf8_encode(input);
+            for (var i = 0; i < input.length; i++) {
+                ret.push(input.charCodeAt(i));
+            }
+            var count = Math.ceil(ret.length / 4);
+            for (var i = ret.length; i < count*4; i++) {
+                ret[i] = 255;
+            }
+            count = Math.ceil(Math.sqrt(ret.length / 4));
+            console.log(count);
+            for (var i = ret.length; i < count*count*4; i++) {
+                ret[i] = 255;
+            }
+            newImage = new Uint8ClampedArray(ret);
+            newImage = new ImageData(newImage, count, count);
+            console.log(newImage);
+            var newCas = lt_code.newDom("canvas",{
+                width: count,
+                height: count
+            });
+            lt_code.addChild(newCas);
+            var newCtx = lt_code.getCtx(newCas);
+            newCtx.putImageData(newImage, 0, 0);
+            newImage = newCas.toDataURL();
+            lt_code.removeChild(newCas);
+            return newImage;
+        },
+
+        /**
+         * 解密
+         * @param {any} input
+         */
+        decode: function (input) {
+            var newImage = lt_code.newDom("img", {
+                src: input,
+            });
+            var count = newImage.width != newImage.height ? console.error("输入的图片数据错误!") : newImage.width;
+            var newCas = lt_code.newDom("canvas", {
+                width: count,
+                height: count,
+            });
+            lt_code.addChild(newCas);
+            var newCtx = lt_code.getCtx(newCas);
+            newCtx.drawImage(newImage, 0, 0);
+            var imageData = newCtx.getImageData(0, 0, count, count);
+            console.log(imageData);
+            imageData = imageData.data;
+            var ret = "";
+            for (var i = 0; i < imageData.length; i++) {
+                if (imageData[i] == 255) {
+                    break;
+                }
+                ret += String.fromCharCode(imageData[i]);
+            }
+            ret = lt_code.base64._utf8_decode(ret);
+            return ret;
+        }
+    },
+
+    /**
+     * 转码为图片
+     * (这个算法如果图片不压缩是可以使用的)
+     */
+    imageRGB: {
+
+        /**
+         * 加密
+         * @param {any} input
+         */
+        encode: function (input) {
+            var ret = [];
+            var j = 0;
+            var newImage = [];
+            input = lt_code.base64._utf8_encode(input);
+            for (var i = 0; i < input.length; i++) {
+                ret.push(input.charCodeAt(i));
+            }
+            var count = Math.ceil(ret.length / 3);
+            for (var i = 0; i < count * 4; i++) {
+                if (i % 4 == 3) {
+                    newImage.push(255);
+                } else {
+                    newImage.push(ret[j++] ? ret[j - 1] : 255);
+                }
+            }
+            ret = newImage;
+            count = Math.ceil(Math.sqrt(ret.length / 4));
+            for (var i = ret.length; i < count * count * 4; i++) {
+                ret[i] = 255;
+            }
+            newImage = new Uint8ClampedArray(ret);
+            newImage = new ImageData(newImage, count, count);
+            var newCas = lt_code.newDom("canvas", {
+                width: count,
+                height: count
+            });
+            lt_code.addChild(newCas);
+            var newCtx = lt_code.getCtx(newCas);
+            newCtx.putImageData(newImage, 0, 0);
+            newImage = newCas.toDataURL();
+            lt_code.removeChild(newCas);
+            return newImage;
+        },
+
+        /**
+         * 解码
+         * @param {any} input
+         */
+        decode: function (input) {
+            var newImage = new Image();
+            newImage.src = input;
+            var count = newImage.width != newImage.height ? console.error("输入的图片数据错误!") : newImage.width;
+            newImage.width = count;
+            newImage.height = count;
+            var newCas = lt_code.newDom("canvas", {
+                width: count,
+                height: count,
+            });
+            lt_code.addChild(newCas);
+            var newCtx = lt_code.getCtx(newCas);
+            newCtx.drawImage(newImage, 0, 0);
+            lt_code.addChild(newCas);
+            var imageData = newCtx.getImageData(0, 0, count, count);
+            lt_code.removeChild(newCas);
+            imageData = imageData.data;
+            var ret = [];
+            for (var i = 0; i < imageData.length; i++) {
+                if (i % 4 == 3) {
+                    continue;
+                }
+                ret.push(imageData[i]);
+            }
+            imageData = ret;
+            ret = [];
+            for (var i = 0; i < imageData.length; i++) {
+                if (imageData[i] == 255) {
+                    break;
+                }
+                ret += String.fromCharCode(imageData[i]);
+            }
+            ret = lt_code.base64._utf8_decode(ret);
+            return ret;
+        }
+    },
 };
 
 /**sha256加密模块 */
