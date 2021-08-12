@@ -8367,7 +8367,6 @@ lt_code.cookie.saveCookie = function (cookieName, cookieValue, cookieDates) {
     var d = new Date(new Date().getTime() + (cookieDates ? cookieDates * 1000 * 60 * 60 * 24 : 7 * 1000 * 60 * 60 * 24));
     //由于base64编码中含有=符号导致cookie存储出错,因此这里使用八进制存储
     cookieValue = lt_code.RSA.project.encode(cookieValue);
-    console.log(cookieValue);
     document.cookie = cookieName + "=" + cookieValue + ";expires=" +
         d.toUTCString();
 }
