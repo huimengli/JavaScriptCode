@@ -860,7 +860,7 @@ lt_code.variable.newUID = function (input) {
         });
         return ret;
     }();
-    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-yxxxxx0xxxxxy'.replace(/[xy]/g,
+    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-yxxx0xxxy'.replace(/[xy]/g,
         function (c) {
             var r = lt_code.variable.random(1) < 0.5 ?
                 (d + lt_code.variable.random(16)) % 16 | 0 :
