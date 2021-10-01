@@ -860,7 +860,7 @@ lt_code.variable.newUID = function (input) {
         });
         return ret;
     }();
-    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-yxxxxx0xxxxxy'.replace(/[xy]/g,
+    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-yxxx0xxxy'.replace(/[xy]/g,
         function (c) {
             var r = lt_code.variable.random(1) < 0.5 ?
                 (d + lt_code.variable.random(16)) % 16 | 0 :
@@ -8396,7 +8396,6 @@ lt_code.cookie.saveCookie = function (cookieName, cookieValue, cookieDates) {
     var d = new Date(new Date().getTime() + (cookieDates ? cookieDates * 1000 * 60 * 60 * 24 : 7 * 1000 * 60 * 60 * 24));
     //由于base64编码中含有=符号导致cookie存储出错,因此这里使用八进制存储
     cookieValue = lt_code.RSA.project.encode(cookieValue);
-    console.log(cookieValue);
     document.cookie = cookieName + "=" + cookieValue + ";expires=" +
         d.toUTCString();
 }
