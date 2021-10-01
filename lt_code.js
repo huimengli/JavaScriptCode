@@ -6194,6 +6194,7 @@ lt_code.Version = function () {
          * @param {string} object 模块名称
          */
         lt_code.init = function (object) {
+            var head = lt_code.getAll("head");
             switch (object) {
                 //伪3D模块
                 case "PTD":
@@ -6202,7 +6203,7 @@ lt_code.Version = function () {
                     var pseudoThreeD = lt_code.newDom("script", {
                         src: lt_code.variable.currentDir + "item/pseudoThreeD.js"
                     });
-                    lt_code.addChild(pseudoThreeD, lt_code.getAll("head"));
+                    lt_code.addChild(pseudoThreeD, head);
                     break;
                 //3D模块
                 case "TD":
@@ -6211,10 +6212,38 @@ lt_code.Version = function () {
                     var threeD = lt_code.newDom("script", {
                         src: lt_code.variable.currentDir + "item/threeD.js",
                     });
-                    lt_code.addChild(threeD, lt_code.getAll("head"));
+                    lt_code.addChild(threeD, head);
+                    break;
+                //图片操作模块
+                case "IMGO":
+                case "imageOperation":
+                    var imageOperation = lt_code.newDom("script", {
+                        src: lt_code.variable.currentDir + "item/imageOperation.js",
+                    });
+                    lt_code.addChild(imageOperation, head);
                     break;
                 default:
                     console.trace("没有这个模块!");
+                    console.log("已有模块:");
+                    /**已有模块信息 */
+                    var log = {
+                        "伪3D模块":
+                        {
+                            "简写": "PTD",
+                            "全称": "pseudoThreeD"
+                        },
+                        "3D模块":
+                        {
+                            "简称": "TD",
+                            "全称": "threeD",
+                        },
+                        "图片操作模块":
+                        {
+                            "简称": "IMGO",
+                            "全称": "imageOperation",
+                        },
+                    };
+                    console.log(log);
             }
         }
     });

@@ -1,0 +1,80 @@
+<!-- 此页面用于测试lt_code中base64模块中的imageRGB算法模块 -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <script src="../../JavaScriptCode/lt_code.js"></script>
+    <style>
+        input[type=button] {
+            width: 150px;
+            height: 30px;
+            border-radius: 15px;
+        }
+    </style>
+</head>
+<body>
+</body>
+</html>
+<script>
+    var EnUpButtom = lt_code.newDom("input", {
+        type: "file",
+        title: "加密",
+    });
+    var EnDownButtom = lt_code.newDom("input", {
+        type: "button",
+        title: "加密下载",
+        value: "加密下载"
+    });
+    var DeUpButtom = lt_code.newDom("input", {
+        type: "file",
+        title: "解密",
+    });
+    var DeDownButtom = lt_code.newDom("input", {
+        type: "button",
+        title: "解密下载",
+        value: "解密下载",
+    });
+    lt_code.addChild(EnUpButtom);
+    lt_code.addChild(EnDownButtom);
+    lt_code.addChild(DeUpButtom);
+    lt_code.addChild(DeDownButtom);
+    var data = null;
+    EnUpButtom.onchange = function () {
+        lt_code.test.fileToBase(EnUpButtom);
+        lt_code.variable.addRun(setInterval(function () {
+            data = lt_code.test.fileToBase.getReturn();
+            if (data) {
+                lt_code.variable.delRun("上传内容");
+            }
+        }, 100), "上传内容");
+    };
+    EnDownButtom.onmousedown = function () {
+        if (!data) {
+            console.error("没有数据!");
+            alert("没有数据!");
+        } else {
+            lt_code.test.downFile(lt_code.base64.imageRGB.encode(data), EnUpButtom.files[0].name + ".ENCODE.png");
+        }
+    };
+    DeUpButtom.onchange = function () {
+        lt_code.test.fileToBase(DeUpButtom);
+        lt_code.variable.addRun(setInterval(function () {
+            data = lt_code.test.fileToBase.getReturn();
+            if (data) {
+                lt_code.variable.delRun("上传内容");
+            }
+        }, 100), "上传内容");
+    };
+    DeDownButtom.onmousedown = function () {
+        if (!data) {
+            console.error("没有数据!");
+        } else {
+            var ret = lt_code.base64.imageRGB.decode(data);
+            var name = DeUpButtom.files[0].name;
+            console.log(ret);
+            lt_code.test.downFile(ret, name.slice(0, name.length - 11));
+        }
+    }
+    var newAlert = function (title, value) {
+
+    }
+</script>

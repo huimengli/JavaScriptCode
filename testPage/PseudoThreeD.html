@@ -1,3 +1,4 @@
+<!-- 此页面用于测试lt_code分布模块中pseudoThreeD(伪3D)模块 -->
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title></title>
@@ -8,19 +9,19 @@
 </body>
 </html>
 <script>
-//alert(lt_code.variable.currentSrc());
-window.onload = function(){
-	lt_code.init("PTD");
-    lt_code.variable.addRun(setInterval(function () {
-        if (lt_code.pseudoThreeD) {
-            lt_code.variable.delRun("PTD初始化");
-            lt_code.pseudoThreeD.init();
-        }
-    }, 20), "PTD初始化");
-};
+    //alert(lt_code.variable.currentSrc());
+    window.onload = function () {
+        lt_code.init("PTD");
+        lt_code.variable.addRun(setInterval(function () {
+            if (lt_code.pseudoThreeD) {
+                lt_code.variable.delRun("PTD初始化");
+                lt_code.pseudoThreeD.init();
+            }
+        }, 20), "PTD初始化");
+    };
 </script>
 <script>
-    var surface,line,cube;
+    var surface, line, cube;
     lt_code.variable.addRun(setInterval(function () {
         if (lt_code.pseudoThreeD && lt_code.pseudoThreeD.ISINIT) {
             lt_code.variable.delRun("动画前置启动");
