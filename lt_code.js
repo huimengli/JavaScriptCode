@@ -1933,7 +1933,7 @@ lt_code.getNum = function (text, types) {
             } else if (types === 4) {
                 return parseInt(/-?[0-9]{1,}/i.exec(text));//读取一位到多位数字(可以读取负数)
             } else if (types === 5) {
-                return parseInt(/-?[\d]+\.?[\d]{0,}/.exec(text));//可以读取小数
+                return parseFloat(/-?[\d]+\.?[\d]{0,}/.exec(text));//可以读取小数
             } else {
                 console.trace("getNum函数,type参数输入错误!");
             }
