@@ -633,16 +633,24 @@ lt_code.utf8ToChinese = function (szInput) {
  */
 lt_code.getUrlData = function (href) {
     href = href || window.location.href;
-    var urlData = [];
+    var urlData = "{}";
     if (/\?/.test(href)) {
         href = /\?(.+)/.exec(href)[1];
         var leftAndRight = [...href.matchAll(/([^&=]+)=([^&=]+)&?/g)];
+        //for (var i = 0; i < leftAndRight.length; i++) {
+        //    var str = '{"' + leftAndRight[i][1] + '":"' + leftAndRight[i][2] + '"}';
+        //    urlData.push(JSON.parse(str));
+        //}
+        urlData = "{";
         for (var i = 0; i < leftAndRight.length; i++) {
-            var str = '{"' + leftAndRight[i][1] + '":"' + leftAndRight[i][2] + '"}';
-            urlData.push(JSON.parse(str));
+            urlData +="\""+ leftAndRight[i][1] + "\":\"" + leftAndRight[i][2] + "\"";
+            if (i<leftAndRight.length-1) {
+                urlData += ",";
+            }
         }
+        urlData += "}";
     }
-    return urlData;
+    return JSON.parse(urlData);
 };
 
 /**
