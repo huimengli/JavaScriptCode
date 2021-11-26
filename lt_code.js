@@ -669,6 +669,32 @@ lt_code.clearUrlData = function (href, url) {
 }
 
 /**
+ * 将内容拷贝到剪切板中
+ * @param {string} value
+ * @param {string} [valueName] 内容名称
+ */
+lt_code.setCopy = function (value,valueName) {
+    var input = lt_code.newDom("input", {
+        readonly: "readonly",
+        value: value,
+        type: "text",
+        style: {
+            width: "1px",
+            height: "1px",
+            position: "absolute",
+            opacity:"0",
+        },
+    });
+    lt_code.addChild(input);
+    input.focus();
+    input.setSelectionRange(0, -1);
+    if (document.execCommand("Copy")) {
+        alert("已将内容 " + (valueName == null ? value : valueName) + " 添加至剪切板");
+    }
+    lt_code.removeChild(input);
+}
+
+/**
  * 用来使得moveTo函数能重复使用的专有变量
  */
 lt_code.variable.users_moveTo = 0;
