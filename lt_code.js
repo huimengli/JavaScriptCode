@@ -907,6 +907,35 @@ lt_code.variable.newUID = function (input) {
 };
 
 /**
+ * 生成新UUID
+ * 标准32位
+ * @param {any} [input] 输入
+ */
+lt_code.variable.newUUID = function (input) {
+    input = input ? input : new Date().getTime().toString();
+    input = lt_code.md5(input);
+    var sha = lt_code.SHA256.decode(input);
+    var dex = "";
+    var uuid = 'uuxxxuuy-1xxx-7xxx-yxxx-xxx0xxxy'.replace(/[uxy]/g, function (e, i) {
+        return e == "u" ? function () {
+            var ret = sha[2 * i];
+            dex += ret;
+            return ret;
+        }() : e == "x" ? function () {
+            var ret = input[i];
+            dex += ret;
+            return ret;
+        }() : function () {
+            return lt_code.md5(dex)[i];
+        }();
+    });
+    return uuid;
+};
+
+//屏蔽原有算法
+lt_code.variable.newUID = lt_code.variable.newUUID;
+
+/**
  * 清空所有lt_code里面所定义的变量的函数
  * 并且清空lt_code_css这个专用的样式空间
  * @param {number} types 输入1全部清空,并且停止所有挂载在runer上的setInterval函数
