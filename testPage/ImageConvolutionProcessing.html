@@ -1,0 +1,57 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <script src="../../JavaScriptCode/lt_code.js"></script>
+    <style>
+        input[type=button]{
+            width:150px;
+            height:30px;
+            border-radius:15px;
+        }
+
+        canvas{
+            border:1px solid black;
+            position:absolute;
+            left:calc(50vw - 500px);
+            top:calc(50vh - 376px);
+            /*background-color:black;*/
+        }
+    </style>
+</head>
+<body>
+</body>
+</html>
+<script>
+    var ck = null;
+    var data = null;
+    window.onload = function () {
+        lt_code.init("IMGO");
+        var input = lt_code.newDom("input", {
+            type: "file",
+        });
+        lt_code.addChild(input);
+        input.onchange = function () {
+            lt_code.test.fileToBase(input);
+            lt_code.variable.addRun(setInterval(function () {
+                data = lt_code.test.fileToBase.getReturn();
+                if (data) {
+                    lt_code.variable.delRun("∂¡»°Õº∆¨");
+                    ck = new lt_code.image.convolutionKernel3(0.3);
+                    //ck.setList(0, -3);
+                    //ck.setList(2, 3);
+                    //ck.setPoint(1, 0, -10);
+                    //ck.setPoint(1, 2, 10);
+                    ck.setLine(0, -3);
+                    ck.setLine(2, 3);
+                    ck.setPoint(0, 1, -10);
+                    ck.setPoint(2, 1, 10);
+                    ck.imageInput(data);
+                    setTimeout(function () {
+                        ck.handleOut()
+                    }, 500);
+                }
+            }, 100), "∂¡»°Õº∆¨");
+        };
+
+    }
+</script>
