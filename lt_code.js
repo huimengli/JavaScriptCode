@@ -10871,6 +10871,49 @@ lt_code.variable.currentSrc = function () {
 /**当前文件所在文件夹 */
 lt_code.variable.currentDir = lt_code.variable.currentSrc.slice(0, this.length - 10);
 
+/**
+ * 补位
+ * @param {number} input 输入
+ * @param {number} input 补位长度
+ */
+lt_code.variable.complement = function (input, num) {
+    var temp = lt_code.variable.toBackArray(input.toString());
+    for (var i = 1; i <= num; i++) {
+        if (i > temp.length) {
+            temp.push("0");
+        }
+    }
+    input = lt_code.variable.toBackArray(temp);
+    var ret = "";
+    for (var i = 0; i < input.length; i++) {
+        ret += input[i];
+    }
+    return ret;
+}
+
+/**
+ * 将输入的内容转为array
+ * @param {any} input 输入
+ */
+lt_code.variable.toArray = function (input) {
+    return Array.prototype.slice.call(input);
+}
+
+/**
+ * 将输入的内容转为反向array
+ * @param {any} input 输入
+ */
+lt_code.variable.toBackArray = function (input) {
+    if (!Array.isArray(input)) {
+        input = lt_code.variable.toArray(input);
+    }
+    var ret = [];
+    for (var i = input.length - 1; i >= 0; i--) {
+        ret.push(input[i]);
+    }
+    return ret;
+}
+
 /**非对称模块 */
 lt_code.RSA = {
     /**
