@@ -10874,7 +10874,7 @@ lt_code.variable.currentDir = lt_code.variable.currentSrc.slice(0, this.length -
 /**
  * 补位
  * @param {number} input 输入
- * @param {number} input 补位长度
+ * @param {number} num 补位长度
  */
 lt_code.variable.complement = function (input, num) {
     var temp = lt_code.variable.toBackArray(input.toString());
