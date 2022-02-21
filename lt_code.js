@@ -432,6 +432,17 @@ lt_code.variable.browserInfo = function () {
     return broName;
 }();
 
+/**
+ * 对象深度拷贝
+ * @param {object} obj
+ */
+lt_code.variable.copy = function (obj) {
+    var ret = {};
+    for (var k in obj)
+        ret[k] = typeof obj[k] === 'object' ? this.copy(obj[k]) : obj[k];
+    return ret;
+};
+
 
 
 /**
@@ -6286,6 +6297,14 @@ lt_code.Version = function () {
                     });
                     lt_code.addChild(imageOperation, head);
                     break;
+                //水印模块
+                case "WM":
+                case "watermark":
+                    var watermark = lt_code.newDom("script", {
+                        src: lt_code.variable.currentDir + "item/watermark.js",
+                    });
+                    lt_code.addChild(watermark, head);
+                    break;
                 default:
                     console.trace("没有这个模块!");
                     console.log("已有模块:");
@@ -6294,17 +6313,26 @@ lt_code.Version = function () {
                         "伪3D模块":
                         {
                             "简写": "PTD",
-                            "全称": "pseudoThreeD"
+                            "全称": "pseudoThreeD",
+                            "空间": "lt_code.pseudoThreeD",
                         },
                         "3D模块":
                         {
                             "简称": "TD",
                             "全称": "threeD",
+                            "空间": "lt_code.threeD",
                         },
                         "图片操作模块":
                         {
                             "简称": "IMGO",
                             "全称": "imageOperation",
+                            "空间": "lt_code.image",
+                        },
+                        "水印模块":
+                        {
+                            "简称": "WM",
+                            "全称": "watermark",
+                            "空间": "lt_code.watermark",
                         },
                     };
                     console.log(log);
@@ -9310,6 +9338,35 @@ lt_code.image.fromHSVToRGB = function (color) {
     return "rgb(" + r.toString() + "," + g.toString() + "," + b.toString() + ")";
 };
 
+/**
+ * rgb色彩转为yCbCr色彩
+ * 输出色彩为ycc(y,Cb,Cr)
+ * @param {string} color rgb颜色
+ */
+lt_code.image.fromRGBToYCbCr = function (color) {
+    color = color.length > 7 ? color : lt_code.color_change(color);
+    var RGB = /(\d+),(\d+),(\d+)/.exec(color);
+    var R = RGB[1], G = RGB[2], B = RGB[3];
+    var Y = 0.257 * R + 0.504 * G + 0.098 * B + 16,
+        Cb = -0.148 * R - 0.291 * G + 0.439 * B + 128,
+        Cr = 0.439 * R - 0.368 * G - 0.071 * B + 128;
+    return "ycc(" + Y.toString() + "," + Cb.toString() + "," + Cr.toString() + ")";
+}
+
+/**
+ * yCbCr色彩转为rgb色彩
+ * @param {any} color
+ */
+lt_code.image.fromYCbCrToRGB = function (color) {
+    var YCC = /ycc/.test(color) ? /([\d\.]+),([\d\.]+),([\d\.]+)/.exec(color) : console.error("输入颜色错误!");
+    var Y = YCC[1], Cb = YCC[2], Cr = YCC[3];
+    var R = 1.164 * (Y - 16) + 1.596 * (Cr - 128),
+        G = 1.164 * (Y - 16) - 0.392 * (Cb - 128) - 0.813 * (Cr - 128),
+        B = 1.164 * (Y - 16) + 2.017 * (Cb - 128);
+    R = Math.round(R), G = Math.round(G), B = Math.round(B);
+    return "rgb(" + R.toString() + "," + G.toString() + "," + B.toString() + ")";
+}
+
 
 
 /**base64加密模块 */
@@ -9377,9 +9434,38 @@ lt_code.base64 = {
         return output;
     },
 
-    // private method for UTF-8 encoding  
+
+    /**
+     * 将输入的内容用utf-8进行编码
+     * 同时将\r\n转化为\n
+     * @param {String} string
+     */
     _utf8_encode: function (string) {
         string = string.replace(/\r\n/g, "\n");
+        var utftext = "";
+        for (var n = 0; n < string.length; n++) {
+            var c = string.charCodeAt(n);
+            if (c < 128) {
+                utftext += String.fromCharCode(c);
+            } else if ((c > 127) && (c < 2048)) {
+                utftext += String.fromCharCode((c >> 6) | 192);
+                utftext += String.fromCharCode((c & 63) | 128);
+            } else {
+                utftext += String.fromCharCode((c >> 12) | 224);
+                utftext += String.fromCharCode(((c >> 6) & 63) | 128);
+                utftext += String.fromCharCode((c & 63) | 128);
+            }
+
+        }
+        return utftext;
+    },
+
+    /**
+     * 将输入的内容用utf-8进行编码
+     * 同时取消将\r\n转化为\n
+     * @param {String} string
+     */
+    _utf8_encodeNoChange: function (string) {
         var utftext = "";
         for (var n = 0; n < string.length; n++) {
             var c = string.charCodeAt(n);
@@ -12735,6 +12821,27 @@ lt_code.addMethod.AddMethod = function () {
             }
         });
         return ret;
+    };
+
+    /**
+     * 获取所有项
+     * @param {number} item 其中一项
+     */
+    Uint8ClampedArray.prototype.indexsOf = function (item) {
+        var ret = [];
+        if (typeof (item) == "number") {
+            if (item>255||item<0) {
+                return ret;
+            }
+            for (var i = 0; i < this.length; i++) {
+                if (this[i]==item) {
+                    ret.push(i);
+                }
+            }
+            return ret;
+        } else {
+            console.error("参数输入错误!");
+        }        
     };
 
     /**
