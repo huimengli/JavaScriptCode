@@ -1,7 +1,7 @@
 ﻿/**
  * @file 帮助文档
- * @author 楼听[修改日期:2020年8月30日]
- * @version demo-16
+ * @author 楼听[修改日期:2022年2月23日]
+ * @version demo-17
  */
 
 //向head里面丢一个特殊的style样式框
@@ -6340,7 +6340,7 @@ lt_code.Version = function () {
         }
     });
 
-    return 16;
+    return 17;
 }();
 
 
@@ -6677,6 +6677,8 @@ lt_code.test.lock = function (obj, allLock) {
 /**
  * 锁定lt_code
  * (不要乱用,可能会导致某些会修改自身的函数出错)
+ * 现有已知会出错的函数:
+ * 1.lt_code.init(初始化某些模块的函数)
  */
 lt_code.test.lockLtCode = function () {
     for (var x in lt_code) {
