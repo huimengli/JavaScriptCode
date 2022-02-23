@@ -6636,20 +6636,54 @@ lt_code.test = {};
  * @param {string} newName 新的名字
  */
 lt_code.test.changeLtCode = function (newName) {
-    newName = !newName ? "_" : newName;
-    eval("window." + newName + " = lt_code");
-    lt_code.variable.newName = newName;
-    lt_code.test.changeLtCode.changeBack = function () {
-        eval("window." + lt_code.variable.newName + " = null");
-        lt_code.test.changeLtCode.changeBack = null;
+    if (lt_code.test.changeLtCode.changeBack == null) {
+        newName = !newName ? "_" : newName;
+        eval("lt_code.test.changeLtCode.back = window." + newName);
+        eval("window." + newName + " = lt_code");
+        lt_code.variable.newName = newName;
+        lt_code.test.changeLtCode.changeBack = function () {
+            eval("window." + lt_code.variable.newName + " = lt_code.test.changeLtCode.back");
+            lt_code.test.changeLtCode.back = null;
+            lt_code.test.changeLtCode.changeBack = null;
+        }
+    } else {
+        lt_code.test.changeLtCode.changeBack();
+        lt_code.test.changeLtCode(newName);
     }
     //window._ = lt_code;
     //lt_code.test.changeLtCode.changeBack = function () {
     //    window._ = null;
     //    lt_code.test.changeLtCode.changeBack = null;
     //}
-}
+};
 
+/**
+ * 锁定对象
+ * @param {object} obj
+ * @param {boolean} [allLock] 是否全锁
+ */
+lt_code.test.lock = function (obj, allLock) {
+    if (allLock) {
+        for (var x in obj) {
+            if (typeof (obj[x]) === "object") {
+                console.log(obj[x]);
+                this.lock(obj[x], true);
+            }
+        }
+    }
+    Object.freeze(obj);
+};
+
+/**
+ * 锁定lt_code
+ * (不要乱用,可能会导致某些会修改自身的函数出错)
+ */
+lt_code.test.lockLtCode = function () {
+    for (var x in lt_code) {
+        this.lock(lt_code[x]);
+    }
+    this.lock(lt_code);
+};
 
 
 /**
