@@ -1768,11 +1768,20 @@ lt_code.getIframe = function (dom, name) {
 /**
  * 获取json的长度
  * @param {JSON} json
+ * @param {boolean} onlyTrueValue 是否只计算非空值
  */
-lt_code.getLength = function (json) {
+lt_code.getLength = function (json, onlyTrueValue) {
     var ret = 0;
-    for (var i in json) {
-        ret++;
+    if (!onlyTrueValue) {
+        for (var i in json) {
+            ret++;
+        }
+    } else {
+        for (var x in json) {
+            if (json[x]) {
+                ret++;
+            }
+        }
     }
     return ret;
 };
