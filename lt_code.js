@@ -11000,7 +11000,14 @@ lt_code.variable.currentSrc = function () {
 }();
 
 /**当前文件所在文件夹 */
-lt_code.variable.currentDir = lt_code.variable.currentSrc.slice(0, this.length - 10);
+lt_code.variable.currentDir = function () {
+    var ret = "", temp = lt_code.variable.currentSrc.split("/");
+    for (var i = 0; i < temp.length - 1; i++) {
+        ret += temp[i];
+        ret += "/";
+    }
+    return ret;
+}();
 
 /**
  * 补位
