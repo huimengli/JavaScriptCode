@@ -6688,10 +6688,15 @@ lt_code.test.lock = function (obj, allLock) {
  * (不要乱用,可能会导致某些会修改自身的函数出错)
  * 现有已知会出错的函数:
  * 1.lt_code.init(初始化某些模块的函数)
+ * @param {Array} notLock 不锁定的对象
  */
-lt_code.test.lockLtCode = function () {
+lt_code.test.lockLtCode = function (notLock) {
+    notLock = notLock ? notLock : [];
+    notLock.push("variable");
     for (var x in lt_code) {
-        this.lock(lt_code[x]);
+        if (notLock.indexOf(x)<0) {
+            this.lock(lt_code[x]);
+        }
     }
     this.lock(lt_code);
 };
