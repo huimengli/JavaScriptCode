@@ -1,0 +1,22 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <script src="../../JavaScriptCode/lt_code.js"></script>
+    <style>
+    </style>
+</head>
+<body>
+
+</body>
+</html>
+<script>
+    window.onload = function () {
+        lt_code.init("WM");
+        lt_code.variable.addRun(setInterval(function () {
+            if (lt_code.watermark) {
+                lt_code.variable.delRun("WM初始化");
+                lt_code.watermark.init();
+            }
+        }, 20), "WM初始化");
+    };
+</script>

@@ -9894,6 +9894,44 @@ lt_code.base64 = {
         },
 
         /**
+         * 获取一个以sha256生成的密匙
+         * @param {String} input
+         */
+        getSHA256Key: function (input) {
+            input = lt_code.SHA256.decode(input.toString());
+            var temp = input,
+                keys = "ABCDEF0123456789",
+                count = 0,
+                keyss = [],
+                indexs = {};
+            for (var i = 0; i < keys.length; i++) {
+                var x = keys[i];
+                count = temp.length;
+                temp = temp.replaceAll(x, "");
+                keyss.push(count - temp.length);
+                indexs[x] = 0;
+            }
+            var key = {},
+                key2 = this._keyStr.substring(0, 64);
+            for (var i = 0; i < keyss.length; i++) {
+                var x = key2.substring(0, keyss[i]);
+                if (x.length==0) {
+                    continue;
+                }
+                key2 = key2.replace(x, "");
+                key[keys[i].toString()] = x;
+            }
+            var ret = "";
+            for (var i = 0; i < input.length; i++) {
+                var x = input[i].toString();
+                ret += key[x][indexs[x]];
+                indexs[x]++;
+            }
+            ret += "=";
+            return ret;
+        },
+
+        /**
          * 加密
          * @param {string} input
          * @param {string} [key]
@@ -10019,6 +10057,44 @@ lt_code.base64 = {
                 all = all.delete(oneKey);
             }
             ret += "+/=";
+            return ret;
+        },
+
+        /**
+         * 获取一个以sha256生成的密匙
+         * @param {String} input
+         */
+        getSHA256Key: function (input) {
+            input = lt_code.SHA256.decode(input.toString());
+            var temp = input,
+                keys = "ABCDEF0123456789",
+                count = 0,
+                keyss = [],
+                indexs = {};
+            for (var i = 0; i < keys.length; i++) {
+                var x = keys[i];
+                count = temp.length;
+                temp = temp.replaceAll(x, "");
+                keyss.push(count - temp.length);
+                indexs[x] = 0;
+            }
+            var key = {},
+                key2 = this._keyStr.substring(0, 64);
+            for (var i = 0; i < keyss.length; i++) {
+                var x = key2.substring(0, keyss[i]);
+                if (x.length == 0) {
+                    continue;
+                }
+                key2 = key2.replace(x, "");
+                key[keys[i].toString()] = x;
+            }
+            var ret = "";
+            for (var i = 0; i < input.length; i++) {
+                var x = input[i].toString();
+                ret += key[x][indexs[x]];
+                indexs[x]++;
+            }
+            ret += "=";
             return ret;
         },
 
