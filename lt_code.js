@@ -9417,7 +9417,48 @@ lt_code.image.fromYCbCrToRGB = function (color) {
     return "rgb(" + R.toString() + "," + G.toString() + "," + B.toString() + ")";
 }
 
+/**
+ * xy值是否在盒子中
+ * @param {Number} x
+ * @param {Number} y
+ * @param {HTMLElement} box
+ */
+lt_code.XYinBox: function (x, y, box) {
+    if (!this.ElementInDocument(box)) {
+        return false;
+    } else if (box.length) {
+        return false;
+    }
+    if (box.offsetLeft > x || box.offsetLeft + box.offsetWidth < x) {
+        return false;
+    } else if (box.offsetTop > y || box.offsetTop + box.offsetHeight < y) {
+        return false;
+    } else {
+        return true;
+    }
+};
 
+/**
+ * 判断节点是否存在于document中
+ * @param {HTMLElement} e
+ */
+lt_code.ElementInDocument: function (e) {
+    if (e == undefined) {
+        return undefined;
+    } else if (e.length) {
+        var rets = [], r = false;
+        for (var i = 0; i < e.length; i++) {
+            r = this.ElementInDocument(e[i]);
+            rets.push(r);
+        }
+        return rets;
+    }
+    var sha = lt_code.md5(e.outerHTML);
+    e.classList.add(sha);
+    var ret = !!lt_code.getClass(sha).length;
+    e.classList.remove(sha);
+    return ret;
+};
 
 /**base64加密模块 */
 lt_code.base64 = {
