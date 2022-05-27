@@ -654,8 +654,8 @@ lt_code.getUrlData = function (href) {
         //}
         urlData = "{";
         for (var i = 0; i < leftAndRight.length; i++) {
-            urlData +="\""+ leftAndRight[i][1] + "\":\"" + leftAndRight[i][2] + "\"";
-            if (i<leftAndRight.length-1) {
+            urlData += "\"" + leftAndRight[i][1] + "\":\"" + leftAndRight[i][2] + "\"";
+            if (i < leftAndRight.length - 1) {
                 urlData += ",";
             }
         }
@@ -684,7 +684,7 @@ lt_code.clearUrlData = function (href, url) {
  * @param {string} value
  * @param {string} [valueName] 内容名称
  */
-lt_code.setCopy = function (value,valueName) {
+lt_code.setCopy = function (value, valueName) {
     var input = lt_code.newDom("input", {
         readonly: "readonly",
         value: value,
@@ -693,7 +693,7 @@ lt_code.setCopy = function (value,valueName) {
             width: "1px",
             height: "1px",
             position: "absolute",
-            opacity:"0",
+            opacity: "0",
         },
     });
     lt_code.addChild(input);
@@ -6694,7 +6694,7 @@ lt_code.test.lockLtCode = function (notLock) {
     notLock = notLock ? notLock : [];
     notLock.push("variable");
     for (var x in lt_code) {
-        if (notLock.indexOf(x)<0) {
+        if (notLock.indexOf(x) < 0) {
             this.lock(lt_code[x]);
         }
     }
@@ -9423,7 +9423,7 @@ lt_code.image.fromYCbCrToRGB = function (color) {
  * @param {Number} y
  * @param {HTMLElement} box
  */
-lt_code.XYinBox: function (x, y, box) {
+lt_code.XYinBox = function (x, y, box) {
     if (!this.ElementInDocument(box)) {
         return false;
     } else if (box.length) {
@@ -9438,11 +9438,41 @@ lt_code.XYinBox: function (x, y, box) {
     }
 };
 
+
+
+/**
+ * xy值是否在盒子中
+ * @param {Number} x
+ * @param {Number} y
+ * @param {HTMLElement} box
+ * @param {...HTMLElement} father
+ */
+lt_code.XYinBoxAndFather = function (x, y, box, ...father) {
+    if (!this.ElementInDocument(box)) {
+        return false;
+    } else if (box.length) {
+        return false;
+    }
+    var l = box.offsetLeft, r = box.offsetLeft + box.offsetWidth,
+        t = box.offsetTop, b = box.offsetTop + box.offsetHeight;
+    for (var i = 0; i < father.length; i++) {
+        l += father[i].offsetLeft, r += father[i].offsetLeft;
+        t += father[i].offsetTop, b += father[i].offsetTop;
+    }
+    if (l > x || r < x) {
+        return false;
+    } else if (t > y || b < y) {
+        return false;
+    } else {
+        return true;
+    }
+};
+
 /**
  * 判断节点是否存在于document中
  * @param {HTMLElement} e
  */
-lt_code.ElementInDocument: function (e) {
+lt_code.ElementInDocument = function (e) {
     if (e == undefined) {
         return undefined;
     } else if (e.length) {
@@ -9956,7 +9986,7 @@ lt_code.base64 = {
                 key2 = this._keyStr.substring(0, 64);
             for (var i = 0; i < keyss.length; i++) {
                 var x = key2.substring(0, keyss[i]);
-                if (x.length==0) {
+                if (x.length == 0) {
                     continue;
                 }
                 key2 = key2.replace(x, "");
@@ -10199,7 +10229,7 @@ lt_code.base64 = {
     imageRGBA: {
 
         /** 加密 */
-        encode : function (input) {
+        encode: function (input) {
             var ret = [];
             var i = 0;
             var newImage = new Uint8ClampedArray();
@@ -10208,18 +10238,18 @@ lt_code.base64 = {
                 ret.push(input.charCodeAt(i));
             }
             var count = Math.ceil(ret.length / 4);
-            for (var i = ret.length; i < count*4; i++) {
+            for (var i = ret.length; i < count * 4; i++) {
                 ret[i] = 255;
             }
             count = Math.ceil(Math.sqrt(ret.length / 4));
             console.log(count);
-            for (var i = ret.length; i < count*count*4; i++) {
+            for (var i = ret.length; i < count * count * 4; i++) {
                 ret[i] = 255;
             }
             newImage = new Uint8ClampedArray(ret);
             newImage = new ImageData(newImage, count, count);
             console.log(newImage);
-            var newCas = lt_code.newDom("canvas",{
+            var newCas = lt_code.newDom("canvas", {
                 width: count,
                 height: count
             });
@@ -12228,7 +12258,7 @@ lt_code.RSA = {
         }
         return this.bigNumberFixed(ret);
     },
-    
+
     /**
      * 大数乘方(快速)
      * @param {string} num
@@ -12242,7 +12272,7 @@ lt_code.RSA = {
             exp--;
         }
         let ret = num;
-        for (;exp; exp/=2) {
+        for (; exp; exp /= 2) {
             exp = Math.floor(exp);
             //console.log(exp);
             if (exp & 1) {
@@ -12310,7 +12340,7 @@ lt_code.RSA = {
             let ix = exp.length - i;
             each = Qlist[exp[i]];
             for (var j = 1; j < ix; j++) {
-                each = this.bigPowerAndQuotientSlow(each,10,num2);
+                each = this.bigPowerAndQuotientSlow(each, 10, num2);
             }
             rets.push(each);
         }
@@ -12339,7 +12369,7 @@ lt_code.RSA = {
      * @param {any} num 乘数
      */
     bigFactorial: function (num) {
-        if (num=="0" || num=="1") {
+        if (num == "0" || num == "1") {
             return '1';
         }
         num = num.toString();
@@ -12483,7 +12513,7 @@ lt_code.RSA = {
          * @param {{K:String,E:String,D:String}} key key至少包含N,E,D三个参数
          */
         setCode: function (input, key) {
-            key = key ? key :console.error("参数错误!");
+            key = key ? key : console.error("参数错误!");
             input = lt_code.base64.encode(input.toString());
             let ret = this.base64ToKey(input).toString();
             let rets = [];
@@ -12512,15 +12542,15 @@ lt_code.RSA = {
             input = lt_code.base64.encode(input.toString());
             let ret = this.base64ToKey(input).toString();
             let rets = [];
-            for (var i = 0; i < ret.length-1; i++) {
+            for (var i = 0; i < ret.length - 1; i++) {
                 rets.push(ret[i++] + ret[i]);
             }
-            if (ret.length&1) {
+            if (ret.length & 1) {
                 rets.push(ret[ret.length - 1]);
             }
             console.log(rets);
             ret = "";
-            for (var i = 0; i < rets.length-1; i++) {
+            for (var i = 0; i < rets.length - 1; i++) {
                 //ret += lt_code.RSA.bigQuotient(lt_code.RSA.bigPower(rets[i], this.keys.veryShowKey.E), this.keys.veryShowKey.N)+",";
                 ret += lt_code.RSA.bigPowerAndQuotient(rets[i], this.keys.veryShowKey.E, this.keys.veryShowKey.N) + ",";
             }
@@ -12534,7 +12564,7 @@ lt_code.RSA = {
          * @param {any} input
          * @param {{K:String,E:String,D:String}} key key至少包含N,E,D三个参数
          */
-        getCode: function (input,key) {
+        getCode: function (input, key) {
             input = lt_code.base64.decode(input.toString());
             let rets = input.split(",");
             let ret = "";
@@ -12545,7 +12575,7 @@ lt_code.RSA = {
             }
             //console.log(ret);
             ret = lt_code.base64.decode(this.keyToBase64(ret));
-            return (ret[ret.length - 1])&&/[\s\n\0]/.test(ret[ret.length-1]) ? ret.slice(0, ret.length - 1) : ret;
+            return (ret[ret.length - 1]) && /[\s\n\0]/.test(ret[ret.length - 1]) ? ret.slice(0, ret.length - 1) : ret;
         },
 
         /**
@@ -12563,7 +12593,7 @@ lt_code.RSA = {
             }
             console.log(ret);
             ret = lt_code.base64.decode(this.keyToBase64(ret));
-            return ret.slice(0,ret.length-1);
+            return ret.slice(0, ret.length - 1);
         },
     },
 
@@ -12581,7 +12611,7 @@ lt_code.RSA = {
 
         let N = this.bigMultiplyCut(P, Q);
 
-        let O = this.bigMultiplyCut(this.bigSubtractSlow(P,1), this.bigSubtractSlow(Q, 1));
+        let O = this.bigMultiplyCut(this.bigSubtractSlow(P, 1), this.bigSubtractSlow(Q, 1));
 
         let E = num3 ? num3 : this.getPrime(this.numbers[2]);
 
@@ -12619,11 +12649,11 @@ lt_code.RSA = {
 
         while (true) {
             i++;
-            answer = this.bigQuotient(this.bigAddSlow(this.bigMultiplyKaraSuba(i, O), 1), E);   
+            answer = this.bigQuotient(this.bigAddSlow(this.bigMultiplyKaraSuba(i, O), 1), E);
             if (answer == 0) {
                 break;
             } else {
-               // console.log(answer);
+                // console.log(answer);
             }
         }
         D = this.bigDividedCutSlow(this.bigAddSlow(this.bigMultiplyKaraSuba(i, O), 1), E);
@@ -13004,18 +13034,18 @@ lt_code.addMethod.AddMethod = function () {
     Uint8ClampedArray.prototype.indexsOf = function (item) {
         var ret = [];
         if (typeof (item) == "number") {
-            if (item>255||item<0) {
+            if (item > 255 || item < 0) {
                 return ret;
             }
             for (var i = 0; i < this.length; i++) {
-                if (this[i]==item) {
+                if (this[i] == item) {
                     ret.push(i);
                 }
             }
             return ret;
         } else {
             console.error("参数输入错误!");
-        }        
+        }
     };
 
     /**
@@ -13053,13 +13083,13 @@ lt_code.addMethod.AddMethod = function () {
      * @param {RegExp} regex 正则表达式
      * @returns {Array}
      */
-    var matchAll =  function (regex) {
+    var matchAll = function (regex) {
         if (!regex.flags) {
             return regex.exec(this);
         } else if (/g/.test(regex.flags)) {
             let ret = [];
             let match;
-            while ((match = regex.exec(this))!==null) {
+            while ((match = regex.exec(this)) !== null) {
                 ret.push(match);
             }
             return ret;
