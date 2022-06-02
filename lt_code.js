@@ -554,6 +554,14 @@ lt_code.newDom = function (domName, attr) {
                 styles = attr[i];
             }
             a.setAttribute(i, styles);
+        } else if (i == "dataset") {
+            if (typeof (attr[i] == "object")) {
+                for (var j in attr[i]) {
+                    a.dataset[j] = attr[i][j];
+                }
+            } else {
+                a.dataset = attr[i];
+            }
         } else {
             if (notAttr.indexOf(i) >= 0) {
                 a[i] = attr[i];
