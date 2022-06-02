@@ -13093,6 +13093,21 @@ lt_code.addMethod.AddMethod = function () {
     };
 
     /**
+     * 添加不重复的对象
+     * @param {...any} item
+     */
+    Array.prototype.add = function (...item) {
+        for (var i = 0; i < item.length; i++) {
+            if (this.indexOf(item[i]) >= 0) {
+                continue;
+            } else {
+                this[this.length] = item[i];
+            }
+        }
+        return this.length;
+    };
+
+    /**
      * 全部匹配
      * @param {RegExp} regex 正则表达式
      * @returns {Array}
@@ -13107,6 +13122,15 @@ lt_code.addMethod.AddMethod = function () {
                 ret.push(match);
             }
             return ret;
+        }
+    };
+
+    /**判断字符串是否为null或者是空白字符串 */
+    String.prototype.IsNullEmptyOrSpace = function () {
+        if (this == null) {
+            return true;
+        } else {
+            return this.replace(/\s/g, "").length == 0;
         }
     };
 
