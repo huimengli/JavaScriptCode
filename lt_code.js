@@ -540,6 +540,8 @@ lt_code.chineseToUtf8 = function (s1) {
  * @param {object} [attr] 节点属性
  */
 lt_code.newDom = function (domName, attr) {
+    /**非节点属性 */
+    var notAttr = ["innerText", "innerHTML"];
     var a = document.createElement(domName);
     for (var i in attr) {
         if (i == "style") {
@@ -553,7 +555,11 @@ lt_code.newDom = function (domName, attr) {
             }
             a.setAttribute(i, styles);
         } else {
-            a.setAttribute(i, attr[i]);
+            if (notAttr.indexOf(i) >= 0) {
+                a[i] = attr[i];
+            } else {
+                a.setAttribute(i, attr[i]);
+            }
         }
     }
     return a;
