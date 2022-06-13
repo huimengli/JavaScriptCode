@@ -13108,6 +13108,21 @@ lt_code.addMethod.AddMethod = function () {
     };
 
     /**
+     * 删除对象
+     * @param {...any} item
+     */
+    Array.prototype.del = function (...item) {
+        for (var i = 0; i < item.length; i++) {
+            var index = this.indexOf(item[i]);
+            if (index >= 0) {
+                this.splice(index, 1);
+            } else {
+                continue;
+            }
+        }
+    };
+
+    /**
      * 全部匹配
      * @param {RegExp} regex 正则表达式
      * @returns {Array}
