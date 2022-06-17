@@ -543,13 +543,25 @@ window.onload = function(){
             }
         }
 
-        /**重载转为字符串 */
-        toString() {
-            var ret = {
-                x: this.x,
-                y: this.y,
-                z: this.z,
-            };
+        /**
+         * 重载转为字符串
+         * @param {number} [ACC] 精度
+         */
+        toString(ACC) {
+            var ret = {};
+            if (!ACC) {
+                ret = {
+                    x: this.x,
+                    y: this.y,
+                    z: this.z,
+                };
+            } else {
+                ret = {
+                    x: lt_code.pseudoThreeD.getAccuracy(this.x,ACC),
+                    y: lt_code.pseudoThreeD.getAccuracy(this.y,ACC),
+                    z: lt_code.pseudoThreeD.getAccuracy(this.z,ACC),
+                }
+            }
             return JSON.stringify(ret);
         }
     },
@@ -652,12 +664,23 @@ window.onload = function(){
             return ret;
         }
 
-        /**重载转为字符串 */
-        toString() {
-            var ret = {
-                x: this.x,
-                y: this.y,
-            };
+        /**
+         * 重载转为字符串
+         * @param {number} [ACC] 精度
+         */
+        toString(ACC) {
+            var ret = {};
+            if (!ACC) {
+                ret = {
+                    x: this.x,
+                    y: this.y,
+                };
+            } else {
+                ret = {
+                    x: lt_code.pseudoThreeD.getAccuracy(this.x, ACC),
+                    y: lt_code.pseudoThreeD.getAccuracy(this.y, ACC),
+                }
+            }
             return JSON.stringify(ret);
         }
     },
