@@ -430,6 +430,11 @@ window.onload = function(){
             return new v3(x, y, z);
         }
 
+        /**克隆 */
+        clone() {
+            return new lt_code.pseudoThreeD.vector3(this.x, this.y, this.z);
+        }
+
         /**
          * 获取两个向量之间的夹角
          * @param {lt_code.pseudoThreeD.vector3} v1
@@ -650,6 +655,11 @@ window.onload = function(){
             ret.x = Math.sin(z / 360 * Math.PI * 2) * l;
             ret.y = Math.cos(z / 360 * Math.PI * 2) * l;
             return ret;
+        }
+
+        /**克隆 */
+        clone() {
+            return new lt_code.pseudoThreeD.vector2(this.x, this.y);
         }
 
         /**重载转为字符串 */
