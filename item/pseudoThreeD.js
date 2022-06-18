@@ -436,6 +436,26 @@ window.onload = function(){
         }
 
         /**
+         * 基于原点缩放
+         * @param {any} zoom 缩放倍率
+         */
+        zoom(zoom) {
+            this.x *= zoom;
+            this.y *= zoom;
+            this.z *= zoom;
+            return this;
+        }
+
+        /**
+         * 将点基于原点缩放,不修改输入内容
+         * @param {any} v 输入点
+         * @param {any} zoom 缩放倍率
+         */
+        static zoom(v, zoom) {
+            return v.clone().zoom(zoom);
+        }
+
+        /**
          * 获取两个向量之间的夹角
          * @param {lt_code.pseudoThreeD.vector3} v1
          * @param {lt_code.pseudoThreeD.vector3} v2
@@ -672,6 +692,25 @@ window.onload = function(){
         /**克隆 */
         clone() {
             return new lt_code.pseudoThreeD.vector2(this.x, this.y);
+        }
+
+        /**
+         * 基于原点缩放
+         * @param {any} zoom 缩放倍率
+         */
+        zoom(zoom) {
+            this.x *= zoom;
+            this.y *= zoom;
+            return this;
+        }
+
+        /**
+         * 将点基于原点缩放,不修改输入内容
+         * @param {any} v 输入点
+         * @param {any} zoom 缩放倍率
+         */
+        static zoom(v,zoom) {
+            return v.clone().zoom(zoom);
         }
 
         /**
