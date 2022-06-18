@@ -734,7 +734,11 @@ lt_code.variable.scrollTop = 0;
 
 /**实时刷新顶部的挂载 */
 lt_code.top_run = setInterval(function () {
-    lt_code.variable.scrollTop = document.body.scrollTop || document.documentElement.scrollTop || 0;
+    try {
+        lt_code.variable.scrollTop = document.body.scrollTop || document.documentElement.scrollTop || 0;
+    } catch (e) {
+        lt_code.variable.scrollTop = 0;
+    }
 }, 20);
 
 /**用来存放数字点阵字画的参数 */
