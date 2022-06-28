@@ -390,6 +390,11 @@ lt_code.variable.browserInfo = function () {
         strStart = userAgent.indexOf('Edge');
         temp = userAgent.substring(strStart);
         broName = temp.replace('/', ' 版本号');
+    } else if (userAgent.includes('Edg') > 0) {
+        isEdge = true;
+        strStart = userAgent.indexOf('Edg');
+        temp = userAgent.substring(strStart);
+        broName = temp.replace('/', '[谷歌内核] 版本号');
     }
 
     //IE浏览器
@@ -420,7 +425,7 @@ lt_code.variable.browserInfo = function () {
     }
 
     //Chrome浏览器
-    if (userAgent.indexOf('WOW') < 0 && userAgent.indexOf("Edge") < 0) {
+    if (userAgent.indexOf("Edg") < 0) {
         isChrome = true;
         /*broName = 'Chrome浏览器';*/
         strStart = userAgent.indexOf('Chrome');
