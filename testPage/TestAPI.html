@@ -2,8 +2,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title></title>
-    <script src="JavaScriptCode/lt_code.js"></script>
-    <script src="Flask1\Flask1\Flask1\static\three.js\build\three.js"></script>
+    <script src="../lt_code.js"></script>
+    <script src="..\..\Flask1\Flask1\Flask1\static\three.js\build\three.js"></script>
 </head>
 <body>
 </body>
@@ -14,10 +14,10 @@
         lt_code.init("API");
         lt_code.variable.addRun(setInterval(async function () {
             if (lt_code.API) {
-                lt_code.variable.delRun("等待API加载");
+                lt_code.variable.delRun("绛夊緟API鍔犺浇");
                 API = new lt_code.API();     
                 await API.Init();
             }
-        }, 100), "等待API加载");
+        }, 100), "绛夊緟API鍔犺浇");
     };
 </script>
