@@ -734,6 +734,229 @@ window.onload = function(){
         }
     },
 
+    /**欧拉角(未完成)*/
+    Euler: class {
+        /**
+         * 构造函数
+         * @param {any} x
+         * @param {any} y
+         * @param {any} z
+         * @param {any} order 排列顺序
+         */
+        constructor(x, y, z, order) {
+            this._x = x === void 0 ? 0 : x;
+            this._y = y === void 0 ? 0 : y;
+            this._z = z === void 0 ? 0 : z;
+            this._order = order === void 0 ? lt_code.pseudoThreeD.Euler.DefaultOrder : order;
+            
+        }
+
+        /**是否是欧拉角*/
+        get isEuler() {
+            return true;
+        }
+
+        get x() {
+            return this._x;
+        }
+
+        get y() {
+            return this._y;
+        }
+
+        get z() {
+            return this._z;
+        }
+
+        get order() {
+            return this._order;
+        }
+
+        /**
+         * 修改内瓤
+         * @param {any} x
+         * @param {any} y
+         * @param {any} z
+         * @param {any} order
+         */
+        set(x, y, z, order) {
+            this._x = x;
+            this._y = y;
+            this._z = z;
+            this._order = order || this._order;
+
+            this._onChangeCallback();
+
+            return this;
+        }
+
+        /**克隆对象 */
+        clone() {
+            return new lt_code.pseudoThreeD.Euler(this.x, this.y, this.z, this.order);
+        }
+
+
+    },
+
+    /**四元数(未完成)*/
+    Quaternion: class {
+        /**
+         * 构造函数
+         * @param {any} x
+         * @param {any} y
+         * @param {any} z
+         * @param {any} w
+         */
+        constructor(x, y, z, w) {
+            this._x = x === void 0 ? 0 : x;
+            this._y = y === void 0 ? 0 : y;
+            this._z = z === void 0 ? 0 : z;
+            this._w = w === void 0 ? 1 : w;
+        }
+
+        get x() {
+            return this._x;
+        }
+
+        get y() {
+            return this._y;
+        }
+
+        get z() {
+            return this._z;
+        }
+
+        get w() {
+            return this._w;
+        }
+
+        get isQuaternion() {
+            return true;
+        }
+
+        static slerp(qa, qb, qm, t) {
+            return qm.copy(qa).slerp(qb, t);
+        }
+
+        static slerpFlat(dst, dstOffset, src0, srcOffset0, src1, srcOffset1, t) {
+            var x0 = src0[srcOffset0 + 0],
+                y0 = src0[srcOffset0 + 1],
+                z0 = src0[srcOffset0 + 2],
+                w0 = src0[srcOffset0 + 3];
+            var x1 = src1[srcOffset1 + 0],
+                y1 = src1[srcOffset1 + 1],
+                z1 = src1[srcOffset1 + 2],
+                w1 = src1[srcOffset1 + 3];
+
+            if (w0 !== w1 || x0 !== x1 || y0 !== y1 || z0 !== z1) {
+                var s = 1 - t;
+                var cos = x0 * x1 + y0 * y1 + z0 * z1 + w0 * w1,
+                    dir = cos >= 0 ? 1 : -1,
+                    sqrSin = 1 - cos * cos; // Skip the Slerp for tiny steps to avoid numeric problems:
+
+                if (sqrSin > Number.EPSILON) {
+                    var sin = Math.sqrt(sqrSin),
+                        len = Math.atan2(sin, cos * dir);
+                    s = Math.sin(s * len) / sin;
+                    t = Math.sin(t * len) / sin;
+                }
+
+                var tDir = t * dir;
+                x0 = x0 * s + x1 * tDir;
+                y0 = y0 * s + y1 * tDir;
+                z0 = z0 * s + z1 * tDir;
+                w0 = w0 * s + w1 * tDir; // Normalize in case we just did a lerp:
+
+                if (s === 1 - t) {
+                    var f = 1 / Math.sqrt(x0 * x0 + y0 * y0 + z0 * z0 + w0 * w0);
+                    x0 *= f;
+                    y0 *= f;
+                    z0 *= f;
+                    w0 *= f;
+                }
+            }
+
+            dst[dstOffset] = x0;
+            dst[dstOffset + 1] = y0;
+            dst[dstOffset + 2] = z0;
+            dst[dstOffset + 3] = w0;
+        }
+
+        static multiplyQuaternionsFlat(dst, dstOffset, src0, srcOffset0, src1, srcOffset1) {
+            var x0 = src0[srcOffset0];
+            var y0 = src0[srcOffset0 + 1];
+            var z0 = src0[srcOffset0 + 2];
+            var w0 = src0[srcOffset0 + 3];
+            var x1 = src1[srcOffset1];
+            var y1 = src1[srcOffset1 + 1];
+            var z1 = src1[srcOffset1 + 2];
+            var w1 = src1[srcOffset1 + 3];
+            dst[dstOffset] = x0 * w1 + w0 * x1 + y0 * z1 - z0 * y1;
+            dst[dstOffset + 1] = y0 * w1 + w0 * y1 + z0 * x1 - x0 * z1;
+            dst[dstOffset + 2] = z0 * w1 + w0 * z1 + x0 * y1 - y0 * x1;
+            dst[dstOffset + 3] = w0 * w1 - x0 * x1 - y0 * y1 - z0 * z1;
+            return dst;
+        };
+
+        set(x, y, z, w) {
+            this._x = x;
+            this._y = y;
+            this._z = z;
+            this._w = w;
+
+            this._onChangeCallback();
+
+            return this;
+        }
+
+        clone() {
+            return new lt_code.pseudoThreeD.Quaternion(this.x, this.y, this.z, this.w);
+        }
+
+        copy(q) {
+            if (q && q.isQuaternion) {
+                this._x = q.x;
+                this._y = q.y;
+                this._z = q.z;
+                this._w = q.w;
+
+                this._onChangeCallback();
+
+                return this;
+            } else {
+                throw new Error("错误对象!四元数不能从其他变量中复制!");
+                return this;
+            }
+        }
+
+        setFromEuler(euler, update) {
+
+        }
+
+        /**
+         * 从三轴旋转中获取四元数
+         * @param {number} yaw Z轴
+         * @param {number} pitch Y轴
+         * @param {number} roll X轴
+         */
+        static FromEuler(yaw, pitch, roll) {
+            var x = y = z = 0, w = 1;
+
+            var cy = Math.cos(yaw * 0.5),
+                sy = Math.sin(yaw * 0.5),
+                cp = Math.cos(pitch * 0.5),
+                sp = Math.sin(pitch * 0.5),
+                cr = Math.cos(roll * 0.5),
+                sr = Math.sin(roll * 0.5);
+            w = cy * cp * cr + sy * sp * sr;
+            x = cy * cp * sr - sy * sp * cr;
+            y = sy * cp * sr + cy * sp * cr;
+            z = sy * cp * cr - cy * sp * sr;
+
+            return new this(x, y, z, w);
+        }
+    },
+
     /*
      * 还需要创建
      * 1.线条类
@@ -1167,7 +1390,7 @@ window.onload = function(){
      * @param {number} [ACC] 精度
      */
     getAccuracy: function (num, ACC) {
-        ACC = ACC!=null ? ACC : this.ACCURACY;
+        ACC = ACC != null ? ACC : this.ACCURACY;
         var exp = "1";
         for (var i = 0; i < ACC; i++) {
             exp += "0";

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <script src="JavaScriptCode/lt_code.js"></script>
+    <script src="Flask1\Flask1\Flask1\static\three.js\build\three.js"></script>
+</head>
+<body>
+</body>
+</html>
+<script>
+    var API = null;
+    window.onload = function () {
+        lt_code.init("API");
+        lt_code.variable.addRun(setInterval(async function () {
+            if (lt_code.API) {
+                lt_code.variable.delRun("等待API加载");
+                API = new lt_code.API();     
+                await API.Init();
+            }
+        }, 100), "等待API加载");
+    };
+</script>
