@@ -470,7 +470,7 @@
                         callback(this.GPS);
                     }
                     switch (GPSUPDATETYPE.indexOf(updateType)%GPSUPDATETYPELENGTH) {
-                        case 1:
+                        case 0:
                             GPSRun = setInterval(() => {
                                 if (this.UseGPS) {
                                     navigator.geolocation.getCurrentPosition(position => {
@@ -479,7 +479,7 @@
                                 }
                             }, updateTimeOrDistance);
                             break;
-                        case 2:
+                        case 1:
                             GPSRun = setInterval(() => {
                                 if (this.UseGPS) { //这里需要添加对于移动的判定
                                     navigator.geolocation.getCurrentPosition(position => {
