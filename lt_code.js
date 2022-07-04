@@ -6382,6 +6382,93 @@ lt_code.Version = function () {
                     console.log(log);
             }
         }
+
+        /**
+         * 初始化一些特殊模块(为了防止缓存)
+         * @param {string} object 模块名称
+         */
+        lt_code.initByTime = function (object) {
+            var head = lt_code.getAll("head");
+            switch (object) {
+                //伪3D模块
+                case "PTD":
+                case "pseudoThreeD":
+                    /**伪3D模块 */
+                    var pseudoThreeD = lt_code.newDom("script", {
+                        src: lt_code.variable.currentDir + "item/pseudoThreeD.js?time="+new Date().getTime(),
+                    });
+                    lt_code.addChild(pseudoThreeD, head);
+                    break;
+                //3D模块
+                case "TD":
+                case "threeD":
+                    /**3D模块 */
+                    var threeD = lt_code.newDom("script", {
+                        src: lt_code.variable.currentDir + "item/threeD.js?time=" + new Date().getTime(),
+                    });
+                    lt_code.addChild(threeD, head);
+                    break;
+                //图片操作模块
+                case "IMGO":
+                case "imageOperation":
+                    var imageOperation = lt_code.newDom("script", {
+                        src: lt_code.variable.currentDir + "item/imageOperation.js?time=" + new Date().getTime(),
+                    });
+                    lt_code.addChild(imageOperation, head);
+                    break;
+                //水印模块
+                case "WM":
+                case "watermark":
+                    var watermark = lt_code.newDom("script", {
+                        src: lt_code.variable.currentDir + "item/watermark.js?time=" + new Date().getTime(),
+                    });
+                    lt_code.addChild(watermark, head);
+                    break;
+                //API模块
+                case "API":
+                    var API = lt_code.newDom("script", {
+                        src: lt_code.variable.currentDir + "item/API.js?time=" + new Date().getTime(),
+                    });
+                    lt_code.addChild(API, head);
+                    break;
+                default:
+                    console.trace("没有这个模块!");
+                    console.log("已有模块:");
+                    /**已有模块信息 */
+                    var log = {
+                        "伪3D模块":
+                        {
+                            "简写": "PTD",
+                            "全称": "pseudoThreeD",
+                            "空间": "lt_code.pseudoThreeD",
+                        },
+                        "3D模块":
+                        {
+                            "简称": "TD",
+                            "全称": "threeD",
+                            "空间": "lt_code.threeD",
+                        },
+                        "图片操作模块":
+                        {
+                            "简称": "IMGO",
+                            "全称": "imageOperation",
+                            "空间": "lt_code.image",
+                        },
+                        "水印模块":
+                        {
+                            "简称": "WM",
+                            "全称": "watermark",
+                            "空间": "lt_code.watermark",
+                        },
+                        "API模块": {
+                            "简称": "API",
+                            "全称": "API",
+                            "空间":"lt_code.API",
+                        },
+                    };
+                    console.log(log);
+            }
+        }
     });
 
     return 17;
