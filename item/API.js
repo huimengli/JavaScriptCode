@@ -1,178 +1,195 @@
 /**
- * @file ¸øÍâ²¿µ÷ÓÃµÄAPI
- * @author Â¥Ìı[ĞŞ¸ÄÊ±¼ä:2022Äê7ÔÂ1ÈÕ]
+ * @file ç»™å¤–éƒ¨è°ƒç”¨çš„API
+ * @author æ¥¼å¬[ä¿®æ”¹æ—¶é—´:2022å¹´7æœˆ1æ—¥]
  * @version demo-1
- * @summary ±¾ÎÄ¼şĞèÒª»ùÓÚlt_code,THREE.js
- * Ö®ºóÈç¹û¸Ä½ø¿ÉÒÔ¿¼ÂÇÈ¡Ïûµô¶ÔÓÚTHREE.jsµÄÒÀÀµ
+ * @summary æœ¬æ–‡ä»¶éœ€è¦åŸºäºlt_code,THREE.js
+ * ä¹‹åå¦‚æœæ”¹è¿›å¯ä»¥è€ƒè™‘å–æ¶ˆæ‰å¯¹äºTHREE.jsçš„ä¾èµ–
  */
 
 !function () {
-    //ÕâÀïÉèÖÃÄÚ²¿Ê¹ÓÃµÄ²ÎÊı
-    /**ÈıÎ»ÏòÁ¿ */
+    //è¿™é‡Œè®¾ç½®å†…éƒ¨ä½¿ç”¨çš„å‚æ•°
+    /**ä¸‰ä½å‘é‡ */
     var Vector3 = THREE.Vector3;
-    /**Å·À­½Ç */
+    /**æ¬§æ‹‰è§’ */
     var Euler = THREE.Euler;
-    /**ËÄÔªÊı */
+    /**å››å…ƒæ•° */
     var Quaternion = THREE.Quaternion;
-    /**ÊıÑ§¹¤¾ß */
+    /**æ•°å­¦å·¥å…· */
     var MathUtils = THREE.MathUtils;
-    /**ËÄÎ¬¾ØÕó */
+    /**å››ç»´çŸ©é˜µ */
     var Matrix4 = THREE.Matrix4;
 
-    //ÕâÀïÉèÖÃÄÚ²¿Ê¹ÓÃµÄ±äÁ¿
-    /**ËÄÎ¬¾ØÕó */
+    //è¿™é‡Œè®¾ç½®å†…éƒ¨ä½¿ç”¨çš„å˜é‡
+    /**å››ç»´çŸ©é˜µ */
     var _matrix4 = new Matrix4();
 
-    /**API¶Ë¿Ú´íÎó */
+    /**APIç«¯å£é”™è¯¯ */
     lt_code.APIError = class {
         /**
-         * ¹¹Ôìº¯Êı
-         * @param {string} [name] APIÃû³Æ
-         * @param {string} [message] ´íÎóÄÚÈİ
-         * @param {...string} [args] ´íÎóµÄ²ÎÊıÃû³Æ
+         * æ„é€ å‡½æ•°
+         * @param {string} [name] APIåç§°
+         * @param {string} [message] é”™è¯¯å†…å®¹
+         * @param {...string} [args] é”™è¯¯çš„å‚æ•°åç§°
          */
         constructor(name, message, ...args) {
-            var value = "API¶Ë¿Ú´íÎó!\n";
-            value += "´íÎóAPI : " + (name ? name : "Î´Öª") + " ;\n";
-            value += "´íÎóÄÚÈİ : " + (message ? message : "ÎŞ") + " ;\n";
+            var value = "APIç«¯å£é”™è¯¯!\n";
+            value += "é”™è¯¯API : " + (name ? name : "æœªçŸ¥") + " ;\n";
+            value += "é”™è¯¯å†…å®¹ : " + (message ? message : "æ— ") + " ;\n";
             if (args.length <= 1) {
-                value += "´íÎó²ÎÊı : " + (args[0] ? args[0] : "ÎŞ") + " ;\n";
+                value += "é”™è¯¯å‚æ•° : " + (args[0] ? args[0] : "æ— ") + " ;\n";
             } else {
                 for (var i = 0; i < args.length; i++) {
-                    value += "´íÎó²ÎÊı" + i + " : " + (args[i] ? args[i] : "ÎŞ") + " ;\n";
+                    value += "é”™è¯¯å‚æ•°" + i + " : " + (args[i] ? args[i] : "æ— ") + " ;\n";
                 }
             }
             return new Error(value);
         }
     };
 
-    /**API¶Ë¿Ú */
+    /**APIç«¯å£ */
     lt_code.API = class {
 
-        //×î³õ°æ±¾±£Áô
-        ///**¹¹½¨API */
+        //æœ€åˆç‰ˆæœ¬ä¿ç•™
+        ///**æ„å»ºAPI */
         //constructor() {
-        //    //ÕâÀïÊÇ±ØĞëÒªÍê³ÉµÄ
-        //    /**ÊÇ·ñÊ¹ÓÃÍÓÂİÒÇ */
+        //    //è¿™é‡Œæ˜¯å¿…é¡»è¦å®Œæˆçš„
+        //    /**æ˜¯å¦ä½¿ç”¨é™€èºä»ª */
         //    this.useGyroscope = false;
-        //    /**ÊÇ·ñÊ¹ÓÃ¼ÓËÙ¶È´«¸ĞÆ÷ */
+        //    /**æ˜¯å¦ä½¿ç”¨åŠ é€Ÿåº¦ä¼ æ„Ÿå™¨ */
         //    this.useAccelerometer = false;
-        //    /**ÊÇ·ñÊ¹ÓÃ·½Ïò´«¸ĞÆ÷ */
+        //    /**æ˜¯å¦ä½¿ç”¨æ–¹å‘ä¼ æ„Ÿå™¨ */
         //    this.useOrientation = false;
-        //    /**ÊÇ·ñÊ¹ÓÃÉãÏñÍ· */
+        //    /**æ˜¯å¦ä½¿ç”¨æ‘„åƒå¤´ */
         //    this.useVideoIn = false;
 
-        //    //ÌØÊâ¶ÔÏó
-        //    /**ÊÇ·ñÊ¹ÓÃGPS(ÔİÊ±²»¿¼ÂÇÕâ¸ö) */
+        //    //ç‰¹æ®Šå¯¹è±¡
+        //    /**æ˜¯å¦ä½¿ç”¨GPS(æš‚æ—¶ä¸è€ƒè™‘è¿™ä¸ª) */
         //    this.useGPS = false;
 
-        //    //¿ÉÒÔ²»Íê³ÉµÄ
-        //    /**ÊÇ·ñÊ¹ÓÃ¹âÃô´«¸ĞÆ÷ */
+        //    //å¯ä»¥ä¸å®Œæˆçš„
+        //    /**æ˜¯å¦ä½¿ç”¨å…‰æ•ä¼ æ„Ÿå™¨ */
         //    this.useLight = false;
-        //    /**ÊÇ·ñÊ¹ÓÃÕğ¶¯ */
+        //    /**æ˜¯å¦ä½¿ç”¨éœ‡åŠ¨ */
         //    this.useShake = false;
         //}
 
-        /**¹¹½¨API */
+        /**æ„å»ºAPI */
         constructor() {
             if (window.THREE == void 0) {
-                throw new lt_code.APIError("¹¹½¨API", "APIµ÷ÓÃĞèÒªÒÀÀµÓÚTHREE.js");
+                throw new lt_code.APIError("æ„å»ºAPI", "APIè°ƒç”¨éœ€è¦ä¾èµ–äºTHREE.js");
             } else if (lt_code.Version < 17 || !lt_code.init) {
-                throw new lt_code.APIError("¹¹½¨API", "APIµ÷ÓÃĞèÒªÒÀÀµÓÚlt_code.js,°æ±¾±ØĞë¸ßÓÚ17ÇÒ·ÇÑ¹Ëõ°æ±¾");
+                throw new lt_code.APIError("æ„å»ºAPI", "APIè°ƒç”¨éœ€è¦ä¾èµ–äºlt_code.js,ç‰ˆæœ¬å¿…é¡»é«˜äº17ä¸”éå‹ç¼©ç‰ˆæœ¬");
             }
 
-            //ÕâÀïÊÇ±ØĞëÒªÍê³ÉµÄ
-            /**ÊÇ·ñÊ¹ÓÃÍÓÂİÒÇ */
+            //è¿™é‡Œæ˜¯å¿…é¡»è¦å®Œæˆçš„
+            /**æ˜¯å¦ä½¿ç”¨é™€èºä»ª */
             this.useGyroscope = false;
-            /**ÊÇ·ñÊ¹ÓÃ¼ÓËÙ¶È´«¸ĞÆ÷ */
+            /**æ˜¯å¦ä½¿ç”¨åŠ é€Ÿåº¦ä¼ æ„Ÿå™¨ */
             this.useAccelerometer = false;
-            /**ÊÇ·ñÊ¹ÓÃ·½Ïò´«¸ĞÆ÷ */
+            /**æ˜¯å¦ä½¿ç”¨æ–¹å‘ä¼ æ„Ÿå™¨ */
             this.useOrientation = false;
-            /**ÊÇ·ñÊ¹ÓÃÉãÏñÍ· */
+            /**æ˜¯å¦ä½¿ç”¨æ‘„åƒå¤´ */
             this.useVideoIn = false;
 
-            //ÌØÊâ¶ÔÏó
-            /**ÊÇ·ñÊ¹ÓÃGPS(ÔİÊ±²»¿¼ÂÇÕâ¸ö) */
+            //ç‰¹æ®Šå¯¹è±¡
+            /**æ˜¯å¦ä½¿ç”¨GPS(æš‚æ—¶ä¸è€ƒè™‘è¿™ä¸ª) */
             this.useGPS = false;
 
-            //¿ÉÒÔ²»Íê³ÉµÄ
-            /**ÊÇ·ñÊ¹ÓÃ¹âÃô´«¸ĞÆ÷ */
+            //å¯ä»¥ä¸å®Œæˆçš„
+            /**æ˜¯å¦ä½¿ç”¨å…‰æ•ä¼ æ„Ÿå™¨ */
             this.useLight = false;
-            /**ÊÇ·ñÊ¹ÓÃÕğ¶¯ */
+            /**æ˜¯å¦ä½¿ç”¨éœ‡åŠ¨ */
             this.useShake = false;
 
-            //ÒÔÏÂÊÇAPIµÄÊı¾İ´æ´¢Î»ÖÃ
-            /**ÍÓÂİÒÇÊı¾İ */
+            //ä»¥ä¸‹æ˜¯APIçš„æ•°æ®å­˜å‚¨ä½ç½®
+            /**é™€èºä»ªæ•°æ® */
             this.gyroscope = null;
-            /**¼ÓËÙ¼ÆÊı¾İ */
+            /**åŠ é€Ÿè®¡æ•°æ® */
             this.accelerometer = null;
-            /**·½Ïò´«¸ĞÆ÷Êı¾İ */
+            /**æ–¹å‘ä¼ æ„Ÿå™¨æ•°æ® */
             this.orientation = null;
-            /**ÉãÏñÍ·µÄÊı¾İÁ÷ */
+            /**æ‘„åƒå¤´çš„æ•°æ®æµ */
             this.mediastream = null;
+
+            /**gpså®šä½ */
+            this.gps = null;
         }
 
-        //demo1°æ±¾²»¿¼ÂÇ±ØĞëÒÔÍâµÄ¶ÔÏó
-        //ÒÔÏÂÊÇ¸øÍâ²¿µ÷ÓÃµÄ¿ØÖÆAPIµÄ¿ª¹Ø
+        //demo1ç‰ˆæœ¬ä¸è€ƒè™‘å¿…é¡»ä»¥å¤–çš„å¯¹è±¡
+        //ä»¥ä¸‹æ˜¯ç»™å¤–éƒ¨è°ƒç”¨çš„æ§åˆ¶APIçš„å¼€å…³
 
-        /**ÊÇ·ñÊ¹ÓÃÍÓÂİÒÇ*/
+        /**æ˜¯å¦ä½¿ç”¨é™€èºä»ª*/
         get UseGyroscope() {
             return !!this.useGyroscope;
         }
 
         set UseGyroscope(value) {
             if (typeof (value) !== "boolean" || value == void 0) {
-                throw new lt_code.APIError("ÆôÓÃ»òÍ£Ö¹ÍÓÂİÒÇ", "²ÎÊıÊäÈëÖ»ÔÊĞíBoolean»òÕßÁô¿Õ", "UseGyroscope");
+                throw new lt_code.APIError("å¯ç”¨æˆ–åœæ­¢é™€èºä»ª", "å‚æ•°è¾“å…¥åªå…è®¸Booleanæˆ–è€…ç•™ç©º", "UseGyroscope");
             }
             else {
                 this.useGyroscope = value;
             }
         }
 
-        /**ÊÇ·ñÊ¹ÓÃ¼ÓËÙ¶È¼Æ*/
+        /**æ˜¯å¦ä½¿ç”¨åŠ é€Ÿåº¦è®¡*/
         get UseAccelerometer() {
             return !!this.useAccelerometer;
         }
 
         set UseAccelerometer(value) {
             if (typeof (value) !== "boolean" || value == void 0) {
-                throw new lt_code.APIError("ÆôÓÃ»òÍ£Ö¹¼ÓËÙ¶È¼Æ", "²ÎÊıÊäÈëÖ»ÔÊĞíBoolean»òÕßÁô¿Õ", "UseAccelerometer");
+                throw new lt_code.APIError("å¯ç”¨æˆ–åœæ­¢åŠ é€Ÿåº¦è®¡", "å‚æ•°è¾“å…¥åªå…è®¸Booleanæˆ–è€…ç•™ç©º", "UseAccelerometer");
             }
             else {
                 this.useAccelerometer = value;
             }
         }
 
-        /**ÊÇ·ñÊ¹ÓÃ·½Ïò´«¸ĞÆ÷*/
+        /**æ˜¯å¦ä½¿ç”¨æ–¹å‘ä¼ æ„Ÿå™¨*/
         get UseOrientation() {
             return !!this.useOrientation;
         }
 
         set UseOrientation(value) {
             if (typeof (value) !== "boolean" || value == void 0) {
-                throw new lt_code.APIError("ÆôÓÃ»òÍ£Ö¹·½Ïò´«¸ĞÆ÷", "²ÎÊıÊäÈëÖ»ÔÊĞíBoolean»òÕßÁô¿Õ", "UseOrientation");
+                throw new lt_code.APIError("å¯ç”¨æˆ–åœæ­¢æ–¹å‘ä¼ æ„Ÿå™¨", "å‚æ•°è¾“å…¥åªå…è®¸Booleanæˆ–è€…ç•™ç©º", "UseOrientation");
             }
             else {
                 this.useOrientation = value;
             }
         }
 
-        /**ÊÇ·ñÊ¹ÓÃÉãÏñÍ·*/
+        /**æ˜¯å¦ä½¿ç”¨æ‘„åƒå¤´*/
         get UseVideoIn() {
             return !!this.useVideoIn;
         }
 
         set UseVideoIn(value) {
             if (typeof (value) !== "boolean" || value == void 0) {
-                throw new lt_code.APIError("ÆôÓÃ»òÍ£Ö¹ÉãÏñÍ·", "²ÎÊıÊäÈëÖ»ÔÊĞíBoolean»òÕßÁô¿Õ", "UseVideoIn");
+                throw new lt_code.APIError("å¯ç”¨æˆ–åœæ­¢æ‘„åƒå¤´", "å‚æ•°è¾“å…¥åªå…è®¸Booleanæˆ–è€…ç•™ç©º", "UseVideoIn");
             }
             else {
                 this.useVideoIn = value;
             }
         }
 
-        //ÒÔÏÂÊÇÌá¹©¸øÍâ²¿µÄ´«¸ĞÆ÷Êı¾İ
-        /**ÍÓÂİÒÇÔ­Ê¼Êı¾İ*/
+        /**æ˜¯å¦ä½¿ç”¨GPS*/
+        get UseGPS() {
+            return !!this.useGPS;
+        }
+
+        set UseGPS(value) {
+            if (typeof (value) !== "boolean" || value == void 0) {
+                throw new lt_code.APIError("å¯ç”¨æˆ–åœæ­¢GPS", "å‚æ•°è¾“å…¥åªå…è®¸Booleanæˆ–è€…ç•™ç©º", "UseGPS");
+            }
+            else {
+                this.useGPS = value;
+            }
+        }
+
+        //ä»¥ä¸‹æ˜¯æä¾›ç»™å¤–éƒ¨çš„ä¼ æ„Ÿå™¨æ•°æ®
+        /**é™€èºä»ªåŸå§‹æ•°æ®*/
         get Gyroscope() {
             if (this.UseGyroscope) {
                 return this.gyroscope;
@@ -180,7 +197,7 @@
                 return null;
             }
         }
-        /**ÍÓÂİÒÇËÄÔªÊı*/
+        /**é™€èºä»ªå››å…ƒæ•°*/
         get GyroscopeQuaternion() {
             if (this.UseGyroscope) {
                 var zee = new Vector3(0, 0, 1);
@@ -202,7 +219,7 @@
                 return null;
             }
         }
-        /**ÍÓÂİÒÇÅ·À­½Ç*/
+        /**é™€èºä»ªæ¬§æ‹‰è§’*/
         get GyroscopeEuler() {
             if (this.UseGyroscope) {
                 var q = this.GyroscopeQuaternion;
@@ -214,7 +231,7 @@
             }
         }
 
-        /**¼ÓËÙ¶È´«¸ĞÆ÷Êı¾İ*/
+        /**åŠ é€Ÿåº¦ä¼ æ„Ÿå™¨æ•°æ®*/
         get Accelerometer() {
             if (this.UseAccelerometer) {
                 return this.accelerometer;
@@ -222,7 +239,7 @@
                 return null;
             }
         }
-        /**·½Ïò´«¸ĞÆ÷*/
+        /**æ–¹å‘ä¼ æ„Ÿå™¨*/
         get Orientation() {
             if (this.UseOrientation) {
                 return this.orientation;
@@ -230,7 +247,7 @@
                 return null;
             }
         }
-        /**ÊÓÆµÊı¾İÁ÷*/
+        /**è§†é¢‘æ•°æ®æµ*/
         get MediaStream() {
             if (this.UseVideoIn) {
                 return this.mediastream;
@@ -239,15 +256,24 @@
             }
         }
 
-        /**ÅĞ¶ÏÊÇ·ñÊÇIOSÉè±¸ */
+        /**GPSæ•°æ®*/
+        get GPS() {
+            if (this.UseGPS) {
+                return this.gps;
+            } else {
+                return null;
+            }
+        }
+
+        /**åˆ¤æ–­æ˜¯å¦æ˜¯IOSè®¾å¤‡ */
         IsIOS() {
             var u = window.navigator.userAgent;
             return !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
         }
 
-        /**»ñÈ¡IOSÈ¨ÏŞµ¯´° */
+        /**è·å–IOSæƒé™å¼¹çª— */
         async IOSConfirm() {
-            /**µ¯´°ºĞ×Ó */
+            /**å¼¹çª—ç›’å­ */
             var box = lt_code.newDom("div", {
                 class: "forIOS",
                 style: {
@@ -272,7 +298,7 @@
                     "padding": "0 50px",
                     "font-size": "62px",
                 },
-                innerText: "ÊÇ·ñÔÊĞí´ËÍøÕ¾Ê¹ÓÃÄúÊÖ»úµÄÍÓÂİÒÇÊı¾İ?"
+                innerText: "æ˜¯å¦å…è®¸æ­¤ç½‘ç«™ä½¿ç”¨æ‚¨æ‰‹æœºçš„é™€èºä»ªæ•°æ®?"
             });
             var buttonsBox = lt_code.newDom("div", {
                 class: "forIOS_button",
@@ -288,14 +314,14 @@
                     padding: "0 40px",
                     color: "#3333ff",
                 },
-                innerText: "È·ÈÏ",
+                innerText: "ç¡®è®¤",
             });
             var noButton = lt_code.newDom("div", {
                 class: "forIOS_No",
                 style: {
 
                 },
-                innerText: "È¡Ïû",
+                innerText: "å–æ¶ˆ",
             });
 
             lt_code.addChild(yesButton, buttonsBox);
@@ -325,7 +351,7 @@
                         }
                     }).catch((err) => {
                         alert(JSON.stringify(err));
-                        alert("ÓÃ»§Î´ÔÊĞíÈ¨ÏŞ");
+                        alert("ç”¨æˆ·æœªå…è®¸æƒé™");
                     });
                 } else {
                     // handle regular non iOS 13+ devices
@@ -348,7 +374,7 @@
                         }
                     }).catch((err) => {
                         alert(JSON.stringify(err));
-                        alert("ÓÃ»§Î´ÔÊĞíÈ¨ÏŞ");
+                        alert("ç”¨æˆ·æœªå…è®¸æƒé™");
                     });
                 } else {
                     // handle regular non iOS 13+ devices
@@ -363,24 +389,24 @@
                 yesButton.onmousedown = function () {
                     testClick();
                     lt_code.removeChild(box);
-                    resolve("ÓÃ»§¸øÓèÈ¨ÏŞ");
+                    resolve("ç”¨æˆ·ç»™äºˆæƒé™");
                 }
                 noButton.onmousedown = function () {
                     lt_code.removeChild(box);
-                    reject(new lt_code.APIError("»ñÈ¡IOSÈ¨ÏŞ", "ÓÃ»§²»¸øÓèÈ¨ÏŞ"));
+                    reject(new lt_code.APIError("è·å–IOSæƒé™", "ç”¨æˆ·ä¸ç»™äºˆæƒé™"));
                 }
             })
         }
 
         /**
-         * API³õÊ¼»¯
-         * ÔÚÕâ¸ö¹ı³ÌÖĞ,Ö±½ÓË÷ÒªËùÓĞÈ¨ÏŞ
+         * APIåˆå§‹åŒ–
+         * åœ¨è¿™ä¸ªè¿‡ç¨‹ä¸­,ç›´æ¥ç´¢è¦æ‰€æœ‰æƒé™
          */
         async Init() {
             if (this.IsIOS()) {
                 await this.IOSConfirm();
             } else {
-                //ÍÓÂİÒÇÈ¨ÏŞ
+                //é™€èºä»ªæƒé™
                 window.addEventListener("deviceorientation", e => {
                     this.gyroscope = {
                         x: e.beta||0,
@@ -389,7 +415,7 @@
                     };
                     this.orientation = e.alpha;
                 });
-                //¼ÓËÙ¶ÈÈ¨ÏŞ
+                //åŠ é€Ÿåº¦æƒé™
                 window.addEventListener('devicemotion', (event) => {
                     this.accelerometer = {
                         x: event.acceleration.x||0,
@@ -400,9 +426,65 @@
             }
         }
 
-        /**¸üĞÂAPIµ÷ÓÃ */
+        /**
+         * APIåˆå§‹åŒ–GPS
+         * @param {PositionCallback} callback å›è°ƒå‡½æ•°
+         */
+        GPSInit(callback) {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition( position=>{
+                    this.gps = position.coords;
+                    if (callback) {
+                        callback(this.GPS);
+                    }
+                }, function (err) {
+                    switch (err.code) {
+                        case 1:
+                            throw new lt_code.APIError("GPSåˆå§‹åŒ–", "ä½ç½®æœåŠ¡è¢«æ‹’ç»");
+                        case 2:
+                            throw new lt_code.APIError("GPSåˆå§‹åŒ–", "æ— æ³•è·å–åˆ°ä½ç½®ä¿¡æ¯");
+                        case 3:
+                            throw new lt_code.APIError("GPSåˆå§‹åŒ–", "è·å–ä¿¡æ¯è¶…æ—¶");
+                        default:
+                            throw new lt_code.APIError("GPSåˆå§‹åŒ–", "æœªçŸ¥é”™è¯¯");
+                    }
+                }, {
+                    enableHighAccuracy: true,
+                    maximumAge: 1000
+                });
+            } else {
+                throw new lt_code.APIError("GPSåˆå§‹åŒ–", "æµè§ˆå™¨ä¸æ”¯æŒGPSå®šä½");
+            }
+        }
+
+        /**æ›´æ–°APIè°ƒç”¨ */
         Update() {
 
+            //GPSæ•°æ®å°±æ˜¯éœ€è¦ä¸æ–­è°ƒç”¨æ‰èƒ½è·å–çš„
+            //ä½†æ˜¯å¦‚æœä¸ä½¿ç”¨GPSå³ä¸è°ƒç”¨
+            if (this.UseGPS) {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(position => {
+                        this.gps = position.coords;
+                    }, function (err) {
+                        switch (err.code) {
+                            case 1:
+                                throw new lt_code.APIError("GPSåˆå§‹åŒ–", "ä½ç½®æœåŠ¡è¢«æ‹’ç»");
+                            case 2:
+                                throw new lt_code.APIError("GPSåˆå§‹åŒ–", "æ— æ³•è·å–åˆ°ä½ç½®ä¿¡æ¯");
+                            case 3:
+                                throw new lt_code.APIError("GPSåˆå§‹åŒ–", "è·å–ä¿¡æ¯è¶…æ—¶");
+                            default:
+                                throw new lt_code.APIError("GPSåˆå§‹åŒ–", "æœªçŸ¥é”™è¯¯");
+                        }
+                    }, {
+                            enableHighAccuracy: true,
+                            maximumAge: 1000
+                        });
+                } else {
+                    throw new lt_code.APIError("GPSåˆå§‹åŒ–", "æµè§ˆå™¨ä¸æ”¯æŒGPSå®šä½");
+                }
+            }
         }
     };
 
