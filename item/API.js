@@ -7,7 +7,7 @@
  */
 
 !function () {
-    //这里设置内部使用的参数
+    //这里设置内部使用的对象
     /**三位向量 */
     var Vector3 = THREE.Vector3;
     /**欧拉角 */
@@ -19,9 +19,39 @@
     /**四维矩阵 */
     var Matrix4 = THREE.Matrix4;
 
-    //这里设置内部使用的变量
+    //这里设置内部使用的外部变量
     /**四维矩阵 */
     var _matrix4 = new Matrix4();
+
+    //这里设置内部使用的变量
+    /**检测GPS挂载 */
+    let GPSRun = null;
+    /**用户之前所在的位置 */
+    let oldPath = null;
+
+    //以下是常量
+    /**GPS刷新的方式 */
+    const GPSUPDATETYPE = [
+        "ByTime", "ByDistance",
+        "bytime", "bydistance",
+        "Time", "Distance",
+        "time", "distance",
+    ];
+    /**
+     * 刷新方式判定次数
+     * 这个数据是对上面调度方式进行计数和判定用的
+     * @example 
+     * const GPSUPDATETYPE = [
+     *     "ByTime", "ByDistance","ByAnother"
+     *     "bytime", "bydistance","byanother"
+     *     "Time", "Distance","Another"
+     *     "time", "distance","another"
+     * ]
+     * 则此数据需记为3
+     */
+    const GPSUPDATETYPELENGTH = 2;
+    /**多少时间检测一次用户移动的距离 */
+    const WAITGPSUPDATE = 100;
 
     /**API端口错误 */
     lt_code.APIError = class {
@@ -429,31 +459,60 @@
         /**
          * API初始化GPS
          * @param {PositionCallback} callback 回调函数
+         * @param {string} [updateType] 刷新GPS的方式
+         * @param {number} [updateTimeOrDistance] 刷新的延迟或者距离
          */
-        GPSInit(callback) {
+        GPSInit(callback, updateType="ByTime", updateTimeOrDistance=1000) {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition( position=>{
                     this.gps = position.coords;
                     if (callback) {
                         callback(this.GPS);
                     }
+                    switch (GPSUPDATETYPE.indexOf(updateType)%GPSUPDATETYPELENGTH) {
+                        case 1:
+                            GPSRun = setInterval(() => {
+                                if (this.UseGPS) {
+                                    navigator.geolocation.getCurrentPosition(position => {
+                                        this.gps = position.coords;
+                                    });
+                                }
+                            }, updateTimeOrDistance);
+                            break;
+                        case 2:
+                            GPSRun = setInterval(() => {
+                                if (this.UseGPS) { //这里需要添加对于移动的判定
+                                    navigator.geolocation.getCurrentPosition(position => {
+                                        this.gps = position.coords;
+                                    });
+                                }
+                            }, WAITGPSUPDATE);
+                        default:
+                            throw new lt_code.APIError("GPS初始化", "没有这种实时检测定位的方法!");
+                    }
                 }, function (err) {
                     var e = null;
-                    switch (err.code) {
-                        case 1:
-                        case "1":
-                            e = new lt_code.APIError("GPS初始化", "位置服务被拒绝",err.code);
-                        case 2:
-                        case "2":
-                            e = new lt_code.APIError("GPS初始化", "无法获取到位置信息", err.code);
-                        case 3:
-                        case "3":
-                            e = new lt_code.APIError("GPS初始化", "获取信息超时", err.code);
-                        default:
-                            e = new lt_code.APIError("GPS初始化", "未知错误", err.code);
+                    for (var x in err.code) {
+                        switch (x) {
+                            case 1:
+                            case "1":
+                                e = new lt_code.APIError("GPS初始化", "位置服务被拒绝", err.code);
+                                break;
+                            case 2:
+                            case "2":
+                                e = new lt_code.APIError("GPS初始化", "无法获取到位置信息", err.code);
+                                break;
+                            case 3:
+                            case "3":
+                                e = new lt_code.APIError("GPS初始化", "获取信息超时", err.code);
+                                break;
+                            default:
+                                e = new lt_code.APIError("GPS初始化", "未知错误", err.code);
+                                break;
+                        }
                     }
                     e.code = err.code;
-                    console.trace(err.code);
+                    //console.trace(err.code);
                     throw e;
                 }, {
                     enableHighAccuracy: true,
@@ -467,31 +526,6 @@
         /**更新API调用 */
         Update() {
 
-            //GPS数据就是需要不断调用才能获取的
-            //但是如果不使用GPS即不调用
-            if (this.UseGPS) {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(position => {
-                        this.gps = position.coords;
-                    }, function (err) {
-                        switch (err.code) {
-                            case 1:
-                                throw new lt_code.APIError("GPS初始化", "位置服务被拒绝");
-                            case 2:
-                                throw new lt_code.APIError("GPS初始化", "无法获取到位置信息");
-                            case 3:
-                                throw new lt_code.APIError("GPS初始化", "获取信息超时");
-                            default:
-                                throw new lt_code.APIError("GPS初始化", "未知错误");
-                        }
-                    }, {
-                            enableHighAccuracy: true,
-                            maximumAge: 1000
-                        });
-                } else {
-                    throw new lt_code.APIError("GPS初始化", "浏览器不支持GPS定位");
-                }
-            }
         }
     };
 
