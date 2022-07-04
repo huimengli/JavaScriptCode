@@ -461,8 +461,9 @@
          * @param {PositionCallback} callback 回调函数
          * @param {string} [updateType] 刷新GPS的方式
          * @param {number} [updateTimeOrDistance] 刷新的延迟或者距离
+         * @param {boolean} enableHighAccuracy 是否使用高精度定位(默认否)
          */
-        GPSInit(callback, updateType="ByTime", updateTimeOrDistance=1000) {
+        GPSInit(callback, updateType = "ByTime", updateTimeOrDistance = 1000, enableHighAccuracy=false) {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition( position=>{
                     this.gps = position.coords;
@@ -475,6 +476,12 @@
                                 if (this.UseGPS) {
                                     navigator.geolocation.getCurrentPosition(position => {
                                         this.gps = position.coords;
+                                    }, err => {
+                                        throw err;
+                                    }, {
+                                        enableHighAccuracy: enableHighAccuracy,
+                                        timeout: 5000,
+                                        maximumAge: 1000,
                                     });
                                 }
                             }, updateTimeOrDistance);
@@ -484,6 +491,12 @@
                                 if (this.UseGPS) { //这里需要添加对于移动的判定
                                     navigator.geolocation.getCurrentPosition(position => {
                                         this.gps = position.coords;
+                                    }, err => {
+                                        throw err;
+                                    }, {
+                                        enableHighAccuracy: enableHighAccuracy,
+                                        timeout: 5000,
+                                        maximumAge: 1000,
                                     });
                                 }
                             }, WAITGPSUPDATE);
@@ -513,7 +526,8 @@
                     //console.trace(err.code);
                     throw e;
                 }, {
-                    enableHighAccuracy: true,
+                    enableHighAccuracy: enableHighAccuracy,
+                    timeout:5000,
                     maximumAge: 1000
                 });
             } else {
