@@ -438,16 +438,19 @@
                         callback(this.GPS);
                     }
                 }, function (err) {
+                    var e = null;
                     switch (err.code) {
                         case 1:
-                            throw new lt_code.APIError("GPS初始化", "位置服务被拒绝");
+                            e = new lt_code.APIError("GPS初始化", "位置服务被拒绝");
                         case 2:
-                            throw new lt_code.APIError("GPS初始化", "无法获取到位置信息");
+                            e = new lt_code.APIError("GPS初始化", "无法获取到位置信息");
                         case 3:
-                            throw new lt_code.APIError("GPS初始化", "获取信息超时");
+                            e = new lt_code.APIError("GPS初始化", "获取信息超时");
                         default:
-                            throw new lt_code.APIError("GPS初始化", "未知错误");
+                            e = new lt_code.APIError("GPS初始化", "未知错误");
                     }
+                    e.code = err.code;
+                    throw e;
                 }, {
                     enableHighAccuracy: true,
                     maximumAge: 1000
