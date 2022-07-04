@@ -492,24 +492,22 @@
                     }
                 }, function (err) {
                     var e = null;
-                    for (var x in err.code) {
-                        switch (x) {
-                            case 1:
-                            case "1":
-                                e = new lt_code.APIError("GPS初始化", "位置服务被拒绝", err.code);
-                                break;
-                            case 2:
-                            case "2":
-                                e = new lt_code.APIError("GPS初始化", "无法获取到位置信息", err.code);
-                                break;
-                            case 3:
-                            case "3":
-                                e = new lt_code.APIError("GPS初始化", "获取信息超时", err.code);
-                                break;
-                            default:
-                                e = new lt_code.APIError("GPS初始化", "未知错误", err.code);
-                                break;
-                        }
+                    switch (err.code) {
+                        case 1:
+                        case "1":
+                            e = new lt_code.APIError("GPS初始化", "位置服务被拒绝", err.code);
+                            break;
+                        case 2:
+                        case "2":
+                            e = new lt_code.APIError("GPS初始化", "无法获取到位置信息", err.code);
+                            break;
+                        case 3:
+                        case "3":
+                            e = new lt_code.APIError("GPS初始化", "获取信息超时", err.code);
+                            break;
+                        default:
+                            e = new lt_code.APIError("GPS初始化", "未知错误", err.code);
+                            break;
                     }
                     e.code = err.code;
                     //console.trace(err.code);
