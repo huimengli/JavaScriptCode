@@ -567,7 +567,7 @@
                 .catch(err => {
                     throw new lt_code.APIError("摄像头初始化", err.name + " : " + err.message);
                 });
-                if (mediaStream) {
+                if (this.mediastream) {
                     stopCameraToVideo();
                 }
                 if (navigator.mediaDevices.getUserMedia || navigator.getUserMedia || navigator.webkitGetUserMedia || navigator
