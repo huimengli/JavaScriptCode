@@ -202,9 +202,11 @@
             else {
                 this.useVideoIn = value;
                 if (this.mediastream) {
-                    this.startCameraToVideo();
-                } else {
-                    this.stopCameraToVideo();
+                    if (value) {
+                        this.startCameraToVideo();
+                    } else {
+                        this.stopCameraToVideo();
+                    }
                 }
             }
         }
