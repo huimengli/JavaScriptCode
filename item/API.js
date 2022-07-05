@@ -201,6 +201,11 @@
             }
             else {
                 this.useVideoIn = value;
+                if (this.mediastream) {
+                    this.startCameraToVideo();
+                } else {
+                    this.stopCameraToVideo();
+                }
             }
         }
 
@@ -621,7 +626,7 @@
                 //    console.log(stream);
                 //    this.mediastream = stream;
                 //    if (callback) {
-                //        callback(mediaStream);
+                //        callback(mediastream);
                 //    }
                 //};
 
@@ -640,12 +645,33 @@
             }
         };
 
-        /**停止将摄像头拍摄到的内容 */
-        stopCameraToVideo() {
+        /**停止将摄像头拍摄到的内容(相当于销毁对象) */
+        finishCameraToVideo() {
             if (this.mediastream != void 0) {
-                var tracks = this.mediaStream.getTracks();
+                var tracks = this.mediastream.getTracks();
                 tracks.forEach(function (e) {
                     e.stop();
+                });
+                this.mediastream = null;
+            }
+        }
+
+        /**继续将摄像头拍摄到的内容输出 */
+        startCameraToVideo() {
+            if (this.mediastream != void 0) {
+                var tracks = this.mediastream.getTracks();
+                tracks.forEach(function (e) {
+                    e.enabled = true;
+                });
+            }
+        }
+
+        /**暂停将摄像头拍摄到的内容输出 */
+        stopCameraToVideo() {
+            if (this.mediastream != void 0) {
+                var tracks = this.mediastream.getTracks();
+                tracks.forEach(function (e) {
+                    e.enabled = false;
                 });
             }
         }
