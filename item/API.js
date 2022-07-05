@@ -143,6 +143,9 @@
 
             /**gps定位 */
             this.gps = null;
+
+            /**震动 */
+            this.vibrate = null;
         }
 
         //demo1版本不考虑必须以外的对象
@@ -678,9 +681,37 @@
             }
         }
 
+        /**初始化震动功能 */
+        VibrateInit() {
+            this.vibrate = navigator.vibrate ||
+                navigator.webkitVibrate ||
+                navigator.mozVibrate ||
+                navigator.msVibrate;
+
+            if (!this.vibrate) {
+                throw new lt_code.APIError("初始化震动功能出错", "设备不支持震动功能");
+            }
+        }
+
         /**更新API调用 */
         Update() {
 
+        }
+
+        //以下是给外部使用的功能
+
+        /**
+         * 震动
+         * @param {any} startTime 开始时间
+         * @param {any} endTime 结束时间
+         * @param {...any} times 更多的震动时间值(开始,结束,开始,结束)
+         */
+        Vibrate(startTime, endTime, ...times) {
+            var theTimes = [startTime, endTime];
+            for (var i = 0; i < times.length; i++) {
+                theTimes.push(times[x]);
+            }
+            this.vibrate(theTimes);
         }
     };
 
