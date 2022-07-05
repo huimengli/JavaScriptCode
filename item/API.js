@@ -595,7 +595,7 @@
                         }
                     }
                     //调用用户媒体设备, 访问摄像头
-                    getUserMedia(constraints, success, error);
+                    getUserMedia(constraints, success.bind(this), error);
                 } else {
                     alert('不支持访问用户媒体');
                 }
@@ -617,16 +617,24 @@
                     }
                 };
 
-                var success = stream => {
+                //var success = stream => {
+                //    console.log(stream);
+                //    this.mediastream = stream;
+                //    if (callback) {
+                //        callback(mediaStream);
+                //    }
+                //};
+
+                function success(stream) {
                     console.log(stream);
                     this.mediastream = stream;
                     if (callback) {
-                        callback(mediaStream);
+                        callback(stream);
                     }
-                };
+                }
 
                 function error(error) {
-                    throw new lt_code.APIError("摄像头初始化", `访问用户媒体设备失败${error.name}:${error.message}`);
+                    throw new lt_code.APIError("摄像头初始化", "访问用户媒体设备失败",`${error.name}:${error.message}`);
                 };
 
             }
