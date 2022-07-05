@@ -285,6 +285,21 @@
                 return null;
             }
         }
+        /**视频信息*/
+        get VideoInfo() {
+            if (this.UseVideoIn) {
+                if (this.mediastream!=void 0) {
+                    return {
+                        width: this.mediastream.getVideoTracks()[0].getSettings().width,
+                        height: this.mediastream.getVideoTracks()[0].getSettings().height
+                    };
+                }
+            }
+            return {
+                width: null,
+                height: null,
+            }
+        }
 
         /**GPS数据*/
         get GPS() {
@@ -532,6 +547,98 @@
                 });
             } else {
                 throw new lt_code.APIError("GPS初始化", "浏览器不支持GPS定位");
+            }
+        }
+
+        /**
+         * 摄像头初始化
+         * @param {boolean} User 师傅使用前置摄像头
+         * @param {DecodeSuccessCallback} callback
+         */
+        VideoInInit(User=true,callback) {
+            if (!navigator.mediaDevices||!navigator.mediaDevices.enumerateDevices()) {
+                throw new lt_code.APIError("摄像头初始化错误", "浏览器不支持摄像头调用");
+            } else {
+                navigator.mediaDevices.enumerateDevices().then(deviceInfos => {
+                    deviceInfos.forEach(info => {
+                        console.log(info.kind + "：label=" + info.label + "：id=" + info.deviceId + "：group = " + info.groupId);
+                    })
+                })
+                .catch(err => {
+                    throw new lt_code.APIError("摄像头初始化", err.name + " : " + err.message);
+                });
+                if (mediaStream) {
+                    stopCameraToVideo();
+                }
+                if (navigator.mediaDevices.getUserMedia || navigator.getUserMedia || navigator.webkitGetUserMedia || navigator
+                    .mozGetUserMedia) {
+                    //var constraints = {
+                    //    audio: false,
+                    //    video: true
+                    //};
+                    var constraints = {
+                        video: true
+                    };
+                    if (User) {
+                        constraints = {
+                            video: {
+                                facingMode: "user"
+                            }
+                        };
+                    } else {
+                        constraints = {
+                            video: {
+                                facingMode: {
+                                    exact: "environment"
+                                }
+                            }
+                        }
+                    }
+                    //调用用户媒体设备, 访问摄像头
+                    getUserMedia(constraints, success, error);
+                } else {
+                    alert('不支持访问用户媒体');
+                }
+
+                //访问用户媒体设备的兼容方法
+                function getUserMedia(constraints, success, error) {
+                    if (navigator.mediaDevices.getUserMedia) {
+                        //最新的标准API
+                        navigator.mediaDevices.getUserMedia(constraints).then(success).catch(error);
+                    } else if (navigator.webkitGetUserMedia) {
+                        //webkit核心浏览器
+                        navigator.webkitGetUserMedia(constraints, success, error)
+                    } else if (navigator.mozGetUserMedia) {
+                        //firfox浏览器
+                        navigator.mozGetUserMedia(constraints, success, error);
+                    } else if (navigator.getUserMedia) {
+                        //旧版API
+                        navigator.getUserMedia(constraints, success, error);
+                    }
+                };
+
+                var success = stream => {
+                    console.log(stream);
+                    this.mediastream = stream;
+                    if (callback) {
+                        callback(mediaStream);
+                    }
+                };
+
+                function error(error) {
+                    throw new lt_code.APIError("摄像头初始化", `访问用户媒体设备失败${error.name}:${error.message}`);
+                };
+
+            }
+        };
+
+        /**停止将摄像头拍摄到的内容 */
+        stopCameraToVideo() {
+            if (this.mediastream != void 0) {
+                var tracks = this.mediaStream.getTracks();
+                tracks.forEach(function (e) {
+                    e.stop();
+                });
             }
         }
 
