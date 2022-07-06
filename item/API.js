@@ -773,8 +773,9 @@
          * 伪截图
          * @param {HTMLVideoElement} video
          * @param {HTMLCanvasElement} canvas
+         * @param {"max"|"Max"|"min"|"Min"|"byVideo"|"byCanvas"} cutType 图像切割方式
          */
-        VideoAddCanvas(video, canvas) {
+        VideoAddCanvas(video, canvas,cutType="Max") {
             video.width = video.width || video.offsetWidth;
             video.height = video.height || video.offsetHeight;
             if (!video.width || !video.height) {
@@ -782,10 +783,38 @@
             }
 
             /**最大宽高 */
-            var wh = {
-                width: video.width > canvas.width ? video.width : canvas.width,
-                height: video.height > canvas.height ? video.height : canvas.height
-            };
+            var wh = { width: null, height: null };
+            switch (cutType) {
+                case "max":
+                case "Max":
+                    wh = {
+                        width: video.width > canvas.width ? video.width : canvas.width,
+                        height: video.height > canvas.height ? video.height : canvas.height
+                    };
+                    break;
+                case "min":
+                case "Min":
+                    wh = {
+                        width: video.width < canvas.width ? video.width : canvas.width,
+                        height: video.height < canvas.height ? video.height : canvas.height
+                    };
+                    break;
+                case "byVideo":
+                    wh = {
+                        width: video.width,
+                        height: video.height
+                    };
+                    break;
+                case "byCanvas":
+                    wh = {
+                        width: canvas.width,
+                        height: canvas.height
+                    };
+                    break;
+                default:
+                    throw new lt_code.APIError("截图函数出错", "cutType不在规定范围内", "cutType");
+            }
+
             /**输出canvas画布 */
             var output = lt_code.newDom("canvas", {
                 class: "APIOutPut",
