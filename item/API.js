@@ -834,12 +834,16 @@
             //开始绘制video
             ctx.drawImage(video,
                 (wh.width - video.width) / 2,
-                (wh.height - video.height) / 2
+                (wh.height - video.height) / 2,
+                video.width,
+                video.height
             );
             //开始绘制canvas
             ctx.drawImage(canvas,
                 (wh.width - canvas.width) / 2,
-                (wh.height - canvas.height) / 2
+                (wh.height - canvas.height) / 2,
+                canvas.width,
+                canvas.height
             );
             //下载截图
             lt_code.test.downFile(output.toDataURL(), "截图" + new Date().format("yyyy-MM-dd hh_mm_ss") + ".png");
