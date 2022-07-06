@@ -143,9 +143,6 @@
 
             /**gps定位 */
             this.gps = null;
-
-            /**震动 */
-            this.vibrate = null;
         }
 
         //demo1版本不考虑必须以外的对象
@@ -683,12 +680,12 @@
 
         /**初始化震动功能 */
         VibrateInit() {
-            this.vibrate = navigator.vibrate ||
+            navigator.vibrate = navigator.vibrate ||
                 navigator.webkitVibrate ||
                 navigator.mozVibrate ||
                 navigator.msVibrate;
 
-            if (!this.vibrate) {
+            if (!navigator.vibrate) {
                 throw new lt_code.APIError("初始化震动功能出错", "设备不支持震动功能");
             }
         }
@@ -711,7 +708,7 @@
             for (var i = 0; i < times.length; i++) {
                 theTimes.push(times[x]);
             }
-            this.vibrate(theTimes);
+            navigator.vibrate(theTimes);
         }
     };
 
