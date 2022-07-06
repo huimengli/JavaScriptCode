@@ -317,7 +317,12 @@
             }
         }
 
-        /**判断是否是IOS设备 */
+        /**
+         * 判断是否是IOS设备
+         * 请注意,如果要在IOS设备上使用mediastream播放视频
+         * 需要添加{playsinline: "playsinline","webkit-playsinline":"true"}
+         * 两个属性,才能让苹果手机正常的播放视频而不是黑屏
+         */
         IsIOS() {
             var u = window.navigator.userAgent;
             return !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
@@ -762,6 +767,57 @@
             } else {
                 throw new lt_code.APIError("截图功能错误", "用户的设备不支持屏幕截取");
             }
+        }
+
+        /**
+         * 伪截图
+         * @param {HTMLVideoElement} video
+         * @param {HTMLCanvasElement} canvas
+         */
+        VideoAddCanvas(video, canvas) {
+            video.width = video.width || video.offsetWidth;
+            video.height = video.height || video.offsetHeight;
+            if (!video.width || !video.height) {
+                throw new lt_code.APIError("截图函数出错!", "video对象不在document中\n或者video对象没有宽高", "video");
+            }
+
+            /**最大宽高 */
+            var wh = {
+                width: video.width > canvas.width ? video.width : canvas.width,
+                height: video.height > canvas.height ? video.height : canvas.height
+            };
+            /**输出canvas画布 */
+            var output = lt_code.newDom("canvas", {
+                class: "APIOutPut",
+                width: wh.width,
+                height: wh.height,
+                style: {
+                    position: "fixed",
+                    left: 0,
+                    top: "100vh",
+                }
+            });
+            /**输出画布 */
+            var ctx = lt_code.getCtx(output);
+
+            //开始绘制
+            lt_code.addChild(output);
+            //开始绘制video
+            ctx.drawImage(video,
+                (wh.width - video.width) / 2,
+                (wh.height - video.height) / 2
+            );
+            //开始绘制canvas
+            ctx.drawImage(canvas,
+                (wh.width - canvas.width) / 2,
+                (wh.height - canvas.height) / 2
+            );
+            //下载截图
+            lt_code.test.downFile(output.toDataURL(), "截图" + new Date().format("yyyy-MM-dd hh_mm_ss") + ".png");
+            //等待100毫秒
+            setTimeout(function () {
+                lt_code.removeChild(output);
+            }, 100);
         }
     };
 
