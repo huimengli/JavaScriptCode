@@ -708,7 +708,60 @@
             for (var i = 0; i < times.length; i++) {
                 theTimes.push(times[x]);
             }
-            navigator.vibrate(theTimes);
+            return navigator.vibrate(theTimes);
+        }
+
+        /**进行截图 */
+        async Screenshot() {
+            if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
+                var media = await navigator.mediaDevices.getDisplayMedia({ video: true });
+                var setting = media.getTracks()[0].getSettings();
+                var video = lt_code.newDom("video", {
+                    id: "Screenshot",
+                    style: {
+                        position: "fixed",
+                        //opacity: "0",
+                        width: setting.width + "px",
+                        height: setting.height + "px",
+                        left: 0,
+                        top:"100vh",
+                        "z-index": -100
+                    }
+                });
+                lt_code.addChild(video);
+                lt_code.getAll().style.overflow = "hidden";
+                video.srcObject = media;
+                await video.play();
+                var canvas = lt_code.newDom("canvas", {
+                    id: "ScreenshotCanvas",
+                    style: {
+                        position: "fixed",
+                        opacity: "0",
+                        width: setting.width + "px",
+                        height: setting.height + "px",
+                        left: 0,
+                        top: 0,
+                        "z-index": -99
+                    }
+                });
+                lt_code.addChild(canvas);
+                canvas.width = setting.width;
+                canvas.height = setting.height;
+                var ctx = lt_code.getCtx(canvas);
+                ctx.drawImage(video, 0, 0, setting.width, setting.height);
+                lt_code.test.downFile(canvas.toDataURL(), "截图" + new Date().format("yyyy-MM-dd hh_mm_ss")+".png");
+                //等待100毫秒
+                setTimeout(function () {
+                    media.getTracks().forEach(function (e) {
+                        e.stop();
+                    });
+                    lt_code.removeChild(video);
+                    lt_code.removeChild(canvas);
+                    lt_code.getAll().style.overflow = "";
+                }, 1000);
+            } else {
+                throw new lt_code.APIError("截图功能错误", "用户的设备不支持屏幕截取");
+            }
         }
     };
 
