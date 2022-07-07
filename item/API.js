@@ -771,11 +771,14 @@
 
         /**
          * 伪截图
+         * 由于有些canvas使用webGL绘制
+         * 所以需要通过image进行拓印
          * @param {HTMLVideoElement} video
          * @param {HTMLCanvasElement} canvas
          * @param {"max"|"Max"|"min"|"Min"|"byVideo"|"byCanvas"} cutType 图像切割方式
+         * @param {"2d"|"webgl"} cntextId ctx渲染方式
          */
-        VideoAddCanvas(video, canvas,cutType="Max") {
+        VideoAddCanvas(video, canvas, cutType = "Max", cntextId="webgl") {
             video.width = video.width || video.offsetWidth;
             video.height = video.height || video.offsetHeight;
             if (!video.width || !video.height) {
@@ -839,12 +842,30 @@
                 video.height
             );
             //开始绘制canvas
-            ctx.drawImage(canvas,
-                (wh.width - canvas.width) / 2,
-                (wh.height - canvas.height) / 2,
-                canvas.width,
-                canvas.height
-            );
+            switch (cntextId) {
+                case "2d":
+                    ctx.drawImage(canvas,
+                        (wh.width - canvas.width) / 2,
+                        (wh.height - canvas.height) / 2,
+                        canvas.width,
+                        canvas.height
+                    );
+                    break;
+                case "webgl":
+                    /**拓印用图片 */
+                    var img = new Image();
+                    img.src = canvas.toDataURL();
+                    img.onloadend = function () {
+                        ctx.drawImage(img,
+                            (wh.width - canvas.width) / 2,
+                            (wh.height - canvas.height) / 2,
+                            canvas.width,
+                            canvas.height
+                        );
+                    };
+                    break;
+                default:
+            }
             //下载截图
             lt_code.test.downFile(output.toDataURL(), "截图" + new Date().format("yyyy-MM-dd hh_mm_ss") + ".png");
             //等待100毫秒
