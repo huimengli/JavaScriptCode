@@ -856,14 +856,12 @@
                     var img = new Image();
                     img.src = canvas.toDataURL();
                     alert(lt_code.getSize(img.src.length));
-                    img.onloadend = function () {
-                        ctx.drawImage(img,
-                            (wh.width - canvas.width) / 2,
-                            (wh.height - canvas.height) / 2,
-                            canvas.width,
-                            canvas.height
-                        );
-                    };
+                    ctx.drawImage(img,
+                        (wh.width - canvas.width) / 2,
+                        (wh.height - canvas.height) / 2,
+                        canvas.width,
+                        canvas.height
+                    );
                     break;
                 default:
             }
