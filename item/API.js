@@ -856,17 +856,19 @@
                     var img = new Image();
                     img.src = canvas.toDataURL();
                     alert(lt_code.getSize(img.src.length));
-                    lt_code.addChild(img);
-                    img.style.position = "fixed";
-                    img.style.zIndex = "100";
-                    img.style.left = "0";
-                    img.style.top = "0";
-                    ctx.drawImage(img,
-                        (wh.width - img.width) / 2,
-                        (wh.height - img.height) / 2,
-                        img.width,
-                        img.height
-                    );
+                    //lt_code.addChild(img);
+                    //img.style.position = "fixed";
+                    //img.style.zIndex = "100";
+                    //img.style.left = "0";
+                    //img.style.top = "0";
+                    img.onload = function () {
+                        ctx.drawImage(img,
+                            (wh.width - img.width) / 2,
+                            (wh.height - img.height) / 2,
+                            img.width,
+                            img.height
+                        )
+                    }
                     break;
                 default:
                     throw new lt_code.APIError("截图函数出错", "contextId没有" + contextId + "模式", "cntextId");
