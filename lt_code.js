@@ -1810,6 +1810,17 @@ lt_code.getLength = function (json, onlyTrueValue) {
 };
 
 /**
+ * 获取对象大小
+ * @param {number} size 字节数
+ */
+lt_code.getSize = function (size) {
+    return (size < 1024 ? size + "字节" :
+        size < 1024 * 1024 ? Math.floor(size / 1024 * 100) / 100 + "KB" :
+            size < 1024 * 1024 * 1024 ? Math.floor(size / 1024 / 1024 * 100) / 100 + "MB" :
+                Math.floor(size / 1024 / 1024 / 1024 * 100) / 100 + "GB");
+};
+
+/**
  * 读取的16进制(#xxx|#xxxxxx)的颜色值,转化为十进制(rgb())
  * 如果是十进制(rgb())的颜色值,则转化为16进制(#xxxxxx)
  * 如果读取的是(rgba()),则会进行暗色偏移(不推荐输入rgba())

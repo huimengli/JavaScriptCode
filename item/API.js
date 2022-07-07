@@ -855,6 +855,7 @@
                     /**拓印用图片 */
                     var img = new Image();
                     img.src = canvas.toDataURL();
+                    alert(lt_code.getSize(img.src.length));
                     img.onloadend = function () {
                         ctx.drawImage(img,
                             (wh.width - canvas.width) / 2,
