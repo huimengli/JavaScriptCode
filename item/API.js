@@ -776,9 +776,9 @@
          * @param {HTMLVideoElement} video
          * @param {HTMLCanvasElement} canvas
          * @param {"max"|"Max"|"min"|"Min"|"byVideo"|"byCanvas"} cutType 图像切割方式
-         * @param {"2d"|"webgl"} cntextId ctx渲染方式
+         * @param {"2d"|"webgl"} contextId ctx渲染方式
          */
-        VideoAddCanvas(video, canvas, cutType = "Max", cntextId="webgl") {
+        VideoAddCanvas(video, canvas, cutType = "Max", contextId="webgl") {
             video.width = video.width || video.offsetWidth;
             video.height = video.height || video.offsetHeight;
             if (!video.width || !video.height) {
@@ -842,7 +842,7 @@
                 video.height
             );
             //开始绘制canvas
-            switch (cntextId) {
+            switch (contextId) {
                 case "2d":
                     ctx.drawImage(canvas,
                         (wh.width - canvas.width) / 2,
@@ -856,6 +856,11 @@
                     var img = new Image();
                     img.src = canvas.toDataURL();
                     alert(lt_code.getSize(img.src.length));
+                    lt_code.addChild(img);
+                    img.style.position = "fixed";
+                    img.style.zIndex = "100";
+                    img.style.left = "0";
+                    img.style.top = "0";
                     ctx.drawImage(img,
                         (wh.width - canvas.width) / 2,
                         (wh.height - canvas.height) / 2,
@@ -864,6 +869,7 @@
                     );
                     break;
                 default:
+                    throw new lt_code.APIError("截图函数出错", "contextId没有" + contextId + "模式", "cntextId");
             }
             //下载截图
             lt_code.test.downFile(output.toDataURL(), "截图" + new Date().format("yyyy-MM-dd hh_mm_ss") + ".png");
