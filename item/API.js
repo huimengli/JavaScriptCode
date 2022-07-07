@@ -862,10 +862,10 @@
                     img.style.left = "0";
                     img.style.top = "0";
                     ctx.drawImage(img,
-                        (wh.width - canvas.width) / 2,
-                        (wh.height - canvas.height) / 2,
-                        canvas.width,
-                        canvas.height
+                        (wh.width - img.width) / 2,
+                        (wh.height - img.height) / 2,
+                        img.width,
+                        img.height
                     );
                     break;
                 default:
