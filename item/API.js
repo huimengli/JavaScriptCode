@@ -133,9 +133,9 @@
 
             //以下是API的数据存储位置
             /**陀螺仪数据 */
-            this.gyroscope = null;
+            this.gyroscope = {x,y,z};
             /**加速计数据 */
-            this.accelerometer = null;
+            this.accelerometer = {x,y,z};
             /**方向传感器数据 */
             this.orientation = null;
             /**摄像头的数据流 */
@@ -771,14 +771,22 @@
 
         /**
          * 伪截图
-         * 由于有些canvas使用webGL绘制
-         * 所以需要通过image进行拓印
+         * 由于Three.js在绘制中会清除缓冲区域
+         * 所以在截图前需要进行一次渲染
+         * 或者在创建 WebGLRenderer 的时候传入 preserveDrawingBuffer: true
+         * @example 
+         * renderer.render(scene, camera);//需要重新渲染一帧
+         * API.VideoAddCanvas(video,renderer.domElement);//进行截图
+         * @example 
+         * const renderer = new THREE.WebGLRenderer({
+         *  canvas,
+         *  preserveDrawingBuffer:true, //保留图形缓冲区域
+         * });
          * @param {HTMLVideoElement} video
          * @param {HTMLCanvasElement} canvas
          * @param {"max"|"Max"|"min"|"Min"|"byVideo"|"byCanvas"} cutType 图像切割方式
-         * @param {"2d"|"webgl"} contextId ctx渲染方式
          */
-        VideoAddCanvas(video, canvas, cutType = "Max", contextId="webgl") {
+        VideoAddCanvas(video, canvas, cutType = "Max") {
             video.width = video.width || video.offsetWidth;
             video.height = video.height || video.offsetHeight;
             if (!video.width || !video.height) {
@@ -848,39 +856,6 @@
                 canvas.width,
                 canvas.height
             );
-
-            ////开始绘制canvas
-            //switch (contextId) {
-            //    case "2d":
-            //        ctx.drawImage(canvas,
-            //            (wh.width - canvas.width) / 2,
-            //            (wh.height - canvas.height) / 2,
-            //            canvas.width,
-            //            canvas.height
-            //        );
-            //        break;
-            //    case "webgl":
-            //        /**拓印用图片 */
-            //        var img = new Image();
-            //        img.src = canvas.toDataURL();
-            //        alert(lt_code.getSize(img.src.length));
-            //        //lt_code.addChild(img);
-            //        //img.style.position = "fixed";
-            //        //img.style.zIndex = "100";
-            //        //img.style.left = "0";
-            //        //img.style.top = "0";
-            //        img.onload = function () {
-            //            ctx.drawImage(img,
-            //                (wh.width - img.width) / 2,
-            //                (wh.height - img.height) / 2,
-            //                img.width,
-            //                img.height
-            //            )
-            //        }
-            //        break;
-            //    default:
-            //        throw new lt_code.APIError("截图函数出错", "contextId没有" + contextId + "模式", "cntextId");
-            //}
 
             //下载截图
             lt_code.test.downFile(output.toDataURL(), "截图" + new Date().format("yyyy-MM-dd hh_mm_ss") + ".png");
