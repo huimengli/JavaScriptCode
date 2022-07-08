@@ -133,9 +133,9 @@
 
             //以下是API的数据存储位置
             /**陀螺仪数据 */
-            this.gyroscope = {x,y,z};
+            this.gyroscope = {x:null,y:null,z:null};
             /**加速计数据 */
-            this.accelerometer = {x,y,z};
+            this.accelerometer = { x: null, y: null, z: null };
             /**方向传感器数据 */
             this.orientation = null;
             /**摄像头的数据流 */
