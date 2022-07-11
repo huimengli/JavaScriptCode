@@ -426,7 +426,7 @@
                                     y: event.gamma||0,
                                     z: event.alpha||0
                                 };
-                                this.orientation = e.alpha;
+                                this.orientation = event.alpha;
                             });
                         }
                     }).catch((err) => {
