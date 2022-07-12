@@ -604,7 +604,9 @@ lt_code.getClientRect = function (dom) {
 lt_code.searchTime = function (time) {
     var cut = new Date().getTime() - time.getTime();
     var ret = null;
-    if (cut < 60 * 1000 && cut > 0) {
+    if (cut<0) {
+        ret = "未来";
+    } else if (cut < 60 * 1000 && cut >= 0) {
         ret = "刚刚";
     } else if (cut < 60 * 60 * 1000) {
         ret = lt_code.getNum(cut / 1000 / 60) + "分钟前";
@@ -613,7 +615,7 @@ lt_code.searchTime = function (time) {
     } else if (cut < 30 * 60 * 60 * 24 * 1000) {
         ret = lt_code.getNum(cut / 1000 / 60 / 60 / 24) + "天前";
     } else {
-        ret = time.getFullYear() + "/" + (time.getMonth() + 1) + "/" + time.getDate() + " " + time.getHours() + ":" + time.getMinutes();
+        ret = time.format("yyyy-MM-dd hh:mm:ss");
     }
     return ret;
 }
