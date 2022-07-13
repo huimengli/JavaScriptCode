@@ -10705,7 +10705,7 @@ lt_code.SHA256 = {
 
     /* Get the internal hash as a hex string */
     sha256_encode_hex: function () {
-        var output = new String();
+        var output = "";
         for (var i = 0; i < 8; i++) {
             for (var j = 28; j >= 0; j -= 4)
                 output += this.sha256_hex_digits.charAt((this.ihash[i] >>> j) & 0x0f);
