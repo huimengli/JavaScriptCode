@@ -4,20 +4,311 @@
     <title></title>
     <script src="../lt_code.js"></script>
     <script src="..\..\Flask1\Flask1\Flask1\static\three.js\build\three.js"></script>
+    <style>
+        video#VideoIn {
+            border: 1px solid black;
+        }
+    </style>
 </head>
 <body>
+    <div class="valueBox">
+    </div>
 </body>
 </html>
 <script>
-    var API = null;
-    window.onload = function () {
-        lt_code.init("API");
-        lt_code.variable.addRun(setInterval(async function () {
-            if (lt_code.API) {
-                lt_code.variable.delRun("等待API加载");
-                API = new lt_code.API();     
-                await API.Init();
-            }
-        }, 100), "等待API加载");
+    /**内容盒子 */
+    var valueBox = lt_code.getAll(".valueBox");
+    try {
+        /**API对象 */
+        var API = new lt_code.API();
+    } catch (e) {
+        var API = null;
+    }
+    /**多少时间从API拿一次数据*/
+    const WAITTIME = 100;
+
+    /**
+     * 创建一个按钮行
+     * @param name 按钮提示
+     * @param classname 按钮英文名
+     */
+    var createButtonLine = function (name, classname) {
+        var line = lt_code.newDom("div", {
+            class: "buttonLine",
+        });
+        var input = lt_code.newDom("input", {
+            type: "checkbox",
+            class: classname,
+            name: classname,
+            value: name,
+        });
+        var tishi = lt_code.newDom("div", {
+            innerText: name,
+        });
+
+        lt_code.addChild(input, line);
+        lt_code.addChild(tishi, line);
+
+        lt_code.addChild(line, valueBox);
+        return input;
+    }
+
+    /**
+     * 创建内容行
+     * @param name
+     * @param value
+     */
+    var createLine = function (name, value) {
+        var line = lt_code.newDom("div", {
+            class: "valueLine",
+        });
+        var lineTitle = lt_code.newDom("div", {
+            class: "valueLineTitle",
+            innerText: name
+        });
+        var lineValue = lt_code.newDom("div", {
+            class: "valueLineValue",
+            innerText: value
+        });
+        lt_code.addChild(lineTitle, line);
+        lt_code.addChild(lineValue, line);
+
+        lt_code.addChild(line, valueBox);
+        return lineValue;
     };
+
+    //以下是布局创建
+    //陀螺仪布局
+    /**是否使用陀螺仪 */
+    var useGyroscope = createButtonLine("是否使用陀螺仪", "useGyroscope");
+    /**陀螺仪的原始数据 */
+    var Gyroscope = createLine("原始陀螺仪数据", null);
+    /**陀螺仪四元数数据 */
+    var GyroscopeQuaternion = createLine("旋转四元素数据", null);
+    /**陀螺仪欧拉角数据 */
+    var GyroscopeEuler = createLine("旋转欧拉角数据", null);
+
+    //测试朝向
+    /**师傅使用方向传感器 */
+    var useOrientation = createButtonLine("是否使用方向传感器", "useOrientation");
+    /**方向传感器数据 */
+    var Orientation = createLine("方向传感器数据", null);
+
+    //GPS布局
+    /**是否使用GPS */
+    var useGPS = createButtonLine("是否使用GPS", "useGPS");
+    /**GPS数据 */
+    var GPS = createLine("GPS数据", null);
+
+    //加速度布局
+    /**是否使用加速计 */
+    var useAccelerometer = createButtonLine("是否使用加速计", "useAccelerometer");
+    /**加速计数据 */
+    var Accelerometer = createLine("加速计数据", null);
+
+    //视频布局
+    /**是否使用摄像头 */
+    var useVideoIn = createButtonLine("是否使用摄像头", "useVideoIn");
+    /**视频播片对象 */
+    var video = createLine("摄像头数据", null);
+
+    //测试震动功能
+    var vibrateButton = lt_code.newDom("input", {
+        type: "button",
+        class: "vibrateButton",
+        value: "测试震动"
+    });
+    lt_code.addChild(vibrateButton, valueBox);
+
+    //测试截图功能
+    var ScreenshotButton = lt_code.newDom("input", {
+        type: "button",
+        class: "ScreenshotButton",
+        value: "测试截图"
+    });
+    lt_code.addChild(ScreenshotButton, valueBox);
+
+    //加载模块
+    window.onload = function () {
+        lt_code.initByTime("API");
+        lt_code.init("PTD");
+        lt_code.variable.addRun(setInterval(function () {
+            if (lt_code.API && lt_code.pseudoThreeD) {
+                lt_code.variable.delRun("等待模块加载");
+                API = new lt_code.API();
+
+                //修改video指向
+                video = function () {
+                    if (API.IsIOS()) {
+                        var ret = lt_code.newDom("video", {
+                            id: "videoIn",
+                            playsinline: "playsinline",
+                            "webkit-playsinline": "true",
+                        });
+                    } else {
+                        var ret = lt_code.newDom("video", {
+                            id: "videoIn",
+                        });
+                    }
+                    video.innerHTML = "";
+                    lt_code.addChild(ret, video);
+                    return ret;
+                }();
+
+                //设置能否使用API数据
+                useGyroscope.onchange = async function () {
+                    API.UseGyroscope = this.checked;
+                    if (this.checked && API.Gyroscope == void 0) {
+                        await API.Init();
+                    }
+                };
+
+                //设置能否使用陀螺仪数据
+                useOrientation.onchange = async function () {
+                    API.UseOrientation = this.checked;
+                    if (this.checked && API.orientation == void 0) {
+                        await API.Init();
+                    }
+                }
+
+                //获取GPS数据
+                useGPS.onchange = function () {
+                    API.UseGPS = this.checked;
+                    if (this.checked && API.GPS == void 0) {
+                        try {
+                            //使用默认的根据时间刷新GPS定位
+                            API.GPSInit(function (gps) {
+                                var dict = {};
+                                for (var x in gps) {
+                                    dict[x] = gps[x];
+                                }
+                                GPS.innerText = JSON.stringify(dict);
+                            });
+                        } catch (e) {
+                            alert(e);
+                        }
+                    }
+                };
+
+                //获取加速计数据
+                useAccelerometer.onchange = async function () {
+                    API.UseAccelerometer = this.checked;
+                    if (this.checked && API.Accelerometer == void 0) {
+                        await API.Init();
+                    }
+                };
+
+                //获取摄像头数据
+                useVideoIn.onchange = function () {
+                    try {
+                        API.UseVideoIn = this.checked;
+                        if (this.checked && API.MediaStream == void 0) {
+                            API.VideoInInit(false, function (stream) {
+                                if ("srcObject" in video) {
+                                    video.srcObject = stream;
+                                } else {
+                                    video.src = window.URL.createObjectURL(stream);
+                                }
+                                video.onloadedmetadata = async function (e) {
+                                    await video.play();
+                                }
+                            });
+                        }
+                    } catch (e) {
+                        alert(e);
+                    }
+                }
+
+                //测试震动按钮
+                vibrateButton.onmousedown = function () {
+                    if (API.vibrate) {
+                        try {
+                            API.VibrateInit();
+                        } catch (e) {
+                            alert(e);
+                        }
+                    }
+                    API.Vibrate(300, 300);
+                }
+
+                //测试截图按钮
+                ScreenshotButton.onmousedown = async function () {
+                    try {
+                        await API.Screenshot();
+                    } catch (e) {
+                        alert(e);
+                    }
+                }
+
+                //开始获取数据
+                lt_code.variable.addRun(setInterval(function () {
+                    //获取陀螺仪数据
+                    if (API.UseGyroscope) {
+                        Gyroscope.innerText = JSON.stringify({
+                            x: lt_code.pseudoThreeD.getAccuracy(API.Gyroscope.x),
+                            y: lt_code.pseudoThreeD.getAccuracy(API.Gyroscope.y),
+                            z: lt_code.pseudoThreeD.getAccuracy(API.Gyroscope.z),
+                        });
+                        GyroscopeQuaternion.innerText = JSON.stringify({
+                            x: lt_code.pseudoThreeD.getAccuracy(API.GyroscopeQuaternion.x),
+                            y: lt_code.pseudoThreeD.getAccuracy(API.GyroscopeQuaternion.y),
+                            z: lt_code.pseudoThreeD.getAccuracy(API.GyroscopeQuaternion.z),
+                            w: lt_code.pseudoThreeD.getAccuracy(API.GyroscopeQuaternion.w),
+                        });
+                        GyroscopeEuler.innerText = JSON.stringify({
+                            x: lt_code.pseudoThreeD.getAccuracy(radianToAngle(API.GyroscopeEuler.x)),
+                            y: lt_code.pseudoThreeD.getAccuracy(radianToAngle(API.GyroscopeEuler.y)),
+                            z: lt_code.pseudoThreeD.getAccuracy(radianToAngle(API.GyroscopeEuler.z)),
+                        });
+                    } else {
+                        Gyroscope.innerText = "null";
+                        GyroscopeQuaternion.innerText = "null";
+                        GyroscopeEuler.innerText = "null";
+                    }
+
+                    //获取方向数据
+                    Orientation.innerText = API.Orientation;
+
+                    //获取GPS数据
+                    if (API.UseGPS && API.GPS) {
+                        var dict = {};
+                        for (var x in API.GPS) {
+                            dict[x] = API.GPS[x];
+                        }
+                        GPS.innerText = JSON.stringify(dict);
+                    } else {
+                        GPS.innerText = null;
+                    }
+
+                    //获取加速度数据
+                    if (API.UseAccelerometer) {
+                        Accelerometer.innerText = JSON.stringify({
+                            x: lt_code.pseudoThreeD.getAccuracy(API.Accelerometer.x),
+                            y: lt_code.pseudoThreeD.getAccuracy(API.Accelerometer.y),
+                            z: lt_code.pseudoThreeD.getAccuracy(API.Accelerometer.z),
+                        });
+                    } else {
+                        Accelerometer.innerText = null;
+                    }
+                }, WAITTIME), "获取数据");
+            }
+        }, 100), "等待模块加载");
+    };
+
+    /**
+     * 将弧度转化为角度
+     * @param e
+     */
+    var radianToAngle = function (radian) {
+        return Math.round(radian * 180 / Math.PI);
+    }
+
+    /**
+     * 将角度转化为弧度
+     * @param deg
+     */
+    var angleToRadian = function (deg) {
+        return deg * Math.PI / 180;
+    }
 </script>
+

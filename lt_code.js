@@ -13058,6 +13058,9 @@ lt_code.RSA = {
 /**3D模块 */
 //lt_code.threeD = {};
 
+/**汇编模块 */
+lt_code.Ass = null;
+
 /**追加方法模块 */
 lt_code.addMethod = {};
 
