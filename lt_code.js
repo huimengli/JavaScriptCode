@@ -6350,13 +6350,6 @@ lt_code.Version = function () {
                     });
                     lt_code.addChild(watermark, head);
                     break;
-                //API模块
-                case "API":
-                    var API = lt_code.newDom("script", {
-                        src: lt_code.variable.currentDir + "item/API.js",
-                    });
-                    lt_code.addChild(API, head);
-                    break;
                 default:
                     console.trace("没有这个模块!");
                     console.log("已有模块:");
@@ -6385,11 +6378,6 @@ lt_code.Version = function () {
                             "简称": "WM",
                             "全称": "watermark",
                             "空间": "lt_code.watermark",
-                        },
-                        "API模块": {
-                            "简称": "API",
-                            "全称": "API",
-                            "空间":"lt_code.API",
                         },
                     };
                     console.log(log);
@@ -6437,13 +6425,6 @@ lt_code.Version = function () {
                     });
                     lt_code.addChild(watermark, head);
                     break;
-                //API模块
-                case "API":
-                    var API = lt_code.newDom("script", {
-                        src: lt_code.variable.currentDir + "item/API.js?time=" + new Date().getTime(),
-                    });
-                    lt_code.addChild(API, head);
-                    break;
                 default:
                     console.trace("没有这个模块!");
                     console.log("已有模块:");
@@ -6472,12 +6453,7 @@ lt_code.Version = function () {
                             "简称": "WM",
                             "全称": "watermark",
                             "空间": "lt_code.watermark",
-                        },
-                        "API模块": {
-                            "简称": "API",
-                            "全称": "API",
-                            "空间":"lt_code.API",
-                        },
+                        }
                     };
                     console.log(log);
             }
