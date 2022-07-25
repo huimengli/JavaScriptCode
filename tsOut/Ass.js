@@ -210,6 +210,14 @@ var Ass;
                 throw new AssError("byte", "toString", "没有这种模式!");
             }
         };
+        /**获取长度(防止报错) */
+        byte.prototype.length = function () {
+            return 0;
+        };
+        /**重载valueOf实现重载加减 */
+        byte.prototype.valueOf = function () {
+            return this.toInt();
+        };
         return byte;
     }());
     Ass_1.byte = byte;
@@ -220,8 +228,17 @@ var Ass;
             return _super !== null && _super.apply(this, arguments) || this;
         }
         Object.defineProperty(reg8.prototype, "IsREG8", {
+            /**是否是8位寄存器 */
             get: function () {
                 return true;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(reg8.prototype, "IsREG16", {
+            /**是否是16位寄存器 */
+            get: function () {
+                return false;
             },
             enumerable: false,
             configurable: true
@@ -234,8 +251,11 @@ var Ass;
         /**
          * 构造函数
          * @param value
+         * @param isSegment 是否是段寄存器
          */
-        function reg16(value) {
+        function reg16(value, isSegment, isIndex) {
+            if (isSegment === void 0) { isSegment = false; }
+            if (isIndex === void 0) { isIndex = false; }
             if (value == void 0) {
                 value = 0;
             }
@@ -245,6 +265,8 @@ var Ass;
                     temp += value.charCodeAt(1) << 8;
                 }
                 value = temp;
+            }
+            else if (typeof (value) == "number") {
             }
             else {
                 throw new AssError("reg16", "constructor", "输入内容类型错误");
@@ -295,9 +317,34 @@ var Ass;
             enumerable: false,
             configurable: true
         });
+        Object.defineProperty(reg16.prototype, "IsREG8", {
+            /**是否是8位寄存器 */
+            get: function () {
+                return false;
+            },
+            enumerable: false,
+            configurable: true
+        });
         Object.defineProperty(reg16.prototype, "IsREG16", {
+            /**是否是16位寄存器 */
             get: function () {
                 return true;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(reg16.prototype, "IsSegment", {
+            /**是否是段寄存器 */
+            get: function () {
+                return this._isSegment;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(reg16.prototype, "IsIndex", {
+            /**是否是指针 */
+            get: function () {
+                return this._isIndex;
             },
             enumerable: false,
             configurable: true
@@ -305,7 +352,7 @@ var Ass;
         /**转为整形 */
         reg16.prototype.toInt = function () {
             var ret = this.l.toInt();
-            ret += (this.h.toInt() << 7);
+            ret += (this.h.toInt() << 8);
             return ret;
         };
         /**转为二进制 */
@@ -335,17 +382,382 @@ var Ass;
                 throw new AssError("reg16", "toString", "没有这种模式!");
             }
         };
+        /**获取长度 */
+        reg16.prototype.length = function () {
+            return 0;
+        };
+        /**重载valueOf实现重载加减 */
+        reg16.prototype.valueOf = function () {
+            return this.toInt();
+        };
         return reg16;
     }());
     Ass_1.reg16 = reg16;
+    /**32位寄存器 */
+    var reg32 = /** @class */ (function () {
+        /**
+         * 构造函数
+         * @param value
+         * @param isSegment 是否是段寄存器
+         */
+        function reg32(value, isSegment, isIndex) {
+            if (isSegment === void 0) { isSegment = false; }
+            if (isIndex === void 0) { isIndex = false; }
+            if (value == void 0) {
+                value = 0;
+            }
+            else if (typeof (value) == "string") {
+                var temp = value.charCodeAt(0);
+                if (temp <= 255) {
+                    temp += value.charCodeAt(1) << 8;
+                }
+                if (temp <= 65535) {
+                    temp += value.charCodeAt(2) << 16;
+                }
+                if (temp <= 1677215) {
+                    temp += value.charCodeAt(2) << 24;
+                }
+                value = temp;
+            }
+            else if (typeof (value) == "number") {
+            }
+            else {
+                throw new AssError("reg32", "constructor", "输入内容类型错误");
+            }
+            if (value < 0 || value > Math.pow(256, 4) - 1) {
+                throw new AssError("reg32", "constructor", "输入数据超过限制");
+            }
+            else {
+                this.l = new reg16(value % (2 << 15));
+                this.h = new reg16(value >> 16);
+            }
+        }
+        Object.defineProperty(reg32.prototype, "l", {
+            get: function () {
+                return this._l;
+            },
+            /**低位 */
+            set: function (value) {
+                if (typeof (value) == "number" || typeof (value) == "string") {
+                    this._l = new reg16(value);
+                }
+                else if (value.IsREG16) {
+                    this._l = value;
+                }
+                else {
+                    throw new AssError("reg32", "set", "低位赋值内容错误");
+                }
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(reg32.prototype, "h", {
+            get: function () {
+                return this._h;
+            },
+            /**高位 */
+            set: function (value) {
+                if (typeof (value) == "number" || typeof (value) == "string") {
+                    this._h = new reg16(value);
+                }
+                else if (value.IsREG16) {
+                    this._h = value;
+                }
+                else {
+                    throw new AssError("reg32", "set", "高位赋值内容错误");
+                }
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(reg32.prototype, "IsREG8", {
+            /**是否是8位寄存器 */
+            get: function () {
+                return false;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(reg32.prototype, "IsREG16", {
+            /**是否是16位寄存器 */
+            get: function () {
+                return false;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(reg32.prototype, "IsREG32", {
+            /**是否是16位寄存器 */
+            get: function () {
+                return true;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(reg32.prototype, "IsSegment", {
+            /**是否是段寄存器 */
+            get: function () {
+                return this._isSegment;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(reg32.prototype, "IsIndex", {
+            /**是否是指针 */
+            get: function () {
+                return this._isIndex;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        /**转为整形 */
+        reg32.prototype.toInt = function () {
+            var ret = this.l.toInt();
+            ret += (this.h.toInt() << 16);
+            return ret;
+        };
+        /**转为二进制 */
+        reg32.prototype.toBinary = function () {
+            return this.h.toBinary() + this.l.toBinary();
+        };
+        /**
+         * 转为字符串
+         * @param {null|number} type 转换方式
+         */
+        reg32.prototype.toString = function (type) {
+            if (type == null) {
+                return this.toInt().toString();
+            }
+            else if (typeof (type) == "number") {
+                if (type == 2) {
+                    return this.toBinary();
+                }
+                else if (type == 16) {
+                    return lt_code.from10To16(this.toInt());
+                }
+                else {
+                    return this.toInt().toString(type);
+                }
+            }
+            else {
+                throw new AssError("reg32", "toString", "没有这种模式!");
+            }
+        };
+        /**获取长度 */
+        reg32.prototype.length = function () {
+            return 0;
+        };
+        /**重载valueOf实现重载加减 */
+        reg32.prototype.valueOf = function () {
+            return this.toInt();
+        };
+        return reg32;
+    }());
+    Ass_1.reg32 = reg32;
     /**模块 */
     var Ass = /** @class */ (function () {
-        function Ass() {
+        /**
+         * 创建的内存空间大小
+         * @param line 内存行数默认64
+         */
+        function Ass(line) {
+            if (line === void 0) { line = 64; }
             this._ax = new reg16();
-            this._bx = new reg16();
+            this._bx = new reg16(null, false, true);
             this._cx = new reg16();
             this._dx = new reg16();
+            this._sp = new reg16();
+            this._bp = new reg16(null, false, true);
+            this._si = new reg16(null, false, true);
+            this._di = new reg16(null, false, true);
+            this._ds = new reg16(null, true);
+            this._es = new reg16(null, true);
+            this._ss = new reg16(null, true);
+            /**内存*/
+            this._memory = new Uint8ClampedArray(line * 16);
         }
+        Object.defineProperty(Ass.prototype, "memory", {
+            /**内存空间*/
+            get: function () {
+                return this._memory;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(Ass.prototype, "ax", {
+            //可变量
+            get: function () {
+                return this._ax;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(Ass.prototype, "bx", {
+            get: function () {
+                return this._bx;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(Ass.prototype, "cx", {
+            get: function () {
+                return this._cx;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(Ass.prototype, "dx", {
+            get: function () {
+                return this._dx;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(Ass.prototype, "sp", {
+            get: function () {
+                return this._sp;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(Ass.prototype, "bp", {
+            get: function () {
+                return this._bp;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(Ass.prototype, "si", {
+            get: function () {
+                return this._si;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(Ass.prototype, "di", {
+            get: function () {
+                return this._di;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(Ass.prototype, "ds", {
+            get: function () {
+                return this._ds;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(Ass.prototype, "es", {
+            get: function () {
+                return this._es;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(Ass.prototype, "ss", {
+            get: function () {
+                return this._ss;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        /**
+         * 读取内存输入检测
+         * @param a
+         * @param b
+         */
+        Ass.prototype.getMemoryCheck = function (a, b) {
+            if (a.IsREG16 || a.IsREG8) {
+                a = a.toInt();
+            }
+            else if (typeof (a) == "number") {
+                if (b.IsREG16 || b.IsREG8) {
+                    b = b.toInt();
+                }
+                else if (typeof (b) == "number") {
+                    if (a * 16 + b > this.memory.length || a * 16 + b < 0) {
+                        throw new AssError("ass", "getMemoryCheck", "获取地址超出内存上下文");
+                    }
+                    else {
+                        return { a: a, b: b };
+                    }
+                }
+                else {
+                    throw new AssError("ass", "getMemoryCheck", "参数b输入类型错误!");
+                }
+            }
+            else {
+                throw new AssError("ass", "getMemoryCheck", "参数a输入类型错误!");
+            }
+        };
+        /**
+         * 获取字节
+         * @param a 段寄存器
+         * @param b 寄存器
+         */
+        Ass.prototype.getByte = function (a, b) {
+            var check = this.getMemoryCheck(a, b);
+            a = check.a;
+            b = check.b;
+            return this.memory[a * 16 + b];
+        };
+        /**
+         * 获取字节
+         * @param a 段寄存器
+         * @param b 寄存器
+         */
+        Ass.prototype.getWord = function (a, b) {
+            var check = this.getMemoryCheck(a, b);
+            a = check.a;
+            b = check.b;
+            if (a * 16 + b + 1 > this.memory.length) {
+                throw new AssError("ass", "getWord", "获取地址超出内存上下文");
+            }
+            var ret = new reg16();
+            ret.l = new reg8(this.memory[a * 16 + b]);
+            ret.h = new reg8(this.memory[a * 16 + b + 1]);
+            return ret.toInt();
+        };
+        /**
+         * 获取长字节
+         * @param a
+         * @param b
+         */
+        Ass.prototype.getDword = function (a, b) {
+            var check = this.getMemoryCheck(a, b);
+            a = check.a;
+            b = check.b;
+            if (a * 16 + b + 3 > this.memory.length) {
+                throw new AssError("ass", "getWord", "获取地址超出内存上下文");
+            }
+            var ret = new reg16();
+            ret.l = new reg8(this.memory[a * 16 + b]);
+            ret.h = new reg8(this.memory[a * 16 + b + 1]);
+            return ret.toInt();
+        };
+        /**
+         * 移动
+         * @param a
+         * @param b
+         * @param c
+         */
+        Ass.prototype.mov = function (a, b, c, d) {
+            if (c === void 0) { c = this.ds; }
+            if (a.length) {
+                if (a[0]) {
+                }
+            }
+            else {
+                if (a.IsREG16) {
+                }
+                else if (a.IsREG8) {
+                }
+                else {
+                    throw new AssError("Ass", "mov", "变量a输入类型错误!");
+                }
+            }
+        };
         return Ass;
     }());
     Ass_1.Ass = Ass;
