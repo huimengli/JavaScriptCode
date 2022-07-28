@@ -3,6 +3,25 @@
 /**汇编模块 */
 namespace Ass {
 
+	/**内存空间 */
+	var _memory: Uint8ClampedArray;
+
+	/**外抛对象 */
+	var _exportList = [
+		//寄存器对象
+		"ax", "bx", "cx", "dx",
+		"ah", "al", "bh", "bl", "ch", "cl", "dh", "dl",
+		"sp", "bp", "si", "di",
+		"ds", "es", "ss",
+		//函数
+		"mov",
+		//数据
+		"memory",
+	];
+
+	/**是否外抛 */
+	var _isExport = false;
+
 	/**汇编错误 */
 	class AssError extends Error {
 		constructor(typeName?:string)
@@ -95,7 +114,7 @@ namespace Ass {
 		public get MIN() {
 			return 0;
 		}
-
+		
 		constructor()
 		constructor(num:number)
 		constructor(str:string)
@@ -113,7 +132,16 @@ namespace Ass {
 
 			if (value < 0 || value > 255) {
 				throw new AssError("byte", "constructor", "输入数据超过限制");
-			} else {
+			} else if (value == 0) {
+				this.v0 = false;
+				this.v1 = false;
+				this.v2 = false;
+				this.v3 = false;
+				this.v4 = false;
+				this.v5 = false;
+				this.v6 = false;
+				this.v7 = false;
+            } else {
 				var s = Math.floor(value);
 				this.v7 = !!((s >> 0) % 2);
 				this.v6 = !!((s >> 1) % 2);
@@ -173,7 +201,7 @@ namespace Ass {
 		}
 
 		/**获取长度(防止报错) */
-		length() {
+		get length() {
 			return 0;
 		}
 
@@ -189,10 +217,10 @@ namespace Ass {
 		public get IsREG8() {
 			return true;
 		}
-		/**是否是16位寄存器 */
-		public get IsREG16() {
-			return false;
-		}
+		/**是否是寄存器 */
+		public get IsREG() {
+			return true;
+        }
 
 		/**
 		 * 转为中文
@@ -202,6 +230,97 @@ namespace Ass {
 		toChinese() {
 			return String.fromCharCode(this.toInt());
 		}
+
+		/**
+		 * 从对象复制
+		 * @param source
+		 */
+		copy(source: reg8 | number | string | byte) {
+            if (typeof(source)=="string") {
+				source = source.charCodeAt(0);
+            } 
+			if (typeof (source) == "number") {
+				if (source < 0 || source > 255) {
+					throw new AssError("reg8", "copy", "输入数据超过上限");
+				} else {
+					var s = Math.floor(source);
+					this.v7 = !!((s >> 0) % 2);
+					this.v6 = !!((s >> 1) % 2);
+					this.v5 = !!((s >> 2) % 2);
+					this.v4 = !!((s >> 3) % 2);
+					this.v3 = !!((s >> 4) % 2);
+					this.v2 = !!((s >> 5) % 2);
+					this.v1 = !!((s >> 6) % 2);
+					this.v0 = !!((s >> 7) % 2);
+				}
+			} else if ("MAX" in source&&"MIN" in source) {
+				this.v7 = source.v7;
+				this.v6 = source.v6;
+				this.v5 = source.v5;
+				this.v4 = source.v4;
+				this.v3 = source.v3;
+				this.v2 = source.v2;
+				this.v1 = source.v1;
+				this.v0 = source.v0;
+			} else {
+				throw new AssError("reg8", "copy", "输入数据类型错误");
+			}
+			return this;
+		}
+
+		/**克隆 */
+		clone() {
+			return new reg8().copy(this);
+		}
+
+		mov(b: reg8);
+		mov(b: number);
+		mov(b: [reg16 | number], seg: reg16);
+
+		/**
+		 * 移动
+		 * 在某种意义上相当于Copy
+		 * @param b 对象或者指针
+		 * @param seg 段寄存器
+		 */
+		mov(b: reg8|number|[reg16|number], seg?: reg16) {
+			if (typeof (b) == "number" || ("MAX" in b && "IsREG" in b)) {
+				if (b < 0 || b > 255) {
+					throw new AssError("reg8", "mov", "输入数据超过限制");
+				} else {
+					this.copy(b);
+				}
+			} else {
+				if (seg == void 0) {
+					throw new AssError("reg8", "mov", "参数seg没有内容,调用内存数据必须seg!");
+                } else  if (!seg.IsSegment) {
+					throw new AssError("reg8", "mov", "参数seg输入对象类型错误!");
+                } else {
+					if (b.length == 1) {
+                        try {
+							if (typeof (b[0]) == "number") {
+								this.copy(_memory[seg.toInt() * 16 + b[0]]);
+							} else {
+                                if (b[0].IsIndex) {
+									this.copy(_memory[seg.toInt() * 16 + b[0].toInt()])
+                                } else {
+									throw new AssError("reg8", "mov", "参数b,[]内必须为指针对象!");
+                                }
+							}
+                        } catch (e) {
+							if (/[\u4e00-\u9f5a]/.test(e.message)) {
+								throw e;
+							} else {
+								throw new AssError("reg8", "mov", "内存超出上下文\n+错误内容:" + e);
+							}
+                        }
+                    } else {
+						throw new AssError("reg8", "mov", "参数b输入对象类型错误!");
+                    }
+                }
+            }
+        }
+
 	}
 
 	/**16位寄存器 */
@@ -237,12 +356,12 @@ namespace Ass {
 				throw new AssError("reg16", "set", "高位赋值内容错误");
 			}
 		}
-		/**是否是8位寄存器 */
-		public get IsREG8() {
-			return false;
-		}
 		/**是否是16位寄存器 */
 		public get IsREG16() {
+			return true;
+		}
+		/**是否是寄存器 */
+		public get IsREG() {
 			return true;
 		}
 
@@ -290,10 +409,15 @@ namespace Ass {
 
 			if (value < 0 || value > 65535) {
 				throw new AssError("reg16", "constructor", "输入数据超过限制");
-			} else {
+            } else if (value==0) {
+				this.l = new reg8(0);
+				this.h = new reg8(0);
+            } else {
 				this.l = new reg8(value % (2 << 7));
 				this.h = new reg8(value >> 8);
 			}
+			this._isSegment = isSegment;
+			this._isIndex = isIndex;
 		}
 
 		/**转为整形 */
@@ -329,7 +453,7 @@ namespace Ass {
 		}
 
 		/**获取长度 */
-		length() {
+		get length() {
 			return 0;
 		}
 
@@ -344,6 +468,108 @@ namespace Ass {
 		toChinese() {
 			return String.fromCharCode(this.toInt());
 		}
+
+		/**
+		 * 从对象复制
+		 * 不会复制对象状态
+		 * @param source
+		 */
+		copy(source: reg8 | reg16 | number | string | byte) {
+			var value = 0;
+            if (typeof(source)=="string") {
+				var temp = source.charCodeAt(0);
+				if (temp <= 255) {
+					temp += source.charCodeAt(1) << 8;
+				}
+				value = temp;
+            } else if (typeof(source)=="number") {
+				value = source;
+            } else if ("IsREG" in source||"MAX" in source) {
+				value = source.toInt();
+            } else {
+				throw new AssError("reg16", "copy", "输入数据类型错误!");
+			}
+			if (value < 0 || value > 65535) {
+				throw new AssError("reg16", "constructor", "输入数据超过限制");
+			} else {
+				this.l = new reg8(value % (2 << 7));
+				this.h = new reg8(value >> 8);
+			}
+			return this;
+		}
+
+		/**
+		 * 克隆
+		 * 克隆会复制对象状态
+		 */
+		clone() {
+			var ret = new reg16();
+			ret.copy(this);
+			ret._isIndex = this.IsIndex;
+			ret._isSegment = this.IsSegment;
+			return ret;
+        }
+
+		mov(b: reg16);
+		mov(b: number);
+		mov(b: [reg16|number],seg:reg16);
+
+		/**
+		 * 移动
+		 * 在某种意义上相当于Copy
+		 * @param b 对象或者指针
+		 * @param seg 段寄存器
+		 */
+		mov(b:reg16|number|[reg16|number], seg?: reg16) {
+			if (typeof (b) == "number") {
+                if (this.IsSegment) {
+					throw new AssError("reg16", "mov", "不能直接将数值赋值给段寄存器!");
+                } else {
+					if (b < 0 || b > 65535) {
+						throw new AssError("reg16", "mov", "输入数据超过限制");
+					} else {
+						this.l.copy(b % (2 << 7));
+						this.h.copy(b >> 8);
+					}
+                }
+			} else  if ("IsREG" in b) {
+                if (b.IsREG16) {
+					this.copy(b)
+                } else {
+					throw new AssError("reg16", "mov", "参数b输入数据类型错误!");
+                }
+			} else {
+				if (seg == void 0) {
+					throw new AssError("reg16", "mov", "参数seg没有内容,调用内存数据必须seg!");
+				} else  if (!seg.IsSegment) {
+					throw new AssError("reg16", "mov", "参数seg输入对象类型错误!");
+				} else {
+					if (this.IsSegment) {
+						throw new AssError("reg16", "mov", "不能直接将内存中的数据赋值给段寄存器!");
+					} else {
+						if (b.length == 1) {
+							try {
+								if (typeof (b[0]) == "number") {
+									this.l.copy(_memory[seg.toInt() * 16 + b[0]]);
+									this.h.copy(_memory[seg.toInt() * 16 + b[0] + 1]);
+								} else {
+									if (b[0].IsIndex) {
+										this.l.copy(_memory[seg.toInt() * 16 + b[0].toInt()]);
+										this.h.copy(_memory[seg.toInt() * 16 + b[0].toInt() + 1]);
+									} else {
+										throw new AssError("reg16", "mov", "参数b,[]内必须为指针对象!");
+									}
+								}
+							} catch (e) {
+								throw new AssError("reg16", "mov", "调用的内存超出上下文!");
+							}
+						} else {
+							throw new AssError("reg16", "mov", "参数b输入对象类型错误!");
+						}
+					}
+				}
+            }
+        }
 	}
 
 	/**32位寄存器 */
@@ -379,16 +605,12 @@ namespace Ass {
 				throw new AssError("reg32", "set", "高位赋值内容错误");
 			}
 		}
-		/**是否是8位寄存器 */
-		public get IsREG8() {
-			return false;
-		}
-		/**是否是16位寄存器 */
-		public get IsREG16() {
-			return false;
-		}
 		/**是否是16位寄存器 */
 		public get IsREG32() {
+			return true;
+		}
+		/**是否是寄存器 */
+		public get IsREG() {
 			return true;
 		}
 
@@ -440,6 +662,8 @@ namespace Ass {
 				this.l = new reg16(value % (2 << 15));
 				this.h = new reg16(value >> 16);
 			}
+			this._isSegment = isSegment;
+			this._isIndex = isIndex;
 		}
 
 		/**转为整形 */
@@ -475,7 +699,7 @@ namespace Ass {
 		}
 
 		/**获取长度 */
-		length() {
+		get length() {
 			return 0;
 		}
 
@@ -512,12 +736,9 @@ namespace Ass {
 		//private _cs = new reg16();
 		//private _ip = new reg16();
 
-		/**内存空间 */
-		private _memory: Uint8ClampedArray;
-
 		/**内存空间*/
 		public get memory() {
-			return this._memory;
+			return _memory;
         }
 
 		//可变量
@@ -557,14 +778,74 @@ namespace Ass {
 			return this._ss;
 		}
 
+		//特殊变量
+		public get ah() {
+			return this._ax.h;
+		}
+		public get al() {
+			return this._ax.l;
+		}
+		public get bh() {
+			return this._bx.h;
+		}
+		public get bl() {
+			return this._bx.l;
+		}
+		public get ch() {
+			return this._cx.h;
+		}
+		public get cl() {
+			return this._cx.l;
+		}
+		public get dh() {
+			return this._dx.h;
+		}
+		public get dl() {
+			return this._dx.l;
+		}
+
 		/**
 		 * 创建的内存空间大小
 		 * @param line 内存行数默认64
 		 */
 		constructor(line=64) {
 			/**内存*/
-			this._memory = new Uint8ClampedArray(line * 16);
+			_memory = new Uint8ClampedArray(line * 16);
 		}
+
+		/**外抛列表*/
+		get ExportList() {
+			return _exportList;
+		}
+
+		/**是否外抛*/
+		get IsExport() {
+			return _isExport;
+        }
+
+		/**对象外抛 */
+		export() {
+            if (_isExport) {
+				throw new AssError("Ass", "export", "对象已经全部外抛");
+            } else {
+				this.ExportList.forEach((e) => {
+					window[e] = this[e];
+				});
+				_isExport = true;
+            }
+		}
+
+		/**关闭外抛 */
+		close() {
+            if (_isExport) {
+				this.ExportList.forEach(function (e) {
+					window[e] = null;
+				});
+				_isExport = false;
+            } else {
+				throw new AssError("Ass", "close", "对象已经没有外抛");
+            }
+        }
 
 		/**
 		 * 读取内存输入检测
@@ -606,7 +887,7 @@ namespace Ass {
 			a = check.a;
 			b = check.b;
 
-			return this.memory[a * 16 + b];
+			return new reg8(this.memory[a * 16 + b]);
 		}
 
 		/**
@@ -624,7 +905,7 @@ namespace Ass {
 			var ret = new reg16();
 			ret.l = new reg8(this.memory[a * 16 + b]);
 			ret.h = new reg8(this.memory[a * 16 + b + 1]);
-			return ret.toInt();
+			return ret;
 		}
 
 		/**
@@ -644,17 +925,17 @@ namespace Ass {
 			ret.l.h = new reg8(this.memory[a * 16 + b + 1]);
 			ret.h.l = new reg8(this.memory[a * 16 + b + 2]);
 			ret.h.h = new reg8(this.memory[a * 16 + b + 3]);
-			return ret.toInt();
+			return ret;
 		}
 
-		mov(a: reg16, b: number): void;
+		mov(a: reg16, b: number|[number|reg16]): void;
 		mov(a: reg16, b: reg16): void;
-		mov(a: reg8, b: number): void;
+		mov(a: reg8, b: number|[number|reg16]): void;
 		mov(a: reg8, b: reg8): void;
-		mov(a: [reg16], b: reg8,c:reg16): void;
-		mov(a: [reg16], b: reg16,c:reg16): void;
-		mov(a: [reg16], b: [reg16],c:reg16): void;
-		mov(a: [reg16], b: number,c:reg16,d:"byte"|"word"|"dword"): void;
+        mov(a: [reg16 | number], b: reg8, c: reg16): void;
+        mov(a: [reg16 | number], b: reg16, c: reg16): void;
+        mov(a: [reg16 | number], b: [reg16|number], c: reg16): void;
+        mov(a: [reg16 | number], b: [reg16|number], c: reg16, ptr: "byte" | "word" | "dword"): void;
 
 		/**
 		 * 移动
@@ -662,18 +943,155 @@ namespace Ass {
 		 * @param b
 		 * @param c
 		 */
-		mov(a:any, b:any,c=this.ds,d?:"byte"|"word"|"dword") {
-            if (a.length) {
-                if (a[0]) {
-
+		mov(a:reg8|reg16|[reg16|number], b:number|reg32|reg16|reg8|[reg16|number],c=this.ds,ptr?:"byte"|"word"|"dword") {
+            if (a.length==1) {
+				if (typeof (a[0]) == "number" || a[0].IsIndex) {
+					if (c.IsSegment) {
+						if (typeof (b) == "number") {
+							try {
+								if (b < 0) {
+									throw new AssError("Ass", "mov", "参数b不接受负数");
+                                } else if (ptr==void 0) {
+									throw new AssError("Ass", "mov", "参数ptr没有输入指针类型");
+                                } else if (ptr == "byte") {
+									if (b < 256) {
+										this.memory[c.toInt() * 16 + a[0]] = b;
+									} else {
+										throw new AssError("Ass", "mov", "参数b超过指针指定的数据上限");
+									}
+								} else if (ptr=="word") {
+									if (b < 65536) {
+										b = new reg16(b);
+										this.memory[c.toInt() * 16 + a[0]] = b.l.toInt();
+										this.memory[c.toInt() * 16 + a[0] + 1] = b.h.toInt();
+									} else {
+										throw new AssError("Ass", "mov", "参数b超过指针指定的数据上限");
+									}
+								} else if (ptr=="dword") {
+									if (b < 4294967296) {
+										b = new reg32(b);
+										this.memory[c.toInt() * 16 + a[0]] = b.l.l.toInt();
+										this.memory[c.toInt() * 16 + a[0] + 1] = b.l.h.toInt();
+										this.memory[c.toInt() * 16 + a[0] + 2] = b.h.l.toInt();
+										this.memory[c.toInt() * 16 + a[0] + 3] = b.h.h.toInt();
+									} else {
+										throw new AssError("Ass", "mov", "参数b超过指针指定的数据上限");
+									}
+								}
+							} catch (e) {
+                                if (/[\u4e00-\u9f5a]/.test(e.message)) {
+									throw e;
+                                } else {
+									throw new AssError("Ass", "mov", "内存超出上下文\n+错误内容:" + e);
+                                }
+							}
+						} else  if ("IsREG" in b) {
+                            try {
+                                if ("IsREG8" in b) {
+                                    this.memory[c.toInt() * 16 + a[0]] = b.toInt();
+                                } else if ("IsREG16" in b) {
+                                    this.memory[c.toInt() * 16 + a[0]] = b.l.toInt();
+                                    this.memory[c.toInt() * 16 + a[0] + 1] = b.h.toInt();
+                                } else if ("IsREG32" in b) {
+									this.memory[c.toInt() * 16 + a[0]] = b.l.l.toInt();
+									this.memory[c.toInt() * 16 + a[0] + 1] = b.l.h.toInt();
+									this.memory[c.toInt() * 16 + a[0] + 2] = b.h.l.toInt();
+									this.memory[c.toInt() * 16 + a[0] + 3] = b.h.h.toInt();
+                                } else {
+									throw new AssError("Ass", "mov", "参数b输入数据类型错误!");
+                                }
+                            } catch (e) {
+								throw new AssError("Ass", "mov", "内存超出上下文\n+错误内容:" + e);
+                            }
+                        } else {
+							if (b.length == 1) {
+								if (typeof (b[0]) == "number") {
+                                    try {
+                                        if (ptr == "byte") {
+                                            this.memory[c.toInt() * 16 + a[0]] = this.memory[c.toInt() * 16 + b[0]];
+                                        } else if (ptr == "word") {
+                                            this.memory[c.toInt() * 16 + a[0]] = this.memory[c.toInt() * 16 + b[0]];
+                                            this.memory[c.toInt() * 16 + a[0] + 1] = this.memory[c.toInt() * 16 + b[0] + 1];
+                                        } else if (ptr == "dword") {
+                                            this.memory[c.toInt() * 16 + a[0]] = this.memory[c.toInt() * 16 + b[0]];
+                                            this.memory[c.toInt() * 16 + a[0] + 1] = this.memory[c.toInt() * 16 + b[0] + 1];
+                                            this.memory[c.toInt() * 16 + a[0] + 2] = this.memory[c.toInt() * 16 + b[0] + 2];
+                                            this.memory[c.toInt() * 16 + a[0] + 3] = this.memory[c.toInt() * 16 + b[0] + 3];
+                                        } else {
+                                            throw new AssError("Ass", "mov", "参数ptr指针类型错误!");
+                                        }
+                                    } catch (e) {
+										if (/[\u4e00-\u9f5a]/.test(e.message)) {
+											throw e;
+										} else {
+											throw new AssError("Ass", "mov", "内存超出上下文\n+错误内容:" + e);
+										}
+                                    }
+                                } else if (b[0].IsIndex) {
+									b[0] = b[0].toInt();
+									try {
+										if (ptr == "byte") {
+											this.memory[c.toInt() * 16 + a[0]] = this.memory[c.toInt() * 16 + b[0]];
+										} else if (ptr == "word") {
+											this.memory[c.toInt() * 16 + a[0]] = this.memory[c.toInt() * 16 + b[0]];
+											this.memory[c.toInt() * 16 + a[0] + 1] = this.memory[c.toInt() * 16 + b[0] + 1];
+										} else if (ptr == "dword") {
+											this.memory[c.toInt() * 16 + a[0]] = this.memory[c.toInt() * 16 + b[0]];
+											this.memory[c.toInt() * 16 + a[0] + 1] = this.memory[c.toInt() * 16 + b[0] + 1];
+											this.memory[c.toInt() * 16 + a[0] + 2] = this.memory[c.toInt() * 16 + b[0] + 2];
+											this.memory[c.toInt() * 16 + a[0] + 3] = this.memory[c.toInt() * 16 + b[0] + 3];
+										} else {
+											throw new AssError("Ass", "mov", "参数ptr指针类型错误!");
+										}
+									} catch (e) {
+										if (/[\u4e00-\u9f5a]/.test(e.message)) {
+											throw e;
+										} else {
+											throw new AssError("Ass", "mov", "内存超出上下文\n+错误内容:" + e);
+										}
+									}
+                                } else {
+									throw new AssError("Ass", "mov", "非指针对象不可出现在[]内!\n或参数b数据错误");
+                                }
+                            } else {
+								throw new AssError("Ass", "mov", "参数b输入类型错误!");
+                            }
+                        }
+					} else {
+						throw new AssError("Ass", "mov", "参数c不是段寄存器!");
+					}
+                } else {
+					throw new AssError("Ass", "mov", "非指针对象不可出现在[]内!\n或参数a数据错误");
                 }
 			} else {
-                if (a.IsREG16) {
-
-                } else if (a.IsREG8) {
-
-                } else {
-					throw new AssError("Ass", "mov", "变量a输入类型错误!");
+                if ("IsREG" in a) {
+					if ("IsREG16" in a) {
+						if (typeof (b) == "number") {
+							a.mov(b);
+						} else  if ("IsREG" in b) {
+							if ("IsREG16" in b) {
+								a.mov(b);
+                            } else {
+								throw new AssError("Ass", "mov", "参数b必须和a为同一种寄存器!");
+                            }
+                        } else {
+							a.mov(b, c);
+                        }
+					} else  if ("IsREG8" in a) {
+						if (typeof (b) == "number") {
+							a.mov(b);
+						} else if ("IsREG" in b) {
+							if ("IsREG8" in b) {
+								a.mov(b);
+							} else {
+								throw new AssError("Ass", "mov", "参数b必须和a为同一种寄存器!");
+							}
+						} else {
+							a.mov(b, c);
+						}
+					} else {
+						throw new AssError("Ass", "mov", "变量a输入类型错误!");
+					}
                 }
             }
         }
