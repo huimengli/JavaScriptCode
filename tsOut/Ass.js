@@ -27,12 +27,178 @@ var Ass;
         "sp", "bp", "si", "di",
         "ds", "es", "ss",
         //函数
-        "mov",
+        "mov", "add", "sub",
         //数据
         "memory",
     ];
     /**是否外抛 */
     var _isExport = false;
+    //以下是函数
+    /**
+     * 加法(数字)
+     * @param reg
+     * @param num
+     */
+    var addNumber = function (reg, num) {
+        if (typeof (num) == "number") {
+            if ("IsREG" in reg) {
+                if ("IsREG8" in reg) {
+                    reg.copy((reg.valueOf() + num) % 0x100);
+                }
+                else if ("IsREG16" in reg) {
+                    reg.copy((reg.valueOf() + num) % 0x10000);
+                }
+                else if ("IsREG32" in reg) {
+                    reg.copy((reg.valueOf() + num) % 0x100000000);
+                }
+                else {
+                    throw new AssError("Ass", "add", "参数reg非已有的寄存器!");
+                }
+            }
+            else {
+                throw new AssError("Ass", "add", "参数reg并非为寄存器!");
+            }
+        }
+        else {
+            throw new AssError("Ass", "add", "参数num不能为其他类型!");
+        }
+    };
+    /**
+     * 减法(数字)
+     * @param reg
+     * @param num
+     */
+    var subNumber = function (reg, num) {
+        if (typeof (num) == "number") {
+            if ("IsREG" in reg) {
+                var temp = 0;
+                if ("IsREG8" in reg) {
+                    temp = (reg.valueOf() - num) % 0x100;
+                    reg.copy(temp >= 0 ? temp : 0x100 + temp);
+                }
+                else if ("IsREG16" in reg) {
+                    temp = (reg.valueOf() - num) % 0x10000;
+                    reg.copy(temp >= 0 ? temp : 0x10000 + temp);
+                }
+                else if ("IsREG32" in reg) {
+                    temp = (reg.valueOf() - num) % 0x100000000;
+                    reg.copy(temp >= 0 ? temp : 0x100000000 + temp);
+                }
+                else {
+                    throw new AssError("Ass", "add", "参数reg非已有的寄存器!");
+                }
+            }
+            else {
+                throw new AssError("Ass", "add", "参数reg并非为寄存器!");
+            }
+        }
+        else {
+            throw new AssError("Ass", "add", "参数num不能为其他类型!");
+        }
+    };
+    /**
+     * 加法(数字)
+     * @param address 内存地址
+     * @param num 加数
+     * @param seg 段寄存器
+     * @param ptr 指针
+     */
+    var addMemoryNumber = function (address, num, seg, ptr) {
+        if (address.length == 1) {
+            if (seg.IsSegment) {
+                if (typeof (address[0]) == "number") {
+                }
+                else {
+                    if (!address[0].IsIndex) {
+                        throw new AssError("Ass", "add", "非指针对象不可出现在[]内!");
+                    }
+                }
+                var temp = 0;
+                switch (ptr) {
+                    case "byte":
+                        temp = Ass.prototype.getByte(seg, address[0]).toInt();
+                        temp += num;
+                        temp = temp % 0x100;
+                        break;
+                    case "word":
+                        temp = Ass.prototype.getWord(seg, address[0]).toInt();
+                        temp += num;
+                        temp = temp % 0x10000;
+                        break;
+                    case "dword":
+                        temp = Ass.prototype.getDword(seg, address[0]).toInt();
+                        temp += num;
+                        temp = temp % 0x100000000;
+                        break;
+                    default:
+                        throw new AssError("Ass", "add", "参数ptr为不支持的指针类型!");
+                }
+                Ass.prototype.mov(address, temp, seg, ptr);
+            }
+            else if (ptr == void 0) {
+                throw new AssError("Ass", "add", "参数ptr必须指定指针类型!");
+            }
+            else {
+                throw new AssError("Ass", "add", "参数seg必须为段寄存器!");
+            }
+        }
+        else {
+            throw new AssError("Ass", "add", "参数a输入内存类型错误!");
+        }
+    };
+    /**
+     * 减法(数字)
+     * @param address 内存地址
+     * @param num 加数
+     * @param seg 段寄存器
+     * @param ptr 指针
+     */
+    var subMemoryNumber = function (address, num, seg, ptr) {
+        if (address.length == 1) {
+            if (seg.IsSegment) {
+                if (typeof (address[0]) == "number") {
+                }
+                else {
+                    if (!address[0].IsIndex) {
+                        throw new AssError("Ass", "add", "非指针对象不可出现在[]内!");
+                    }
+                }
+                var temp = 0;
+                switch (ptr) {
+                    case "byte":
+                        temp = Ass.prototype.getByte(seg, address[0]).toInt();
+                        temp -= num;
+                        temp = temp % 0x100;
+                        temp = temp >= 0 ? temp : temp + 0x100;
+                        break;
+                    case "word":
+                        temp = Ass.prototype.getWord(seg, address[0]).toInt();
+                        temp -= num;
+                        temp = temp % 0x10000;
+                        temp = temp >= 0 ? temp : temp + 0x10000;
+                        break;
+                    case "dword":
+                        temp = Ass.prototype.getDword(seg, address[0]).toInt();
+                        temp -= num;
+                        temp = temp % 0x100000000;
+                        temp = temp >= 0 ? temp : temp + 0x100000000;
+                        break;
+                    default:
+                        throw new AssError("Ass", "add", "参数ptr为不支持的指针类型!");
+                }
+                Ass.prototype.mov(address, temp, seg, ptr);
+            }
+            else if (ptr == void 0) {
+                throw new AssError("Ass", "add", "参数ptr必须指定指针类型!");
+            }
+            else {
+                throw new AssError("Ass", "add", "参数seg必须为段寄存器!");
+            }
+        }
+        else {
+            throw new AssError("Ass", "add", "参数a输入内存类型错误!");
+        }
+    };
     /**汇编错误 */
     var AssError = /** @class */ (function (_super) {
         __extends(AssError, _super);
@@ -273,6 +439,14 @@ var Ass;
             enumerable: false,
             configurable: true
         });
+        Object.defineProperty(reg8.prototype, "value", {
+            /**用于调试时查看数据*/
+            get: function () {
+                return this.valueOf();
+            },
+            enumerable: false,
+            configurable: true
+        });
         /**
          * 转为中文
          * 实际上从reg16开始才能正真存储中文
@@ -393,9 +567,11 @@ var Ass;
                 value = 0;
             }
             else if (typeof (value) == "string") {
-                var temp = value.charCodeAt(0);
+                var index = 0;
+                var temp = value.charCodeAt(index++);
                 if (temp <= 255) {
-                    temp += value.charCodeAt(1) << 8;
+                    temp *= Math.pow(2, 8);
+                    temp += value.charCodeAt(index++);
                 }
                 value = temp;
             }
@@ -412,8 +588,8 @@ var Ass;
                 this.h = new reg8(0);
             }
             else {
-                this.l = new reg8(value % (2 << 7));
-                this.h = new reg8(value >> 8);
+                this.l = new reg8(value % 0x100);
+                this.h = new reg8(Math.floor(value / 0x100));
             }
             this._isSegment = isSegment;
             this._isIndex = isIndex;
@@ -488,10 +664,18 @@ var Ass;
             enumerable: false,
             configurable: true
         });
+        Object.defineProperty(reg16.prototype, "value", {
+            /**用于调试时查看数据*/
+            get: function () {
+                return this.valueOf();
+            },
+            enumerable: false,
+            configurable: true
+        });
         /**转为整形 */
         reg16.prototype.toInt = function () {
             var ret = this.l.toInt();
-            ret += (this.h.toInt() << 8);
+            ret += (this.h.toInt() * Math.pow(2, 8));
             return ret;
         };
         /**转为二进制 */
@@ -547,9 +731,11 @@ var Ass;
         reg16.prototype.copy = function (source) {
             var value = 0;
             if (typeof (source) == "string") {
-                var temp = source.charCodeAt(0);
+                var index = 0;
+                var temp = source.charCodeAt(index++);
                 if (temp <= 255) {
-                    temp += source.charCodeAt(1) << 8;
+                    temp *= Math.pow(2, 8);
+                    temp += source.charCodeAt(index++);
                 }
                 value = temp;
             }
@@ -566,8 +752,8 @@ var Ass;
                 throw new AssError("reg16", "constructor", "输入数据超过限制");
             }
             else {
-                this.l = new reg8(value % (2 << 7));
-                this.h = new reg8(value >> 8);
+                this.l = new reg8(value % 0x100);
+                this.h = new reg8(Math.floor(value / 0x100));
             }
             return this;
         };
@@ -598,8 +784,8 @@ var Ass;
                         throw new AssError("reg16", "mov", "输入数据超过限制");
                     }
                     else {
-                        this.l.copy(b % (2 << 7));
-                        this.h.copy(b >> 8);
+                        this.l = new reg8(b % 0x100);
+                        this.h = new reg8(Math.floor(b / 0x100));
                     }
                 }
             }
@@ -667,9 +853,19 @@ var Ass;
                 value = 0;
             }
             else if (typeof (value) == "string") {
-                var temp = value.charCodeAt(0);
-                if (temp <= 65535) {
-                    temp += value.charCodeAt(1) << 16;
+                var index = 0;
+                var temp = value.charCodeAt(index++);
+                if (temp <= 255) {
+                    temp *= Math.pow(2, 8);
+                    temp += value.charCodeAt(index++);
+                }
+                if (temp <= 0xffff) {
+                    temp *= index == 1 ? Math.pow(2, 16) : Math.pow(2, 8);
+                    temp += value.charCodeAt(index++);
+                }
+                if (temp < 0xffffff) {
+                    temp *= index == 1 ? Math.pow(2, 24) : index == 2 ? Math.pow(2, 16) : Math.pow(2, 8);
+                    temp += value.charCodeAt(index++);
                 }
                 value = temp;
             }
@@ -682,8 +878,8 @@ var Ass;
                 throw new AssError("reg32", "constructor", "输入数据超过限制");
             }
             else {
-                this.l = new reg16(value % (2 << 15));
-                this.h = new reg16(value >> 16);
+                this.l = new reg16(value % 0x10000);
+                this.h = new reg16(Math.floor(value / Math.pow(2, 16)));
             }
             this._isSegment = isSegment;
             this._isIndex = isIndex;
@@ -758,10 +954,18 @@ var Ass;
             enumerable: false,
             configurable: true
         });
+        Object.defineProperty(reg32.prototype, "value", {
+            /**用于调试时查看数据*/
+            get: function () {
+                return this.valueOf();
+            },
+            enumerable: false,
+            configurable: true
+        });
         /**转为整形 */
         reg32.prototype.toInt = function () {
             var ret = this.l.toInt();
-            ret += (this.h.toInt() << 16);
+            ret += (this.h.toInt() * Math.pow(2, 16));
             return ret;
         };
         /**转为二进制 */
@@ -809,6 +1013,55 @@ var Ass;
         reg32.prototype.toChinese = function () {
             var ret = String.fromCharCode(this.h.toInt());
             ret += String.fromCharCode(this.l.toInt());
+            return ret;
+        };
+        /**
+         * 从对象复制
+         * @param source
+         */
+        reg32.prototype.copy = function (source) {
+            var value = 0;
+            if (typeof (source) == "string") {
+                var index = 0;
+                var temp = source.charCodeAt(index++);
+                if (temp <= 255) {
+                    temp *= Math.pow(2, 8);
+                    temp += source.charCodeAt(index++);
+                }
+                if (temp <= 0xffff) {
+                    temp *= index == 1 ? Math.pow(2, 16) : Math.pow(2, 8);
+                    temp += source.charCodeAt(index++);
+                }
+                if (temp < 0xffffff) {
+                    temp *= index == 1 ? Math.pow(2, 24) : index == 2 ? Math.pow(2, 16) : Math.pow(2, 8);
+                    temp += source.charCodeAt(index++);
+                }
+                value = temp;
+            }
+            else if (typeof (source) == "number") {
+                value = source;
+            }
+            else {
+                value = source.toInt();
+            }
+            if (value < 0 || value > 0xffffffff) {
+                throw new AssError("reg32", "copy", "输入数据超过限制");
+            }
+            else {
+                this.l.copy(value % 0x10000);
+                this.h.copy(Math.floor(value / Math.pow(2, 16)));
+            }
+            return this;
+        };
+        /**
+         * 克隆
+         * 克隆会复制对象的状态
+         */
+        reg32.prototype.clone = function () {
+            var ret = new reg32();
+            ret.copy(this);
+            ret._isIndex = this.IsIndex;
+            ret._isSegment = this.IsSegment;
             return ret;
         };
         return reg32;
@@ -1031,11 +1284,11 @@ var Ass;
             if (a.IsREG16 || a.IsREG8) {
                 a = a.toInt();
             }
-            else if (typeof (a) == "number") {
+            if (typeof (a) == "number") {
                 if (b.IsREG16 || b.IsREG8) {
                     b = b.toInt();
                 }
-                else if (typeof (b) == "number") {
+                if (typeof (b) == "number") {
                     if (a * 16 + b > this.memory.length || a * 16 + b < 0) {
                         throw new AssError("ass", "getMemoryCheck", "获取地址超出内存上下文");
                     }
@@ -1060,7 +1313,8 @@ var Ass;
             var check = this.getMemoryCheck(a, b);
             a = check.a;
             b = check.b;
-            return new reg8(this.memory[a * 16 + b]);
+            var ret = new reg8(this.memory[a * 16 + b]);
+            return ret;
         };
         /**
          * 获取字节
@@ -1294,6 +1548,152 @@ var Ass;
                         throw new AssError("Ass", "mov", "变量a输入类型错误!");
                     }
                 }
+            }
+        };
+        /**
+         * 添加
+         * @param a
+         * @param b
+         * @param c
+         * @param ptr
+         */
+        Ass.prototype.add = function (a, b, c, ptr) {
+            if (c === void 0) { c = this.ds; }
+            if ("IsREG" in a) {
+                if (typeof (b) == "number" || "IsREG" in b) {
+                    addNumber(a, b.valueOf());
+                }
+                else if (b.length == 1) {
+                    if (typeof (b[0]) == "number") {
+                    }
+                    else {
+                        if (!b[0].IsIndex) {
+                            throw new AssError("Ass", "add", "非指针对象不可出现在[]内!");
+                        }
+                    }
+                    switch (ptr) {
+                        case "byte":
+                            addNumber(a, Ass.prototype.getByte(c, b[0]).toInt());
+                            break;
+                        case "word":
+                            addNumber(a, Ass.prototype.getWord(c, b[0]).toInt());
+                            break;
+                        case "dword":
+                            addNumber(a, Ass.prototype.getWord(c, b[0]).toInt());
+                            break;
+                        default:
+                            throw new AssError("Ass", "add", "参数b输入类型错误!");
+                    }
+                }
+                else {
+                    throw new AssError("Ass", "add", "参数b输入类型错误!");
+                }
+            }
+            else if (a.length == 1) {
+                if (typeof (b) == "number" || "IsREG" in b) {
+                    addMemoryNumber(a, b.valueOf(), c, ptr);
+                }
+                else if (b.length == 1) {
+                    if (typeof (b[0]) == "number") {
+                    }
+                    else {
+                        if (!b[0].IsIndex) {
+                            throw new AssError("Ass", "add", "非指针对象不可出现在[]内!");
+                        }
+                    }
+                    switch (ptr) {
+                        case "byte":
+                            addMemoryNumber(a, Ass.prototype.getByte(c, b[0]).toInt(), c, ptr);
+                            break;
+                        case "word":
+                            addMemoryNumber(a, Ass.prototype.getWord(c, b[0]).toInt(), c, ptr);
+                            break;
+                        case "dword":
+                            addMemoryNumber(a, Ass.prototype.getWord(c, b[0]).toInt(), c, ptr);
+                            break;
+                        default:
+                            throw new AssError("Ass", "add", "参数b输入类型错误!");
+                    }
+                }
+                else {
+                    throw new AssError("Ass", "add", "参数b输入类型错误!");
+                }
+            }
+            else {
+                throw new AssError("Ass", "add", "参数a输入类型错误!");
+            }
+        };
+        /**
+         * 减少
+         * @param a
+         * @param b
+         * @param c
+         * @param ptr
+         */
+        Ass.prototype.sub = function (a, b, c, ptr) {
+            if (c === void 0) { c = this.ds; }
+            if ("IsREG" in a) {
+                if (typeof (b) == "number" || "IsREG" in b) {
+                    subNumber(a, b.valueOf());
+                }
+                else if (b.length == 1) {
+                    if (typeof (b[0]) == "number") {
+                    }
+                    else {
+                        if (!b[0].IsIndex) {
+                            throw new AssError("Ass", "sub", "非指针对象不可出现在[]内!");
+                        }
+                    }
+                    switch (ptr) {
+                        case "byte":
+                            subNumber(a, Ass.prototype.getByte(c, b[0]).toInt());
+                            break;
+                        case "word":
+                            subNumber(a, Ass.prototype.getWord(c, b[0]).toInt());
+                            break;
+                        case "dword":
+                            subNumber(a, Ass.prototype.getWord(c, b[0]).toInt());
+                            break;
+                        default:
+                            throw new AssError("Ass", "sub", "参数b输入类型错误!");
+                    }
+                }
+                else {
+                    throw new AssError("Ass", "sub", "参数b输入类型错误!");
+                }
+            }
+            else if (a.length == 1) {
+                if (typeof (b) == "number" || "IsREG" in b) {
+                    subMemoryNumber(a, b.valueOf(), c, ptr);
+                }
+                else if (b.length == 1) {
+                    if (typeof (b[0]) == "number") {
+                    }
+                    else {
+                        if (!b[0].IsIndex) {
+                            throw new AssError("Ass", "sub", "非指针对象不可出现在[]内!");
+                        }
+                    }
+                    switch (ptr) {
+                        case "byte":
+                            subMemoryNumber(a, Ass.prototype.getByte(c, b[0]).toInt(), c, ptr);
+                            break;
+                        case "word":
+                            subMemoryNumber(a, Ass.prototype.getWord(c, b[0]).toInt(), c, ptr);
+                            break;
+                        case "dword":
+                            subMemoryNumber(a, Ass.prototype.getWord(c, b[0]).toInt(), c, ptr);
+                            break;
+                        default:
+                            throw new AssError("Ass", "sub", "参数b输入类型错误!");
+                    }
+                }
+                else {
+                    throw new AssError("Ass", "sub", "参数b输入类型错误!");
+                }
+            }
+            else {
+                throw new AssError("Ass", "sub", "参数a输入类型错误!");
             }
         };
         return Ass;
