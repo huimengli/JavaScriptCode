@@ -13234,6 +13234,29 @@ lt_code.addMethod.AddMethod = function () {
     };
 
     /**
+     * 快速排序
+     * 从小到大
+     */
+    Array.prototype.quickSort = function () {
+        if (this.length <= 1) {
+            return this;
+        }
+        var pivotIndex = Math.floor(this.length / 2);
+        var pivot = this.splice(pivotIndex, 1)[0];
+        var left = [];
+        var right = [];
+
+        for (var i = 0; i < this.length; i++) {
+            if (this[i] < pivot) {
+                left.push(this[i]);
+            } else {
+                right.push(this[i]);
+            }
+        }
+        return left.quickSort().concat([pivot], right.quickSort());
+    };
+
+    /**
      * 添加不重复的对象
      * @param {...any} item
      */
