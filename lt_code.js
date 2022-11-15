@@ -1002,13 +1002,13 @@ lt_code.clearAll = function (types) {
 lt_code.variable.regular = {};
 
 /**获取一个汉字的正则 */
-lt_code.variable.regular.getChinese = /^[\u4e00-\u9fa5]{1}/;
+lt_code.variable.regular.getChinese = /[\u4e00-\u9fa5]{1}/;
 
 /**获取多个汉字的正则*/
-lt_code.variable.regular.getChineseMore = /^[\u4e00-\u9fa5]+/;
+lt_code.variable.regular.getChineseMore = /[\u4e00-\u9fa5]+/;
 
 /**读取邮箱的正则 */
-lt_code.variable.regular.getEmall = /^[a-zA-Z0-9_\-]+\@[a-zA-Z0-9]+\.[a-z0-9]{2,6}/;
+lt_code.variable.regular.getEmall = /[a-zA-Z0-9_\-]+\@[a-zA-Z0-9]+\.[a-z0-9]{2,6}/;
 
 /**读取年月日的正则 */
 lt_code.variable.regular.getYMD = /(\d{4}|\d{2})[\,|\-|\_|\/](1[0-2]|[0-9])[\,|\-|\_|\/]([0-2][0-9]|[0-3][0-1]|[0-9])/;
@@ -6257,17 +6257,21 @@ lt_code.Version = function () {
     //eval("console.log('lt_code部分代码由楼听提供');");
     //窗体启动时候运行的内容
     window.addEventListener("load", function () {
-        var ico = document.getElementsByTagName("link");
-        var have = false;
-        for (var i in ico) {
-            if (/icon/.test(i.type)) {
-                have = true;
+        //如果页面没有图标则使用我的图标
+        !function () {
+            var ico = document.getElementsByTagName("link");
+            var have = false;
+            for (var i in ico) {
+                if (/icon/.test(i.type)) {
+                    have = true;
+                }
             }
-        }
-        if (!have) {
-            lt_code.variable.setIcon(0);
-        }
+            if (!have) {
+                lt_code.variable.setIcon(0);
+            }
+        }();
 
+        //强制页面样式
         !function () {
             if (document.getElementById("lt_code_globla_css")) {
                 lt_code.removeChild(lt_code.getId("lt_code_globla_css"));
@@ -6307,7 +6311,20 @@ lt_code.Version = function () {
                 }
             }
             return fmt;
-        }
+        };
+
+        //加载meta声明文件
+        !function () {
+            var meta = lt_code.getTage("meta");
+            if (meta.length == 0) {
+                var t = lt_code.newDom("meta", {
+                    "http-equiv": "content-type",
+                    context: "text/html;charset=UTF-8"
+                });
+                //lt_code.addChild(t, lt_code.getAll("head"));
+                console.log("页面中没有meta标记,显示utf-8文件可能会出现中文乱码\n请在head标签中添加:\n" + t.outerHTML);
+            }
+        }();
 
         /**
          * 初始化一些特殊模块
@@ -13357,6 +13374,29 @@ lt_code.addMethod.AddMethod = function () {
             }
         }
         return ret;
+    };
+
+    /**
+     * 快速排序
+     * 从小到大
+     */
+    Array.prototype.quickSort = function () {
+        if (this.length <= 1) {
+            return this;
+        }
+        var pivotIndex = Math.floor(this.length / 2);
+        var pivot = this.splice(pivotIndex, 1)[0];
+        var left = [];
+        var right = [];
+
+        for (var i = 0; i < this.length; i++) {
+            if (this[i] < pivot) {
+                left.push(this[i]);
+            } else {
+                right.push(this[i]);
+            }
+        }
+        return left.quickSort().concat([pivot], right.quickSort());
     };
 
     /**
