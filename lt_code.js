@@ -11910,6 +11910,41 @@ lt_code.RSA = {
     },
 
     /**
+     * 大数减中值
+     * (慢速)
+     * (无小数部分)
+     * @param {String} num1 数1
+     * @param {String} [num2] 被减数
+     */
+    bigMidValueNoFloatSlow: function (num1, num2) {
+        num1 = num1.toString();
+        let num = !num2 ? num1 : this.bigSubtractSlow(num1, num2);
+        let isF = /-/.test(num) ? function () {
+            num = num.slice(1);
+            return true;
+        }() : false;
+        let count = num.length;
+        if (count <= 1) {
+            if (num%2==0) {
+                return (lt_code.getNum(num) / 2).toString();
+            } else {
+                return (lt_code.getNum(num-1) / 2).toString();
+            }
+        }
+        let each = 0;
+        let last = 0;
+        let ret = "";
+        for (var i = 0; i < count; i++) {
+            each = last == 0 ? lt_code.getNum(num[i]) / 2 : (lt_code.getNum(num[i]) + 10) / 2;
+            last = each % 1 == 0.5 ? 1 : 0;
+            ret += lt_code.getNum(each).toString();
+        }
+        //ret += last == 0 ? "" : ".5";
+        ret = isF ? "-" + ret : ret;
+        return this.bigNumberFixed(ret);
+    },
+
+    /**
      * 大数取中值(慢速)
      * @param {String} num1 数1
      * @param {String} [num2] 数2
@@ -12535,7 +12570,7 @@ lt_code.RSA = {
         9689,
         9941,
         11213,
-        //19937,
+        19937,
     ],
 
     /**计算计划 */
@@ -12574,6 +12609,9 @@ lt_code.RSA = {
 
         /**八进制密匙 */
         _key: "12345678",
+
+        /**十六进制密钥 */
+        _key16: "0123456789ABCDEF",
 
         /**base64密匙 */
         _64Key: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
@@ -12796,6 +12834,10 @@ lt_code.RSA = {
         return D;
     },
 
+    getKey2: function (p,q) {
+        
+    },
+
     /**
      * n是否为素数(未完成)
      * @param {any} n
@@ -12809,6 +12851,107 @@ lt_code.RSA = {
             return false;
         }
 
+    },
+
+    /**
+     * n是否为素数
+     * @param {any} n
+     */
+    isPrime2: function (n) {
+        /**
+         * 高精度
+         * @param {any} a
+         * @param {any} b
+         * @param {any} mod
+         */
+        var mul = (a, b, mod) => {
+            a = this.bigQuotient(a, mod);
+            b = this.bigQuotient(b, mod);
+            var c = this.bigDividedCutSlow(this.bigMultiplyKaraSuba(a, b), mod);
+            var ret = this.bigSubtractSlow(this.bigMultiplyKaraSuba(a, b), this.bigMultiplyKaraSuba(c, mod))
+            return this.bigQuotient(this.bigAddSlow(this.bigQuotient(ret, mod), mod), mod);
+        };
+
+        /**
+         * 快速幂
+         * @param {any} x
+         * @param {any} n
+         * @param {any} mod
+         */
+        var pow_mod = (x, n, mod) => {
+            var res = 1;
+            while (n!="0") {
+                if (n & 1)
+                    res = mul(res, x, mod);
+                x = mul(x, x, mod);
+                n = this.bigMidValueNoFloatSlow(n);
+            }
+            return this.bigQuotient(this.bigAddSlow(res, mod), mod);
+        };
+
+        var Miller_Rabbin = (a, n) => {
+
+            //把n-1 转化为(2^r)*d
+            var s = this.bigSubtractSlow(n, 1),
+                r = 0;
+            while ((s & 1) == 0) {
+                s = this.bigMidValueNoFloatSlow(s);
+                r++;
+            }
+
+            //算出2^d 存在k里面
+            var k = pow_mod(a, s, n);
+
+            //二次探测 看变化过程中是不是等于1 或者n-1;
+            if (k == 1) {
+                return true;
+            } else {
+                for (var i = 0; i < r; i++) {
+                    k = this.bigPowerAndQuotient(k, 2, n);
+                    if (k == n - 1) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        };
+
+        var prime = [2, 3, 5, 7, 11, 13, 17, 19];
+        for (var i = 0; i < prime.length; i++) {
+            if (n==prime[i]) {
+                return true;
+            }
+            if (Miller_Rabbin(prime[i],n)==false) {
+                return false;//未通过探测 返回假
+            }
+        }
+        return true;//通过探测 返回真
+    },
+
+    /**测试取中值是用那种算法快*/
+    testMidValueAndDiv2: function () {
+        var a = "1000000000000000000000000000000000000000000000000000000000000000";
+        const count = 1000;
+        var list = [];
+        var ans1 = [],ans2 = [];
+        for (var i = 0; i < count; i++) {
+            list.push(this.bigRandom(a));
+        }
+        var time = new Date().getTime();
+        for (var i = 0; i < list.length; i++) {
+            ans1.push(this.bigDividedCutSlow(list[i], 2));
+        }
+        var time2 = new Date().getTime();
+        for (var i = 0; i < list.length; i++) {
+            ans2.push(this.bigMidValueSlow(list[i]));
+        }
+        var time3 = new Date().getTime();
+        return {
+            ans1: ans1,
+            ans2: ans2,
+            time1: time2 - time,
+            time2: time3 - time2
+        };
     },
 
     /**
