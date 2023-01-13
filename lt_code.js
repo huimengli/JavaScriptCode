@@ -13456,6 +13456,20 @@ lt_code.addMethod.AddMethod = function () {
         }
     };
 
+    /**判断字符串是否为null或者是空白字符串 */
+    String.IsNullEmptyOrSpace = function (value) {
+        if (typeof (value) == "string") {
+            return value.IsNullEmptyOrSpace();
+        } else {
+            return false;
+        }
+    };
+
+    /**将HTMLCollection集合对象转为 */
+    HTMLCollection.prototype.toArray = function () {
+        return Array.prototype.slice.call(this);
+    }
+
     /**如果string没有matchAll则使用自己写的函数 */
     String.prototype.matchAll = String.prototype.matchAll ? String.prototype.matchAll : matchAll;
 }();
