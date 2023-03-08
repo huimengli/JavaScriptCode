@@ -1709,6 +1709,7 @@ lt_code.getAll4 = function (htmldom) {
  * @example
  * [domName].[className]>[domName]+#[ID]-.[className]<null
  * @param {String} htmldom 读取方式
+ * @returns {HTMLElement[]}
  */
 lt_code.getAll5 = function (htmldom) {
     //筛选修正
