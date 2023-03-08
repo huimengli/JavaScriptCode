@@ -1697,6 +1697,17 @@ lt_code.getAll4 = function (htmldom) {
 
 /**
  * 读取对象的函数(功能增强)(id:#)(class:.)
+ * [domName][.className]>[domName]+[#ID]-[.className]<null
+ * domName   标签名称,类似于:div,span,p...
+ * className   类名称,类似于:.box,.hide
+ * ID          标签ID,类似于:#name,#password
+ * >        选取子代
+ * <        选取父代(<后必须带有内容,可以填null或其他任何内容)
+ * 如果非必须,最好不要用+-,可能会产生不可预料的结果
+ * +        追加筛选
+ * -        减少筛选
+ * @example
+ * [domName].[className]>[domName]+#[ID]-.[className]<null
  * @param {String} htmldom 读取方式
  */
 lt_code.getAll5 = function (htmldom) {
@@ -13606,6 +13617,12 @@ lt_code.addMethod.AddMethod = function () {
 
     /**如果string没有matchAll则使用自己写的函数 */
     String.prototype.matchAll = String.prototype.matchAll ? String.prototype.matchAll : matchAll;
+
+    /**显示localStorage使用了多少存储空间 */
+    localStorage.__proto__.show = function () {
+        var total = unescape(encodeURIComponent(JSON.stringify(localStorage))).length;
+        console.log("localStorage已经使用了 " + Math.floor(total / 1024) + "KB 的空间");
+    };
 }();
 
 //加载图标
