@@ -1696,6 +1696,127 @@ lt_code.getAll4 = function (htmldom) {
 };
 
 /**
+ * 读取对象的函数(功能增强)(id:#)(class:.)
+ * @param {String} htmldom 读取方式
+ */
+lt_code.getAll5 = function (htmldom) {
+    //筛选修正
+    htmldom = htmldom.replace(" ", "+");
+    /**读取所用的正则 */
+    var read = /([><\+\-]?)([#\.]?)([^#\.<>\+\-\ ]+)([\S\s]*)/;
+    /**读取到的所有结果 */
+    var matchs = read.exec(htmldom);
+    //读取到的结果
+    var rets = [];
+    //开始读取
+    while (matchs!=null) {
+        if (matchs[1]=="") {//没有要求计算祖/子辈,没有添加或者减少
+            if (matchs[2]=="") {//要求根据tag查照,因为tag不会重复,所以不用计算筛选
+                rets = Array.prototype.slice.call(document.getElementsByTagName(matchs[3])); 
+            } else if (matchs[2]=="#") {
+                if (rets.length==0) {
+                    rets = Array.prototype.slice.call(document.getElementById(matchs[3]));
+                } else {
+                    rets = function () {
+                        var ret = [];
+                        for (var i = 0; i < rets.length; i++) {
+                            if (rets[i].id==matchs[3]) {
+                                ret.add(rets[i]);
+                            }
+                        }
+                        return ret;
+                    }();
+                }
+            } else if (matchs[2]==".") {
+                if (rets.length == 0) {
+                    rets = Array.prototype.slice.call(document.getElementsByClassName(matchs[3]));
+                } else {
+                    rets = function () {
+                        var ret = [];
+                        for (var i = 0; i < rets.length; i++) {
+                            if (rets[i].classList.indexOf(matchs[3])>=0) {
+                                ret.add(rets[i]);
+                            }
+                        }
+                        return ret;
+                    }();
+                }
+            }
+        } else if (matchs[1]=="<") {//计算祖辈
+            if (rets.length==0) {
+                return document.body;
+            } else {
+                rets = function () {
+                    var ret = [];
+                    for (var i = 0; i < rets.length; i++) {
+                        ret.add(lt_code.getDomFather(rets[i]));
+                    }
+                    return ret;
+                }();
+            }
+        } else if (matchs[1]==">") {//计算子辈
+            if (rets.length==0) {//没有父辈
+                if (matchs[2] == "") {//要求根据tag查照
+                    rets = Array.prototype.slice.call(document.getElementsByTagName(matchs[3]));
+                } else if (matchs[2] == "#") {
+                    rets = Array.prototype.slice.call(document.getElementById(matchs[3]));
+                } else if (matchs[2] == ".") {
+                    rets = Array.prototype.slice.call(document.getElementsByClassName(matchs[3]));
+                }
+            } else {
+                if (matchs[2] == "") {//要求根据tag查照
+                    rets = function () {
+                        var ret = [];
+                        for (var i = 0; i < rets.length; i++) {
+                            var tempArray = Array.prototype.slice.call(rets[i].getElementsByTagName(matchs[3]));
+                            ret.add.apply(ret, tempArray);
+                        }
+                        return ret;
+                    }();
+                } else if (matchs[2] == "#") {
+                    rets = function () {
+                        var ret = [];
+                        for (var i = 0; i < rets.length; i++) {
+                            var tempArray = Array.prototype.slice.call(rets[i].getElementById(matchs[3]));
+                            ret.add.apply(ret, tempArray);
+                        }
+                        return ret;
+                    }();
+                } else if (matchs[2] == ".") {
+                    rets = function () {
+                        var ret = [];
+                        for (var i = 0; i < rets.length; i++) {
+                            var tempArray = Array.prototype.slice.call(rets[i].getElementsByClassName(matchs[3]));
+                            ret.add.apply(ret, tempArray);
+                        }
+                        return ret;
+                    }();
+                }
+            }
+        } else if (matchs[1]=="+") {//计算添加
+            if (matchs[2] == "") {//要求根据tag查照
+                rets.add.apply(rets,Array.prototype.slice.call(document.getElementsByTagName(matchs[3])));
+            } else if (matchs[2] == "#") {
+                rets.add.apply(rets,Array.prototype.slice.call(document.getElementById(matchs[3])));
+            } else if (matchs[2] == ".") {
+                rets.add.apply(rets,Array.prototype.slice.call(document.getElementsByClassName(matchs[3])));
+            }
+        } else if (matchs[1] == "-") {//计算减少
+            if (matchs[2] == "") {//要求根据tag查照
+                rets.del.apply(rets, Array.prototype.slice.call(document.getElementsByTagName(matchs[3])));
+            } else if (matchs[2] == "#") {
+                rets.del.apply(rets, Array.prototype.slice.call(document.getElementById(matchs[3])));
+            } else if (matchs[2] == ".") {
+                rets.del.apply(rets, Array.prototype.slice.call(document.getElementsByClassName(matchs[3])));
+            }
+        }
+        //结束一轮查找
+        matchs = read.exec(matchs[4]);
+    }
+    return rets;
+};
+
+/**
  * 分类取用
  * @param {any[]} arg
  * @param {boolean} useLtDom 是否使用lt_dom类
@@ -13464,6 +13585,19 @@ lt_code.addMethod.AddMethod = function () {
             return false;
         }
     };
+
+    /**
+     * 查找token在TokenList中的位置
+     * @param {String} tokenName
+     */
+    DOMTokenList.prototype.indexOf = function (tokenName) {
+        for (var i = 0; i < this.length; i++) {
+            if (this[i]==tokenName) {
+                return i;
+            }
+        }
+        return -1;
+    }
 
     /**将HTMLCollection集合对象转为 */
     HTMLCollection.prototype.toArray = function () {
