@@ -1956,6 +1956,20 @@ lt_code.getSize = function (size) {
 };
 
 /**
+ * 获取精度
+ * @param {number} num 输入
+ * @param {number} [acc] 精度(默认2)
+ */
+lt_code.getAccuracy = function (num,acc=2) {
+    if (typeof(num)!="number") {
+        num = parseFloat(num);
+    }
+    num = num * Math.pow(10,acc);
+    num = Math.round(num);
+    return num / Math.pow(10, acc);
+};
+
+/**
  * 读取的16进制(#xxx|#xxxxxx)的颜色值,转化为十进制(rgb())
  * 如果是十进制(rgb())的颜色值,则转化为16进制(#xxxxxx)
  * 如果读取的是(rgba()),则会进行暗色偏移(不推荐输入rgba())
