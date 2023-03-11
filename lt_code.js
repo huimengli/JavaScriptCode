@@ -1063,10 +1063,15 @@ lt_code.getChinese = function (text, types) {
 /**
  * 获取对象的父类
  * @param {HTMLElement} dom 输入对象
+ * @param {number} times 向上查找几次
  * @return {HTMLElement} 返回父类节点
  */
-lt_code.getDomFather = function (dom) {
-    return dom.parentNode;
+lt_code.getDomFather = function (dom, times = 1) {
+    var ret = dom;
+    for (var i = 0; i < times; i++) {
+        ret = ret.parentNode;
+    }
+    return ret;
 };
 
 
