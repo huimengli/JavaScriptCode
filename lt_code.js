@@ -11469,12 +11469,13 @@ lt_code.variable.currentDir = function () {
  * 补位
  * @param {number} input 输入
  * @param {number} num 补位长度
+ * @param {string} complementValue 补位内容
  */
-lt_code.variable.complement = function (input, num) {
+lt_code.variable.complement = function (input, num,complementValue="0") {
     var temp = lt_code.variable.toBackArray(input.toString());
     for (var i = 1; i <= num; i++) {
         if (i > temp.length) {
-            temp.push("0");
+            temp.push(complementValue);
         }
     }
     input = lt_code.variable.toBackArray(temp);
