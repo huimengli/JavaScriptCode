@@ -13004,8 +13004,126 @@ lt_code.RSA = {
         return D;
     },
 
-    getKey2: function (p,q) {
-        
+    getKey2: function (bitLength) {
+        /** 生成大素数的函数 */
+        function generateLargePrime(bits) {
+            let prime;
+            do {
+                prime = generateRandomBigInt(bits);
+            } while (!isPrime(prime));
+            return prime;
+        }
+
+        /** 选择一个与 phi 互质的 e（伪代码，通常选择65537）*/
+        function chooseE(phi) {
+            let e = 65537; // 常用的公钥指数
+            while (gcd(e, phi) !== 1) {
+                e += 2; // 寻找下一个可能的 e
+            }
+            return e;
+        }
+
+        /** 计算最大公约数（欧几里得算法）*/
+        function gcd(a, b) {
+            if (b === 0) return a;
+            return gcd(b, a % b);
+        }
+
+        /** 计算模逆（扩展欧几里得算法）*/
+        function modInverse(e, phi) {
+            let [a, m] = [e, phi];
+            let [x, y, u, v] = [0, 1, 1, 0];
+            while (a !== 0) {
+                [q, r] = [Math.floor(m / a), m % a];
+                [m, a] = [a, r];
+                [x, u] = [u, x - q * u];
+                [y, v] = [v, y - q * v];
+            }
+            if (m !== 1) {
+                throw new Error("无法计算模逆");
+            }
+            return (x + phi) % phi;
+        }
+
+        /** 生成指定比特长度的随机大整数（伪代码）*/
+        function generateRandomBigInt(bits) {
+            let random = "1"; // 确保最高位是1
+            for (let i = 1; i < bits - 1; i++) {
+                random += Math.floor(Math.random() * 2); // 添加随机的0或1
+            }
+            random += "1"; // 确保最低位是1，使得数是奇数
+            //return BigInt("0b" + random);
+        }
+
+        /** 检查一个数是否为素数（伪代码，需要实现有效的素性测试）*/
+        function isPrime(n, accuracy = 20) {
+            if (n < 2n) return false;
+            if (n === 2n) return true;
+            if (n % 2n === 0n) return false;
+
+            // 写Miller-Rabin素性测试的代码
+            for (let i = 0; i < accuracy; i++) {
+                let a = BigInt(Math.floor(Math.random() * Number(n - 3n))) + 2n;
+                if (!millerRabinTest(a, n)) return false;
+            }
+            return true;
+        }
+
+        /**
+         * Miller-Rabin素性测试
+         * @param {any} a
+         * @param {any} n
+         */
+        function millerRabinTest(a, n) {
+            let d = n - 1n;
+            let r = 0n;
+            while (d % 2n === 0n) {
+                d /= 2n;
+                r++;
+            }
+            let x = modPow(a, d, n);
+            if (x === 1n || x === n - 1n) return true;
+            for (let i = 0n; i < r - 1n; i++) {
+                x = (x * x) % n;
+                if (x === n - 1n) return true;
+            }
+            return false;
+        }
+
+        function modPow(base, exponent, modulus) {
+            if (modulus === 1n) return 0n;
+            let result = 1n;
+            base = base % modulus;
+            while (exponent > 0n) {
+                if (exponent % 2n === 1n) {
+                    result = (result * base) % modulus;
+                }
+                exponent = exponent >> 1n;
+                base = (base * base) % modulus;
+            }
+            return result;
+        }
+
+        // 选择两个大素数 p 和 q
+        let p = generateLargePrime(bitLength / 2);
+        let q = generateLargePrime(bitLength / 2);
+
+        // 计算 N = p * q
+        let N = p * q;
+
+        // 计算欧拉函数 phi(N) = (p-1) * (q-1)
+        let phi = (p - 1) * (q - 1);
+
+        // 选择 e，e 需要与 phi(N) 互质
+        let e = chooseE(phi);
+
+        // 计算 e 相对于 phi(N) 的模逆 d
+        let d = modInverse(e, phi);
+
+        return {
+            publicKey: { N: N, e: e },
+            privateKey: { N: N, d: d }
+        };
     },
 
     /**
