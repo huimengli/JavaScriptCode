@@ -1,0 +1,428 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <script src="../lt_code.js"></script>
+</head>
+<body>
+    <input type="file" name="name" value="" />
+    <canvas id="input"></canvas>
+    <canvas id="output"></canvas>
+    <button id="up">增加模糊度</button>
+    <button id="down">减少模糊度</button>
+</body>
+</html>
+<!-- 核心 -->
+<script>
+    /**
+     * 边缘检测卷积核心
+     */
+    var edgeDetectKernel = [
+        [-1, -1, -1],
+        [-1, 8, -1],
+        [-1, -1, -1]
+    ];
+
+    /**
+     * 模糊核心
+     */
+    var blurKernel = [
+        [1 / 9, 1 / 9, 1 / 9],
+        [1 / 9, 1 / 9, 1 / 9],
+        [1 / 9, 1 / 9, 1 / 9]
+    ];
+</script>
+<!-- 设置 -->
+<script>
+    /**是否使用卷积模式 */
+    var useKernel = false;
+    /**卷积模式使用的那个核心 */
+    var kernel = blurKernel;
+</script>
+<!-- 运行功能 -->
+<script>
+    /**读取文件按钮 */
+    var inputButton = lt_code.getAll("input");
+    /**显示输入窗口 */
+    var inputCanvas = lt_code.getAll("#input");
+    /**显示输出窗口 */
+    var outputCanvas = lt_code.getAll("#output");
+    /**输入的照片 */
+    var img = new Image();
+    /**图片宽度 */
+    var width = 0;
+    /**图片高度 */
+    var height = 0;
+
+    /**增加模糊程度 */
+    var up = lt_code.getAll("#up");
+    /**减小模糊程度 */
+    var down = lt_code.getAll("#down");
+
+    /**混合宽度 */
+    const mixWidth = 5;
+    /**混合高度 */
+    const mixHeight = 5;
+
+    /**混合程度 */
+    var mixSize = 1;
+
+    inputButton.onchange = function () {
+        if (inputButton.files.length>0) {
+            lt_code.test.fileToBase(inputButton);
+            lt_code.variable.addRun(setInterval(function () {
+                var base = lt_code.test.fileToBase.getReturn();
+                if (base) {
+                    lt_code.variable.delRun("waitInput");
+                    img.src = base;
+
+                    img.onload = function () {
+                        width = img.width;
+                        height = img.height;
+                        width = Math.ceil(width / mixWidth) * mixWidth;
+                        height = Math.ceil(height / mixHeight) * mixHeight;
+
+                        //重设canvas大小
+                        inputCanvas.width = width;
+                        inputCanvas.height = height;
+                        outputCanvas.width = width;
+                        outputCanvas.height = height;
+
+                        /**输入画布 */
+                        var inputCtx = inputCanvas.getContext("2d", { willReadFrequently: true });
+                        /**输出画布 */
+                        var outputCtx = lt_code.getCtx(outputCanvas);
+
+                        //放置原图
+                        inputCtx.drawImage(img, 0, 0);
+
+                        /**获取图片数据 */
+                        var imgdata = inputCtx.getImageData(0, 0, width, height);
+                        //var outData = new ImageData(width, height);
+
+                        //进行数据处理
+
+                        //之前的做法
+                        !function () {
+                            //先进行2*2处理
+                            for (var i = 0; i < imgdata.data.length; i += 8) {
+                                var j = i + width * 4;
+                                var t1 = new Color(
+                                    imgdata.data[i],
+                                    imgdata.data[i + 1],
+                                    imgdata.data[i + 2],
+                                    imgdata.data[i + 3]
+                                );
+                                var t2 = new Color(
+                                    imgdata.data[i + 4],
+                                    imgdata.data[i + 5],
+                                    imgdata.data[i + 6],
+                                    imgdata.data[i + 7]
+                                );
+                                var t3 = new Color(
+                                    imgdata.data[j],
+                                    imgdata.data[j + 1],
+                                    imgdata.data[j + 2],
+                                    imgdata.data[j + 3]
+                                );
+                                var t4 = new Color(
+                                    imgdata.data[j + 4],
+                                    imgdata.data[j + 5],
+                                    imgdata.data[j + 6],
+                                    imgdata.data[j + 7]
+                                );
+                                var t = t1.MIX(t2, t3, t4);
+
+                                t.CopyTo(outData, i);
+                                t.CopyTo(outData, i + 4);
+                                t.CopyTo(outData, j);
+                                t.CopyTo(outData, j + 4);
+                            }
+                        }
+
+                        if (useKernel) {
+                            var outData = imgdata.MIXByKernel(kernel);
+                        } else {
+                            var outData = imgdata.MIX(mixWidth, mixHeight);
+                        }
+
+                        outputCtx.putImageData(outData, 0, 0);
+
+                        up.onmousedown = function () {
+                            mixSize++;
+                            changeSize();
+                        };
+                        down.onmousedown = function () {
+                            mixSize = mixSize == 1 ? 1 : mixSize - 1;
+                            changeSize();
+                        };
+                        let lastSize = mixSize;
+                        var changeSize = function () {
+                            if (lastSize==mixSize) {
+                                return;
+                            } else {
+                                lastSize = mixSize;
+                                //计算应该获取的数据宽高
+                                width = img.width;
+                                height = img.height;
+                                width = Math.ceil(width / mixSize) * mixSize;
+                                height = Math.ceil(height / mixSize) * mixSize;
+                                //获取图片数据
+                                imgdata = inputCtx.getImageData(0, 0, width, height);
+                                outData = imgdata.MIX(mixSize, mixSize);
+                                outputCtx.putImageData(outData, 0, 0);
+                            }
+                        }
+                    }
+
+                }
+            }, 100), "waitInput");
+        }
+    }
+
+    /**颜色类 */
+    class Color {
+        /**
+         * 构造函数
+         * @param {number} R
+         * @param {number} G
+         * @param {number} B
+         * @param {number} [A]
+         */
+        constructor(R, G, B,A) {
+            this.r = R;
+            this.g = G;
+            this.b = B;
+            this.a = A ? A : 255;
+        }
+
+        get R() {
+            return this.r;
+        }
+
+        get G() {
+            return this.g;
+        }
+
+        get B() {
+            return this.b;
+        }
+
+        get A() {
+            return this.a;
+        }
+
+        ToRGB() {
+            return "rgb(" + this.r + "," + this.g + "," + this.b + ")";
+        }
+
+        ToRGBA() {
+            return "rgba(" + this.r + "," + this.g + "," + this.b + "," + this.a + ")";
+        }
+
+        ///**
+        // * 像素混合
+        // * @param {Color} color
+        // */
+        //MIX(color) {
+        //    return new Color(
+        //        (this.r + color.r)/2,
+        //        (this.g + color.g)/2,
+        //        (this.b + color.b)/2,
+        //        (this.a + color.a)/2,
+        //    )
+        //}
+
+        /**
+         * 像素混合
+         * @param {Color[]} color
+         */
+        MIX(...color) {
+            var r = this.r,
+                g = this.g,
+                b = this.b,
+                a = this.a;
+            var count = color.length + 1;
+
+            for (var i = 0; i < color.length; i++) {
+                r += color[i].r;
+                g += color[i].g;
+                b += color[i].b;
+                a += color[i].a;
+            }
+
+            r = Math.floor(r / count);
+            g = Math.floor(g / count);
+            b = Math.floor(b / count);
+            a = Math.floor(a / count);
+
+            return new Color(r, g, b, a);
+        }
+
+        /**
+         * 将像素写入图片数据
+         * @param {ImageData} imgData
+         * @param {number} start
+         */
+        CopyTo(imgData,start) {
+            imgData.data[start+0] = this.r;
+            imgData.data[start+1] = this.g;
+            imgData.data[start+2] = this.b;
+            imgData.data[start+3] = this.a;
+        }
+
+        /**
+         * 像素混合
+         * @param {Color[]} color
+         */
+        static MIX(...color) {
+            var r = 0,
+                g = 0,
+                b = 0,
+                a = 0;
+            var count = color.length;
+
+            for (var i = 0; i < color.length; i++) {
+                r += color[i].r;
+                g += color[i].g;
+                b += color[i].b;
+                a += color[i].a;
+            }
+
+            r = Math.floor(r / count);
+            g = Math.floor(g / count);
+            b = Math.floor(b / count);
+            a = Math.floor(a / count);
+
+            return new Color(r, g, b, a);
+        }
+    }
+
+    ///**
+    // * 图像数据模糊混合
+    // * 使用此算法前必须保证读入的数据宽度必须是MixWidth的整数倍
+    // * 同时高度也必须是MixHeight的整数倍率
+    // * @param MixWidth
+    // * @param MixHeight
+    // */
+    //ImageData.prototype.MIX = function (MixWidth, MixHeight) {
+    //    var ret = new ImageData(this.width, this.height);
+    //    for (var i = 0; i < this.data.length; i += MixWidth * 4) {   //i是字节扫描
+    //        var partColor = [];
+    //        for (var j = 0; j < MixWidth; j++) {                        //j是块中列扫描
+    //            for (var l = 0; l < MixHeight; l++) {                   //l是块中行扫描
+    //                var k = i + j * 4 + l * this.width * 4;             //因此,k需要的数据是i(已经计算过的字节),j*4(每个像素占四个字节),l*this.width(下一行这个字节的定位)
+    //                partColor.push(new Color(
+    //                    this.data[k],
+    //                    this.data[k + 1],
+    //                    this.data[k + 2],
+    //                    this.data[k + 3],
+    //                ));
+    //            }
+    //        }
+    //        var tempColor = Color.MIX.apply(null, partColor);
+    //        for (var j = 0; j < MixWidth; j++) {                        //j是块中列扫描
+    //            for (var l = 0; l < MixHeight; l++) {                   //l是块中行扫描
+    //                var k = i + j * 4 + l * this.width * 4;             //因此,k需要的数据是i(已经计算过的字节),j*4(每个像素占四个字节),l*this.width(下一行这个字节的定位)
+    //                tempColor.CopyTo(ret, k);
+    //            }
+    //        }
+    //        //判断已经扫描完一行:
+    //        if ((i/4)/MixWidth==1) {
+    //            i += this.width * (MixHeight - 1) * 4;
+    //        }
+    //    }
+    //    return ret;
+    //}
+
+    /**
+     * 图像数据模糊混合
+     * 使用此算法前必须保证读入的数据宽度必须是MixWidth的整数倍
+     * 同时高度也必须是MixHeight的整数倍率
+     * @param MixWidth
+     * @param MixHeight
+     */
+    ImageData.prototype.MIX = function (MixWidth, MixHeight) {
+        var ret = new ImageData(this.width, this.height);
+
+        // 正确计算块的开始和结束位置
+        for (var y = 0; y < this.height; y += MixHeight) {
+            for (var x = 0; x < this.width; x += MixWidth) {
+                var partColor = [];
+
+                // 在块内收集颜色
+                for (var dy = 0; dy < MixHeight; dy++) {
+                    for (var dx = 0; dx < MixWidth; dx++) {
+                        var i = (x + dx + (y + dy) * this.width) * 4;
+                        partColor.push(new Color(
+                            this.data[i],
+                            this.data[i + 1],
+                            this.data[i + 2],
+                            this.data[i + 3]
+                        ));
+                    }
+                }
+
+                // 混合颜色
+                var tempColor = Color.MIX.apply(null, partColor);
+
+                // 应用混合颜色
+                for (var dy = 0; dy < MixHeight; dy++) {
+                    for (var dx = 0; dx < MixWidth; dx++) {
+                        var i = (x + dx + (y + dy) * this.width) * 4;
+                        tempColor.CopyTo(ret, i);
+                    }
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * 对图像数据应用卷积处理
+     * @param {number[][]} kernel 卷积核
+     */
+    ImageData.prototype.MIXByKernel = function (kernel) {
+        var width = this.width;
+        var height = this.height;
+        var output = new ImageData(width, height);
+
+        var kernelSize = kernel.length;
+        var kernelHalfSize = Math.floor(kernelSize / 2);
+
+        for (var y = 0; y < height; y++) {
+            for (var x = 0; x < width; x++) {
+                var r = 0, g = 0, b = 0, a = 0, kernelSum = 0;
+
+                for (var ky = 0; ky < kernelSize; ky++) {
+                    for (var kx = 0; kx < kernelSize; kx++) {
+                        var px = x + kx - kernelHalfSize;
+                        var py = y + ky - kernelHalfSize;
+
+                        if (px >= 0 && px < width && py >= 0 && py < height) {
+                            var i = (py * width + px) * 4;
+                            var weight = kernel[ky][kx];
+
+                            r += this.data[i] * weight;
+                            g += this.data[i + 1] * weight;
+                            b += this.data[i + 2] * weight;
+                            a += this.data[i + 3] * weight;
+                            kernelSum += weight;
+                        }
+                    }
+                }
+
+                // 应用卷积和，考虑权重总和
+                if (kernelSum <= 0) kernelSum = 1; // 避免除以零
+                var oi = (y * width + x) * 4;
+                output.data[oi] = r / kernelSum;
+                output.data[oi + 1] = g / kernelSum;
+                output.data[oi + 2] = b / kernelSum;
+                output.data[oi + 3] = a / kernelSum;
+            }
+        }
+
+        return output;
+    }
+</script>
+
