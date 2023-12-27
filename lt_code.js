@@ -1,7 +1,7 @@
 ﻿/**
  * @file 帮助文档
- * @author 楼听[修改日期:2022年2月23日]
- * @version demo-17
+ * @author 绘梦璃[修改日期:2023年12月27日]
+ * @version demo-18
  */
 
 //向head里面丢一个特殊的style样式框
@@ -2099,7 +2099,7 @@ lt_code.getSize = function (size) {
  * @param {number} num 输入
  * @param {number} [acc] 精度(默认2)
  */
-lt_code.getAccuracy = function (num,acc=2) {
+lt_code.variable.getAccuracy = function (num,acc=2) {
     if (typeof(num)!="number") {
         num = parseFloat(num);
     }
@@ -6540,16 +6540,17 @@ lt_code.getJson = function (str) {
  * 还是没有图标则自动调用图标
  */
 lt_code.Version = function () {
-    //eval("console.log('lt_code部分代码由楼听提供');");
+    //eval("console.log('lt_code部分代码由绘梦璃提供');");
     //窗体启动时候运行的内容
     window.addEventListener("load", function () {
         //如果页面没有图标则使用我的图标
         !function () {
             var ico = document.getElementsByTagName("link");
             var have = false;
-            for (var i in ico) {
-                if (/icon/.test(i.type)) {
+            for (var i = 0; i < ico.length; i++) {
+                if (/icon/.test(ico[i].type)) {
                     have = true;
+                    break; // 找到图标后退出循环
                 }
             }
             if (!have) {
@@ -6787,7 +6788,7 @@ lt_code.Version = function () {
         }
     });
 
-    return 17;
+    return 18;
 }();
 
 
