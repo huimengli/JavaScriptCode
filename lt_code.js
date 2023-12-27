@@ -6653,7 +6653,7 @@ lt_code.Version = function () {
         !function () {
             lt_code.variable.onload.forEach(load => {
                 try {
-                    load();
+                    load.function();
                 } catch (e) {
                     console.error(e);
                 }
