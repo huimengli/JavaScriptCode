@@ -11,9 +11,31 @@ document.head.innerHTML += "<style id=\"lt_code_css\"></style>";
  * 自制的代码
  * @param {...any} arg 输入参数
  */
-var lt_code = function (...arg) {
-    return lt_code.getAllType(arg, true);
-}
+//var lt_code = function (...arg) {
+//    return lt_code.getAllType(arg, true);
+//}
+var lt_code = (function () {
+    /**
+     * 内部功能实现
+     * @param {any} arg
+     */
+    function innerLtCode(arg) {
+        return lt_code.getAll6(arg);
+    }
+
+    // 设置onload属性,对其进行赋值的时候将函数添加进入启动函数
+    // 读取这个属性的时候显示所有的启动函数
+    Object.defineProperty(innerLtCode, "onload", {
+        set: function (func) {
+            lt_code.variable.addLoad(func);
+        },
+        get: function () {
+            return lt_code.variable.onload;
+        }
+    })
+
+    return innerLtCode;
+})();
 
 /**关闭浏览器 */
 lt_code.close = function () {
@@ -1019,8 +1041,36 @@ lt_code.variable.regular.getMounth = /1[0-2]|[0-9]/;
 /**读取日期的正则(大月) */
 lt_code.variable.regular.getDaty = /[0-2][0-9]|[0-3][0-1]|[0-9]/;
 
+/**
+ * 获取精度
+ * @param {number} num 输入
+ * @param {number} [acc] 精度(默认2)
+ */
+lt_code.variable.getAccuracy = function (num, acc = 2) {
+    if (typeof (num) != "number") {
+        num = parseFloat(num);
+    }
+    num = num * Math.pow(10, acc);
+    num = Math.round(num);
+    return num / Math.pow(10, acc);
+};
 
+/**
+ * 启动项里面需要运行的函数
+ */
+lt_code.variable.onload = new Array();
 
+/**
+ * 添加window.onload时运行的函数
+ * @param {Function} func 启动的时候想要执行的函数
+ * @param {String} name 需要执行的启动函数名称
+ */
+lt_code.variable.addLoad = function (func, name = "匿名启动事件") {
+    if (!!func) {
+        var newOne = { name: name, function: func };
+        lt_code.variable.onload.push(newOne);
+    }
+};
 
 /**
  * 截取汉字的函数(重载+2)
@@ -2092,20 +2142,6 @@ lt_code.getSize = function (size) {
         size < 1024 * 1024 ? Math.floor(size / 1024 * 100) / 100 + "KB" :
             size < 1024 * 1024 * 1024 ? Math.floor(size / 1024 / 1024 * 100) / 100 + "MB" :
                 Math.floor(size / 1024 / 1024 / 1024 * 100) / 100 + "GB");
-};
-
-/**
- * 获取精度
- * @param {number} num 输入
- * @param {number} [acc] 精度(默认2)
- */
-lt_code.variable.getAccuracy = function (num,acc=2) {
-    if (typeof(num)!="number") {
-        num = parseFloat(num);
-    }
-    num = num * Math.pow(10,acc);
-    num = Math.round(num);
-    return num / Math.pow(10, acc);
 };
 
 /**
