@@ -6649,6 +6649,17 @@ lt_code.Version = function () {
             }
         }();
 
+        //执行额外的onload函数
+        !function () {
+            lt_code.variable.onload.forEach(load => {
+                try {
+                    load();
+                } catch (e) {
+                    console.error(e);
+                }
+            });
+        }();
+
         /**
          * 初始化一些特殊模块
          * @param {string} object 模块名称
