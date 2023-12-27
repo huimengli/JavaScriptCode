@@ -1703,14 +1703,15 @@ lt_code.getAll4 = function (htmldom) {
 /**
  * 读取对象的函数(功能增强)(id:#)(class:.)
  * [domName][.className]>[domName]+[#ID]-[.className]<null
- * domName   标签名称,类似于:div,span,p...
- * className   类名称,类似于:.box,.hide
- * ID          标签ID,类似于:#name,#password
- * >        选取子代
- * <        选取父代(<后必须带有内容,可以填null或其他任何内容)
+ * domName      标签名称,类似于:div,span,p...
+ * className    类名称,类似于:.box,.hide
+ * ID           标签ID,类似于:#name,#password
+ * >            选取子代
+ * <            选取父代(<后必须带有内容,可以填null或其他任何内容)
  * 如果非必须,最好不要用+-,可能会产生不可预料的结果
- * +        追加筛选
- * -        减少筛选
+ * +            追加筛选
+ * -            减少筛选
+ * 因为有些类名中会包含-符号,因此这个版本被废弃
  * @example
  * [domName].[className]>[domName]+#[ID]-.[className]<null
  * @param {String} htmldom 读取方式
@@ -1721,6 +1722,139 @@ lt_code.getAll5 = function (htmldom) {
     htmldom = htmldom.replace(" ", "+");
     /**读取所用的正则 */
     var read = /([><\+\-]?)([#\.]?)([^#\.<>\+\-\ ]+)([\S\s]*)/;
+    /**读取到的所有结果 */
+    var matchs = read.exec(htmldom);
+    //读取到的结果
+    var rets = [];
+    //开始读取
+    while (matchs!=null) {
+        if (matchs[1]=="") {//没有要求计算祖/子辈,没有添加或者减少
+            if (matchs[2]=="") {//要求根据tag查照,因为tag不会重复,所以不用计算筛选
+                rets = Array.prototype.slice.call(document.getElementsByTagName(matchs[3])); 
+            } else if (matchs[2]=="#") {
+                if (rets.length==0) {
+                    rets = Array.prototype.slice.call(document.getElementById(matchs[3]));
+                } else {
+                    rets = function () {
+                        var ret = [];
+                        for (var i = 0; i < rets.length; i++) {
+                            if (rets[i].id==matchs[3]) {
+                                ret.add(rets[i]);
+                            }
+                        }
+                        return ret;
+                    }();
+                }
+            } else if (matchs[2]==".") {
+                if (rets.length == 0) {
+                    rets = Array.prototype.slice.call(document.getElementsByClassName(matchs[3]));
+                } else {
+                    rets = function () {
+                        var ret = [];
+                        for (var i = 0; i < rets.length; i++) {
+                            if (rets[i].classList.indexOf(matchs[3])>=0) {
+                                ret.add(rets[i]);
+                            }
+                        }
+                        return ret;
+                    }();
+                }
+            }
+        } else if (matchs[1]=="<") {//计算祖辈
+            if (rets.length==0) {
+                return document.body;
+            } else {
+                rets = function () {
+                    var ret = [];
+                    for (var i = 0; i < rets.length; i++) {
+                        ret.add(lt_code.getDomFather(rets[i]));
+                    }
+                    return ret;
+                }();
+            }
+        } else if (matchs[1]==">") {//计算子辈
+            if (rets.length==0) {//没有父辈
+                if (matchs[2] == "") {//要求根据tag查照
+                    rets = Array.prototype.slice.call(document.getElementsByTagName(matchs[3]));
+                } else if (matchs[2] == "#") {
+                    rets = Array.prototype.slice.call(document.getElementById(matchs[3]));
+                } else if (matchs[2] == ".") {
+                    rets = Array.prototype.slice.call(document.getElementsByClassName(matchs[3]));
+                }
+            } else {
+                if (matchs[2] == "") {//要求根据tag查照
+                    rets = function () {
+                        var ret = [];
+                        for (var i = 0; i < rets.length; i++) {
+                            var tempArray = Array.prototype.slice.call(rets[i].getElementsByTagName(matchs[3]));
+                            ret.add.apply(ret, tempArray);
+                        }
+                        return ret;
+                    }();
+                } else if (matchs[2] == "#") {
+                    rets = function () {
+                        var ret = [];
+                        for (var i = 0; i < rets.length; i++) {
+                            var tempArray = Array.prototype.slice.call(rets[i].getElementById(matchs[3]));
+                            ret.add.apply(ret, tempArray);
+                        }
+                        return ret;
+                    }();
+                } else if (matchs[2] == ".") {
+                    rets = function () {
+                        var ret = [];
+                        for (var i = 0; i < rets.length; i++) {
+                            var tempArray = Array.prototype.slice.call(rets[i].getElementsByClassName(matchs[3]));
+                            ret.add.apply(ret, tempArray);
+                        }
+                        return ret;
+                    }();
+                }
+            }
+        } else if (matchs[1]=="+") {//计算添加
+            if (matchs[2] == "") {//要求根据tag查照
+                rets.add.apply(rets,Array.prototype.slice.call(document.getElementsByTagName(matchs[3])));
+            } else if (matchs[2] == "#") {
+                rets.add.apply(rets,Array.prototype.slice.call(document.getElementById(matchs[3])));
+            } else if (matchs[2] == ".") {
+                rets.add.apply(rets,Array.prototype.slice.call(document.getElementsByClassName(matchs[3])));
+            }
+        } else if (matchs[1] == "-") {//计算减少
+            if (matchs[2] == "") {//要求根据tag查照
+                rets.del.apply(rets, Array.prototype.slice.call(document.getElementsByTagName(matchs[3])));
+            } else if (matchs[2] == "#") {
+                rets.del.apply(rets, Array.prototype.slice.call(document.getElementById(matchs[3])));
+            } else if (matchs[2] == ".") {
+                rets.del.apply(rets, Array.prototype.slice.call(document.getElementsByClassName(matchs[3])));
+            }
+        }
+        //结束一轮查找
+        matchs = read.exec(matchs[4]);
+    }
+    return rets;
+};
+
+/**
+ * 读取对象的函数(功能增强)(id:#)(class:.)
+ * [domName][.className]>[domName]+[#ID]^[.className]<null
+ * domName   标签名称,类似于:div,span,p...
+ * className 类名称,类似于:.box,.hide
+ * ID        标签ID,类似于:#name,#password
+ * >         选取子代
+ * <         选取父代(<后必须带有内容,可以填null或其他任何内容)
+ * 如果非必须,最好不要用+^,可能会产生不可预料的结果
+ * +         追加筛选
+ * ^         减少筛选
+ * @example
+ * [domName].[className]>[domName]+#[ID]^[.className]<null
+ * @param {String} htmldom 读取方式
+ * @returns {HTMLElement[]}
+ */
+lt_code.getAll6 = function (htmldom) {
+    // 筛选修正
+    htmldom = htmldom.replace(" ", "+");
+    /** 读取所用的正则 */
+    var read = /([><\+\^]?)([#\.]?)([^#\.<>\+\^\ ]+)([\S\s]*)/;
     /**读取到的所有结果 */
     var matchs = read.exec(htmldom);
     //读取到的结果
@@ -13075,34 +13209,35 @@ lt_code.RSA = {
          * @param {any} n
          */
         function millerRabinTest(a, n) {
-            let d = n - 1n;
-            let r = 0n;
-            while (d % 2n === 0n) {
-                d /= 2n;
-                r++;
+            let d = lt_code.RSA.bigSubtractSlow(n,1);
+            let r = "0";
+            while (lt_code.RSA.bigQuotient(d,2)==0) {
+                d = lt_code.RSA.bigDividedCutSlow(d, 2);
+                r = lt_code.RSA.bigAddSlow(r, 1);
             }
-            let x = modPow(a, d, n);
-            if (x === 1n || x === n - 1n) return true;
+            //let x = modPow(a, d, n);
+            let x = lt_code.RSA.bigPowerAndQuotient(a, d, n);
+            if (x === 1 || x === lt_code.RSA.bigSubtractSlow(n, 1)) return true;
             for (let i = 0n; i < r - 1n; i++) {
                 x = (x * x) % n;
-                if (x === n - 1n) return true;
+                if (x === lt_code.RSA.bigSubtractSlow(n,1)) return true;
             }
             return false;
         }
 
-        function modPow(base, exponent, modulus) {
-            if (modulus === 1n) return 0n;
-            let result = 1n;
-            base = base % modulus;
-            while (exponent > 0n) {
-                if (exponent % 2n === 1n) {
-                    result = (result * base) % modulus;
-                }
-                exponent = exponent >> 1n;
-                base = (base * base) % modulus;
-            }
-            return result;
-        }
+        //function modPow(base, exponent, modulus) {
+        //    if (modulus === 1n) return 0n;
+        //    let result = 1n;
+        //    base = base % modulus;
+        //    while (exponent > 0n) {
+        //        if (exponent % 2n === 1n) {
+        //            result = (result * base) % modulus;
+        //        }
+        //        exponent = exponent >> 1n;
+        //        base = (base * base) % modulus;
+        //    }
+        //    return result;
+        //}
 
         // 选择两个大素数 p 和 q
         let p = generateLargePrime(bitLength / 2);
