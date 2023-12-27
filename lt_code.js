@@ -9,33 +9,34 @@ document.head.innerHTML += "<style id=\"lt_code_css\"></style>";
 
 /**
  * 自制的代码
- * @param {...any} arg 输入参数
+ * @param {String} arg 输入参数
  */
-//var lt_code = function (...arg) {
-//    return lt_code.getAllType(arg, true);
-//}
-var lt_code = (function () {
-    /**
-     * 内部功能实现
-     * @param {any} arg
-     */
-    function innerLtCode(arg) {
-        return lt_code.getAll6(arg);
-    }
+var lt_code = function (arg) {
+    return lt_code.getAll6(arg);
+}
 
-    // 设置onload属性,对其进行赋值的时候将函数添加进入启动函数
-    // 读取这个属性的时候显示所有的启动函数
-    Object.defineProperty(innerLtCode, "onload", {
-        set: function (func) {
-            lt_code.variable.addLoad(func);
-        },
-        get: function () {
-            return lt_code.variable.onload;
-        }
-    })
+//var lt_code = (function () {
+//    /**
+//     * 内部功能实现
+//     * @param {any} arg
+//     */
+//    function innerLtCode(arg) {
+//        return lt_code.getAll6(arg);
+//    }
 
-    return innerLtCode;
-})();
+//    // 设置onload属性,对其进行赋值的时候将函数添加进入启动函数
+//    // 读取这个属性的时候显示所有的启动函数
+//    Object.defineProperty(innerLtCode, "onload", {
+//        set: function (func) {
+//            lt_code.variable.addLoad(func);
+//        },
+//        get: function () {
+//            return lt_code.variable.onload;
+//        }
+//    })
+
+//    return innerLtCode;
+//})();
 
 /**关闭浏览器 */
 lt_code.close = function () {
@@ -933,6 +934,17 @@ lt_code.variable.delRun = function (name) {
     });
 }
 
+// 设置onload属性,对其进行赋值的时候将函数添加进入启动函数
+// 读取这个属性的时候显示所有的启动函数
+Object.defineProperty(lt_code, "run", {
+    set: function (num) {
+        lt_code.variable.addRun(num);
+    },
+    get: function () {
+        return lt_code.variable.runer;
+    }
+});
+
 /**
  * 生成新UID
  * 33位(保留设计思路,但屏蔽此算法)
@@ -1071,6 +1083,17 @@ lt_code.variable.addLoad = function (func, name = "匿名启动事件") {
         lt_code.variable.onload.push(newOne);
     }
 };
+
+// 设置onload属性,对其进行赋值的时候将函数添加进入启动函数
+// 读取这个属性的时候显示所有的启动函数
+Object.defineProperty(lt_code, "onload", {
+    set: function (func) {
+        lt_code.variable.addLoad(func);
+    },
+    get: function () {
+        return lt_code.variable.onload;
+    }
+});
 
 /**
  * 截取汉字的函数(重载+2)
