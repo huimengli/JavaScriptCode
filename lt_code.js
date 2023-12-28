@@ -2025,7 +2025,7 @@ lt_code.getAll6 = function (htmldom) {
             } else if (matchs[2] == ".") {
                 rets.add.apply(rets,Array.prototype.slice.call(document.getElementsByClassName(matchs[3])));
             }
-        } else if (matchs[1] == "-") {//计算减少
+        } else if (matchs[1] == "^") {//计算减少
             if (matchs[2] == "") {//要求根据tag查照
                 rets.del.apply(rets, Array.prototype.slice.call(document.getElementsByTagName(matchs[3])));
             } else if (matchs[2] == "#") {
