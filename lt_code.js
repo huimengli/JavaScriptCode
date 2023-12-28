@@ -10,6 +10,7 @@ document.head.innerHTML += "<style id=\"lt_code_css\"></style>";
 /**
  * 自制的代码
  * @param {String} arg 输入参数
+ * @returns {HTMLElement[]}
  */
 var lt_code = function (arg) {
     return lt_code.getAll6(arg);
