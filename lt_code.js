@@ -11506,15 +11506,28 @@ lt_code.test.threeDimensionalCloud = function () {
         eval("console.trace(" + str + ")");
     };
 
+    ///**
+    // * 每一个
+    // * @param {Array} callback
+    // */
+    //Array.prototype.forEach = function (callback) {
+    //    for (var i = 0; i < this.length; i++) {
+    //        callback.call(this[i]);
+    //    }
+    //};
+
     /**
      * 每一个
      * @param {Array} callback
      */
-    Array.prototype.forEach = function (callback) {
-        for (var i = 0; i < this.length; i++) {
-            callback.call(this[i]);
-        }
-    };
+    Object.defineProperty(Array.prototype, "forEach", {
+        value: function (callback) {
+            for (var i = 0; i < this.length; i++) {
+                callback.call(this[i]);
+            }
+        },
+        enumerable:false
+    })
 
     /**旋转x轴 */
     var rotateX = () => {
@@ -13709,203 +13722,374 @@ lt_code.addMethod.AddMethod = function () {
      * @param {number} index 索引
      * @param {number} [count] 项数
      */
-    Array.prototype.remove = function (index, count) {
-        var ret = [];
-        count = count == null || count == 0 ? 1 : count;
-        this.forEach(function (e, i) {
-            if (i < index) {
-                ret.push(e);
-            } else if (i >= index + count) {
-                ret.push(e);
-            }
-        });
-        return ret;
-    };
+    //Array.prototype.remove = function (index, count) {
+    //    var ret = [];
+    //    count = count == null || count == 0 ? 1 : count;
+    //    this.forEach(function (e, i) {
+    //        if (i < index) {
+    //            ret.push(e);
+    //        } else if (i >= index + count) {
+    //            ret.push(e);
+    //        }
+    //    });
+    //    return ret;
+    //};
+    Object.defineProperty(Array.prototype, "remove", {
+        value: function (index, count) {
+            var ret = [];
+            count = count == null || count == 0 ? 1 : count;
+            this.forEach(function (e, i) {
+                if (i < index) {
+                    ret.push(e);
+                } else if (i >= index + count) {
+                    ret.push(e);
+                }
+            });
+            return ret;
+        },
+        enumerable: false
+    });
 
     /**
      * 删除内容
      * @param {any} obj 要删除的对象
      * @param {any} [needAll] 是否全部删除
      */
-    Array.prototype.delete = function (obj, needAll) {
-        var ret = [];
-        var base = this;
-        if (Array.isArray(obj) === false) {
-            if (!needAll) {
-                var i = -1;
-                base.forEach(function (e, j) {
-                    if (obj === e && i < 0) {
-                        i = j;
-                    } else {
-                        ret.push(e);
-                    }
-                });
-            } else {
-                base.forEach(function (e) {
-                    if (obj !== e) {
-                        ret.push(e);
-                    }
-                });
+    //Array.prototype.delete = function (obj, needAll) {
+    //    var ret = [];
+    //    var base = this;
+    //    if (Array.isArray(obj) === false) {
+    //        if (!needAll) {
+    //            var i = -1;
+    //            base.forEach(function (e, j) {
+    //                if (obj === e && i < 0) {
+    //                    i = j;
+    //                } else {
+    //                    ret.push(e);
+    //                }
+    //            });
+    //        } else {
+    //            base.forEach(function (e) {
+    //                if (obj !== e) {
+    //                    ret.push(e);
+    //                }
+    //            });
+    //        }
+    //    }
+    //    //这里有bug
+    //    //else {
+    //    //    if (!needAll) {
+    //    //        obj.forEach(function (e) {
+    //    //            ret = ret.delete(e, false);
+    //    //        });
+    //    //    } else {
+    //    //        obj.forEach(function (e) {
+    //    //            ret = ret.delete(e, true);
+    //    //        });
+    //    //    }
+    //    //}
+    //    return ret;
+    //};
+    Object.defineProperty(Array.prototype, "delete", {
+        value: function (obj, needAll) {
+            var ret = [];
+            var base = this;
+            if (Array.isArray(obj) === false) {
+                if (!needAll) {
+                    var i = -1;
+                    base.forEach(function (e, j) {
+                        if (obj === e && i < 0) {
+                            i = j;
+                        } else {
+                            ret.push(e);
+                        }
+                    });
+                } else {
+                    base.forEach(function (e) {
+                        if (obj !== e) {
+                            ret.push(e);
+                        }
+                    });
+                }
             }
-        }
-        //这里有bug
-        //else {
-        //    if (!needAll) {
-        //        obj.forEach(function (e) {
-        //            ret = ret.delete(e, false);
-        //        });
-        //    } else {
-        //        obj.forEach(function (e) {
-        //            ret = ret.delete(e, true);
-        //        });
-        //    }
-        //}
-        return ret;
-    };
+            return ret;
+        },
+        enumerable: false
+    });
 
     /**
      * 随机取出一个数据
      */
-    Array.prototype.randomOne = function () {
-        let item = Math.random() * this.length;
-        item = Math.floor(item);
-        let ret = this[item];
-        return ret;
-    };
+    //Array.prototype.randomOne = function () {
+    //    let item = Math.random() * this.length;
+    //    item = Math.floor(item);
+    //    let ret = this[item];
+    //    return ret;
+    //};
+    Object.defineProperty(Array.prototype, "randomOne", {
+        value: function () {
+            let item = Math.random() * this.length;
+            item = Math.floor(item);
+            let ret = this[item];
+            return ret;
+        },
+        enumerable: false
+    });
 
     /**
      * 将整个列表随机化
      */
-    Array.prototype.random = function () {
-        let list = this;
-        let ret = [];
-        let count = this.length;
-        let item;
-        for (let i = 0; i < count; i++) {
-            item = list.randomOne();
-            list = list.delete(item);
-            ret.push(item);
-        }
-        return ret;
-    };
+    //Array.prototype.random = function () {
+    //    let list = this;
+    //    let ret = [];
+    //    let count = this.length;
+    //    let item;
+    //    for (let i = 0; i < count; i++) {
+    //        item = list.randomOne();
+    //        list = list.delete(item);
+    //        ret.push(item);
+    //    }
+    //    return ret;
+    //};
+    Object.defineProperty(Array.prototype, "random", {
+        value: function () {
+            let list = this;
+            let ret = [];
+            let count = this.length;
+            let item;
+            for (let i = 0; i < count; i++) {
+                item = list.randomOne();
+                list = list.delete(item);
+                ret.push(item);
+            }
+            return ret;
+        },
+        enumerable: false
+    });
 
     /**
      * 获取所有项
      * @param {object} item 其中一项
      */
-    Array.prototype.indexsOf = function (item) {
-        var ret = [];
-        this.forEach(function (e, i) {
-            if (e == item) {
-                ret.push(i);
-            }
-        });
-        return ret;
-    };
+    //Array.prototype.indexsOf = function (item) {
+    //    var ret = [];
+    //    this.forEach(function (e, i) {
+    //        if (e == item) {
+    //            ret.push(i);
+    //        }
+    //    });
+    //    return ret;
+    //};
+    Object.defineProperty(Array.prototype, "indexsOf", {
+        value: function (item) {
+            var ret = [];
+            this.forEach(function (e, i) {
+                if (e == item) {
+                    ret.push(i);
+                }
+            });
+            return ret;
+        },
+        enumerable: false
+    });
 
     /**
      * 获取所有项
      * @param {number} item 其中一项
      */
-    Uint8ClampedArray.prototype.indexsOf = function (item) {
-        var ret = [];
-        if (typeof (item) == "number") {
-            if (item > 255 || item < 0) {
-                return ret;
-            }
-            for (var i = 0; i < this.length; i++) {
-                if (this[i] == item) {
-                    ret.push(i);
+    //Uint8ClampedArray.prototype.indexsOf = function (item) {
+    //    var ret = [];
+    //    if (typeof (item) == "number") {
+    //        if (item > 255 || item < 0) {
+    //            return ret;
+    //        }
+    //        for (var i = 0; i < this.length; i++) {
+    //            if (this[i] == item) {
+    //                ret.push(i);
+    //            }
+    //        }
+    //        return ret;
+    //    } else {
+    //        console.error("参数输入错误!");
+    //    }
+    //};
+    Object.defineProperty(Uint8ClampedArray.prototype, "indexsOf", {
+        value: function (item) {
+            var ret = [];
+            if (typeof (item) == "number") {
+                if (item > 255 || item < 0) {
+                    return ret;
                 }
+                for (var i = 0; i < this.length; i++) {
+                    if (this[i] == item) {
+                        ret.push(i);
+                    }
+                }
+                return ret;
+            } else {
+                console.error("参数输入错误!");
             }
-            return ret;
-        } else {
-            console.error("参数输入错误!");
-        }
-    };
+        },
+        enumerable: false
+    });
 
     /**
      * 顺序排列
      * @param {boolean} isMinToMax 是否从小到大排列
      */
-    Array.prototype.order = function (isMinToMax) {
-        var ret = [];
-        var list = this;
-        const count = this.length;
-        if (isMinToMax) {
-            do {
-                let min = Math.min.apply(null, list);
-                for (let i = 0; i < list.indexsOf(min).length; i++) {
-                    ret.push(min);
+    //Array.prototype.order = function (isMinToMax) {
+    //    var ret = [];
+    //    var list = this;
+    //    const count = this.length;
+    //    if (isMinToMax) {
+    //        do {
+    //            let min = Math.min.apply(null, list);
+    //            for (let i = 0; i < list.indexsOf(min).length; i++) {
+    //                ret.push(min);
+    //            }
+    //            list = list.delete(min, true);
+    //            //console.log(list);
+    //        } while (list.length);
+    //    } else {
+    //        while (list.length > 0) {
+    //            let max = Math.max.apply(null, list);
+    //            for (let i = 0; i < list.indexsOf(max).length; i++) {
+    //                ret.push(max);
+    //            }
+    //            list = list.delete(max, true);
+    //            //console.log(list);
+    //        }
+    //    }
+    //    return ret;
+    //};
+    Object.defineProperty(Array.prototype, "order", {
+        value: function (isMinToMax) {
+            var ret = [];
+            var list = this;
+            const count = this.length;
+            if (isMinToMax) {
+                do {
+                    let min = Math.min.apply(null, list);
+                    for (let i = 0; i < list.indexsOf(min).length; i++) {
+                        ret.push(min);
+                    }
+                    list = list.delete(min, true);
+                    //console.log(list);
+                } while (list.length);
+            } else {
+                while (list.length > 0) {
+                    let max = Math.max.apply(null, list);
+                    for (let i = 0; i < list.indexsOf(max).length; i++) {
+                        ret.push(max);
+                    }
+                    list = list.delete(max, true);
+                    //console.log(list);
                 }
-                list = list.delete(min, true);
-                //console.log(list);
-            } while (list.length);
-        } else {
-            while (list.length > 0) {
-                let max = Math.max.apply(null, list);
-                for (let i = 0; i < list.indexsOf(max).length; i++) {
-                    ret.push(max);
-                }
-                list = list.delete(max, true);
-                //console.log(list);
             }
-        }
-        return ret;
-    };
+            return ret;
+        },
+        enumerable: false
+    });
 
     /**
      * 快速排序
      * 从小到大
      */
-    Array.prototype.quickSort = function () {
-        if (this.length <= 1) {
-            return this;
-        }
-        var pivotIndex = Math.floor(this.length / 2);
-        var pivot = this.splice(pivotIndex, 1)[0];
-        var left = [];
-        var right = [];
+    //Array.prototype.quickSort = function () {
+    //    if (this.length <= 1) {
+    //        return this;
+    //    }
+    //    var pivotIndex = Math.floor(this.length / 2);
+    //    var pivot = this.splice(pivotIndex, 1)[0];
+    //    var left = [];
+    //    var right = [];
 
-        for (var i = 0; i < this.length; i++) {
-            if (this[i] < pivot) {
-                left.push(this[i]);
-            } else {
-                right.push(this[i]);
+    //    for (var i = 0; i < this.length; i++) {
+    //        if (this[i] < pivot) {
+    //            left.push(this[i]);
+    //        } else {
+    //            right.push(this[i]);
+    //        }
+    //    }
+    //    return left.quickSort().concat([pivot], right.quickSort());
+    //};
+    Object.defineProperty(Array.prototype, "quickSort", {
+        value: function () {
+            if (this.length <= 1) {
+                return this;
             }
-        }
-        return left.quickSort().concat([pivot], right.quickSort());
-    };
+            var pivotIndex = Math.floor(this.length / 2);
+            var pivot = this.splice(pivotIndex, 1)[0];
+            var left = [];
+            var right = [];
+
+            for (var i = 0; i < this.length; i++) {
+                if (this[i] < pivot) {
+                    left.push(this[i]);
+                } else {
+                    right.push(this[i]);
+                }
+            }
+            return left.quickSort().concat([pivot], right.quickSort());
+        },
+        enumerable: false
+    });
 
     /**
      * 添加不重复的对象
      * @param {...any} item
      */
-    Array.prototype.add = function (...item) {
-        for (var i = 0; i < item.length; i++) {
-            if (this.indexOf(item[i]) >= 0) {
-                continue;
-            } else {
-                this[this.length] = item[i];
+    //Array.prototype.add = function (...item) {
+    //    for (var i = 0; i < item.length; i++) {
+    //        if (this.indexOf(item[i]) >= 0) {
+    //            continue;
+    //        } else {
+    //            this[this.length] = item[i];
+    //        }
+    //    }
+    //    return this.length;
+    //};
+    Object.defineProperty(Array.prototype, "add", {
+        value: function (...item) {
+            for (var i = 0; i < item.length; i++) {
+                if (this.indexOf(item[i]) >= 0) {
+                    continue;
+                } else {
+                    this[this.length] = item[i];
+                }
             }
-        }
-        return this.length;
-    };
+            return this.length;
+        },
+        enumerable: false
+    });
 
     /**
      * 删除对象
      * @param {...any} item
      */
-    Array.prototype.del = function (...item) {
-        for (var i = 0; i < item.length; i++) {
-            var index = this.indexOf(item[i]);
-            if (index >= 0) {
-                this.splice(index, 1);
-            } else {
-                continue;
+    //Array.prototype.del = function (...item) {
+    //    for (var i = 0; i < item.length; i++) {
+    //        var index = this.indexOf(item[i]);
+    //        if (index >= 0) {
+    //            this.splice(index, 1);
+    //        } else {
+    //            continue;
+    //        }
+    //    }
+    //};
+    Object.defineProperty(Array.prototype, "del", {
+        value: function (...item) {
+            for (var i = 0; i < item.length; i++) {
+                var index = this.indexOf(item[i]);
+                if (index >= 0) {
+                    this.splice(index, 1);
+                } else {
+                    continue;
+                }
             }
-        }
-    };
+        },
+        enumerable: false
+    });
 
     /**
      * 全部匹配
@@ -13947,19 +14131,36 @@ lt_code.addMethod.AddMethod = function () {
      * 查找token在TokenList中的位置
      * @param {String} tokenName
      */
-    DOMTokenList.prototype.indexOf = function (tokenName) {
-        for (var i = 0; i < this.length; i++) {
-            if (this[i]==tokenName) {
-                return i;
+    //DOMTokenList.prototype.indexOf = function (tokenName) {
+    //    for (var i = 0; i < this.length; i++) {
+    //        if (this[i]==tokenName) {
+    //            return i;
+    //        }
+    //    }
+    //    return -1;
+    //}
+    Object.defineProperty(DOMTokenList.prototype, "indexOf", {
+        value: function (tokenName) {
+            for (var i = 0; i < this.length; i++) {
+                if (this[i] == tokenName) {
+                    return i;
+                }
             }
-        }
-        return -1;
-    }
+            return -1;
+        },
+        enumerable: false
+    });
 
     /**将HTMLCollection集合对象转为 */
-    HTMLCollection.prototype.toArray = function () {
-        return Array.prototype.slice.call(this);
-    }
+    //HTMLCollection.prototype.toArray = function () {
+    //    return Array.prototype.slice.call(this);
+    //}
+    Object.defineProperty(HTMLCollection.prototype, "toArray", {
+        value: function () {
+            return Array.prototype.slice.call(this);
+        },
+        enumerable: false
+    });
 
     /**如果string没有matchAll则使用自己写的函数 */
     String.prototype.matchAll = String.prototype.matchAll ? String.prototype.matchAll : matchAll;
