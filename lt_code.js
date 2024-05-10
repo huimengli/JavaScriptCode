@@ -621,10 +621,13 @@ lt_code.searchTime = function (time) {
 }
 
 /**
- * utf-8转字符串(傻逼算法,这个算法有错误)
+ * utf-8转字符串
  * @param {any} szInput
  */
 lt_code.utf8ToChinese = function (szInput) {
+    if (!szInput || typeof(szInput)!="string") {
+        return szInput;
+    }
     var x, wch, wch1, wch2, uch = "", szRet = "";
     for (x = 0; x < szInput.length; x++) {
         if (szInput.charAt(x) == "%") {
