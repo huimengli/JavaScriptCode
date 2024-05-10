@@ -1,7 +1,7 @@
 ﻿/**
  * @file 帮助文档
- * @author 楼听[修改日期:2022年2月23日]
- * @version demo-17
+ * @author 绘梦璃[修改日期:2023年12月27日]
+ * @version demo-18
  */
 
 //向head里面丢一个特殊的style样式框
@@ -9,11 +9,35 @@ document.head.innerHTML += "<style id=\"lt_code_css\"></style>";
 
 /**
  * 自制的代码
- * @param {...any} arg 输入参数
+ * @param {String} arg 输入参数
+ * @returns {HTMLElement[]}
  */
-var lt_code = function (...arg) {
-    return lt_code.getAllType(arg, true);
+var lt_code = function (arg) {
+    return lt_code.getAll6(arg);
 }
+
+//var lt_code = (function () {
+//    /**
+//     * 内部功能实现
+//     * @param {any} arg
+//     */
+//    function innerLtCode(arg) {
+//        return lt_code.getAll6(arg);
+//    }
+
+//    // 设置onload属性,对其进行赋值的时候将函数添加进入启动函数
+//    // 读取这个属性的时候显示所有的启动函数
+//    Object.defineProperty(innerLtCode, "onload", {
+//        set: function (func) {
+//            lt_code.variable.addLoad(func);
+//        },
+//        get: function () {
+//            return lt_code.variable.onload;
+//        }
+//    })
+
+//    return innerLtCode;
+//})();
 
 /**关闭浏览器 */
 lt_code.close = function () {
@@ -914,6 +938,17 @@ lt_code.variable.delRun = function (name) {
     });
 }
 
+// 设置onload属性,对其进行赋值的时候将函数添加进入启动函数
+// 读取这个属性的时候显示所有的启动函数
+Object.defineProperty(lt_code, "run", {
+    set: function (num) {
+        lt_code.variable.addRun(num);
+    },
+    get: function () {
+        return lt_code.variable.runer;
+    }
+});
+
 /**
  * 生成新UID
  * 33位(保留设计思路,但屏蔽此算法)
@@ -1022,8 +1057,47 @@ lt_code.variable.regular.getMounth = /1[0-2]|[0-9]/;
 /**读取日期的正则(大月) */
 lt_code.variable.regular.getDaty = /[0-2][0-9]|[0-3][0-1]|[0-9]/;
 
+/**
+ * 获取精度
+ * @param {number} num 输入
+ * @param {number} [acc] 精度(默认2)
+ */
+lt_code.variable.getAccuracy = function (num, acc = 2) {
+    if (typeof (num) != "number") {
+        num = parseFloat(num);
+    }
+    num = num * Math.pow(10, acc);
+    num = Math.round(num);
+    return num / Math.pow(10, acc);
+};
 
+/**
+ * 启动项里面需要运行的函数
+ */
+lt_code.variable.onload = new Array();
 
+/**
+ * 添加window.onload时运行的函数
+ * @param {Function} func 启动的时候想要执行的函数
+ * @param {String} name 需要执行的启动函数名称
+ */
+lt_code.variable.addLoad = function (func, name = "匿名启动事件") {
+    if (!!func) {
+        var newOne = { name: name, function: func };
+        lt_code.variable.onload.push(newOne);
+    }
+};
+
+// 设置onload属性,对其进行赋值的时候将函数添加进入启动函数
+// 读取这个属性的时候显示所有的启动函数
+Object.defineProperty(lt_code, "onload", {
+    set: function (func) {
+        lt_code.variable.addLoad(func);
+    },
+    get: function () {
+        return lt_code.variable.onload;
+    }
+});
 
 /**
  * 截取汉字的函数(重载+2)
@@ -1706,14 +1780,15 @@ lt_code.getAll4 = function (htmldom) {
 /**
  * 读取对象的函数(功能增强)(id:#)(class:.)
  * [domName][.className]>[domName]+[#ID]-[.className]<null
- * domName   标签名称,类似于:div,span,p...
- * className   类名称,类似于:.box,.hide
- * ID          标签ID,类似于:#name,#password
- * >        选取子代
- * <        选取父代(<后必须带有内容,可以填null或其他任何内容)
+ * domName      标签名称,类似于:div,span,p...
+ * className    类名称,类似于:.box,.hide
+ * ID           标签ID,类似于:#name,#password
+ * >            选取子代
+ * <            选取父代(<后必须带有内容,可以填null或其他任何内容)
  * 如果非必须,最好不要用+-,可能会产生不可预料的结果
- * +        追加筛选
- * -        减少筛选
+ * +            追加筛选
+ * -            减少筛选
+ * 因为有些类名中会包含-符号,因此这个版本被废弃
  * @example
  * [domName].[className]>[domName]+#[ID]-.[className]<null
  * @param {String} htmldom 读取方式
@@ -1822,6 +1897,139 @@ lt_code.getAll5 = function (htmldom) {
                 rets.add.apply(rets,Array.prototype.slice.call(document.getElementsByClassName(matchs[3])));
             }
         } else if (matchs[1] == "-") {//计算减少
+            if (matchs[2] == "") {//要求根据tag查照
+                rets.del.apply(rets, Array.prototype.slice.call(document.getElementsByTagName(matchs[3])));
+            } else if (matchs[2] == "#") {
+                rets.del.apply(rets, Array.prototype.slice.call(document.getElementById(matchs[3])));
+            } else if (matchs[2] == ".") {
+                rets.del.apply(rets, Array.prototype.slice.call(document.getElementsByClassName(matchs[3])));
+            }
+        }
+        //结束一轮查找
+        matchs = read.exec(matchs[4]);
+    }
+    return rets;
+};
+
+/**
+ * 读取对象的函数(功能增强)(id:#)(class:.)
+ * [domName][.className]>[domName]+[#ID]^[.className]<null
+ * domName   标签名称,类似于:div,span,p...
+ * className 类名称,类似于:.box,.hide
+ * ID        标签ID,类似于:#name,#password
+ * >         选取子代
+ * <         选取父代(<后必须带有内容,可以填null或其他任何内容)
+ * 如果非必须,最好不要用+^,可能会产生不可预料的结果
+ * +         追加筛选
+ * ^         减少筛选
+ * @example
+ * [domName].[className]>[domName]+#[ID]^[.className]<null
+ * @param {String} htmldom 读取方式
+ * @returns {HTMLElement[]}
+ */
+lt_code.getAll6 = function (htmldom) {
+    // 筛选修正
+    htmldom = htmldom.replace(" ", "+");
+    /** 读取所用的正则 */
+    var read = /([><\+\^]?)([#\.]?)([^#\.<>\+\^\ ]+)([\S\s]*)/;
+    /**读取到的所有结果 */
+    var matchs = read.exec(htmldom);
+    //读取到的结果
+    var rets = [];
+    //开始读取
+    while (matchs!=null) {
+        if (matchs[1]=="") {//没有要求计算祖/子辈,没有添加或者减少
+            if (matchs[2]=="") {//要求根据tag查照,因为tag不会重复,所以不用计算筛选
+                rets = Array.prototype.slice.call(document.getElementsByTagName(matchs[3])); 
+            } else if (matchs[2]=="#") {
+                if (rets.length==0) {
+                    rets = Array.prototype.slice.call(document.getElementById(matchs[3]));
+                } else {
+                    rets = function () {
+                        var ret = [];
+                        for (var i = 0; i < rets.length; i++) {
+                            if (rets[i].id==matchs[3]) {
+                                ret.add(rets[i]);
+                            }
+                        }
+                        return ret;
+                    }();
+                }
+            } else if (matchs[2]==".") {
+                if (rets.length == 0) {
+                    rets = Array.prototype.slice.call(document.getElementsByClassName(matchs[3]));
+                } else {
+                    rets = function () {
+                        var ret = [];
+                        for (var i = 0; i < rets.length; i++) {
+                            if (rets[i].classList.indexOf(matchs[3])>=0) {
+                                ret.add(rets[i]);
+                            }
+                        }
+                        return ret;
+                    }();
+                }
+            }
+        } else if (matchs[1]=="<") {//计算祖辈
+            if (rets.length==0) {
+                return document.body;
+            } else {
+                rets = function () {
+                    var ret = [];
+                    for (var i = 0; i < rets.length; i++) {
+                        ret.add(lt_code.getDomFather(rets[i]));
+                    }
+                    return ret;
+                }();
+            }
+        } else if (matchs[1]==">") {//计算子辈
+            if (rets.length==0) {//没有父辈
+                if (matchs[2] == "") {//要求根据tag查照
+                    rets = Array.prototype.slice.call(document.getElementsByTagName(matchs[3]));
+                } else if (matchs[2] == "#") {
+                    rets = Array.prototype.slice.call(document.getElementById(matchs[3]));
+                } else if (matchs[2] == ".") {
+                    rets = Array.prototype.slice.call(document.getElementsByClassName(matchs[3]));
+                }
+            } else {
+                if (matchs[2] == "") {//要求根据tag查照
+                    rets = function () {
+                        var ret = [];
+                        for (var i = 0; i < rets.length; i++) {
+                            var tempArray = Array.prototype.slice.call(rets[i].getElementsByTagName(matchs[3]));
+                            ret.add.apply(ret, tempArray);
+                        }
+                        return ret;
+                    }();
+                } else if (matchs[2] == "#") {
+                    rets = function () {
+                        var ret = [];
+                        for (var i = 0; i < rets.length; i++) {
+                            var tempArray = Array.prototype.slice.call(rets[i].getElementById(matchs[3]));
+                            ret.add.apply(ret, tempArray);
+                        }
+                        return ret;
+                    }();
+                } else if (matchs[2] == ".") {
+                    rets = function () {
+                        var ret = [];
+                        for (var i = 0; i < rets.length; i++) {
+                            var tempArray = Array.prototype.slice.call(rets[i].getElementsByClassName(matchs[3]));
+                            ret.add.apply(ret, tempArray);
+                        }
+                        return ret;
+                    }();
+                }
+            }
+        } else if (matchs[1]=="+") {//计算添加
+            if (matchs[2] == "") {//要求根据tag查照
+                rets.add.apply(rets,Array.prototype.slice.call(document.getElementsByTagName(matchs[3])));
+            } else if (matchs[2] == "#") {
+                rets.add.apply(rets,Array.prototype.slice.call(document.getElementById(matchs[3])));
+            } else if (matchs[2] == ".") {
+                rets.add.apply(rets,Array.prototype.slice.call(document.getElementsByClassName(matchs[3])));
+            }
+        } else if (matchs[1] == "^") {//计算减少
             if (matchs[2] == "") {//要求根据tag查照
                 rets.del.apply(rets, Array.prototype.slice.call(document.getElementsByTagName(matchs[3])));
             } else if (matchs[2] == "#") {
@@ -1961,20 +2169,6 @@ lt_code.getSize = function (size) {
         size < 1024 * 1024 ? Math.floor(size / 1024 * 100) / 100 + "KB" :
             size < 1024 * 1024 * 1024 ? Math.floor(size / 1024 / 1024 * 100) / 100 + "MB" :
                 Math.floor(size / 1024 / 1024 / 1024 * 100) / 100 + "GB");
-};
-
-/**
- * 获取精度
- * @param {number} num 输入
- * @param {number} [acc] 精度(默认2)
- */
-lt_code.getAccuracy = function (num,acc=2) {
-    if (typeof(num)!="number") {
-        num = parseFloat(num);
-    }
-    num = num * Math.pow(10,acc);
-    num = Math.round(num);
-    return num / Math.pow(10, acc);
 };
 
 /**
@@ -6409,16 +6603,17 @@ lt_code.getJson = function (str) {
  * 还是没有图标则自动调用图标
  */
 lt_code.Version = function () {
-    //eval("console.log('lt_code部分代码由楼听提供');");
+    //eval("console.log('lt_code部分代码由绘梦璃提供');");
     //窗体启动时候运行的内容
     window.addEventListener("load", function () {
         //如果页面没有图标则使用我的图标
         !function () {
             var ico = document.getElementsByTagName("link");
             var have = false;
-            for (var i in ico) {
-                if (/icon/.test(i.type)) {
+            for (var i = 0; i < ico.length; i++) {
+                if (/icon/.test(ico[i].type)) {
                     have = true;
+                    break; // 找到图标后退出循环
                 }
             }
             if (!have) {
@@ -6479,6 +6674,17 @@ lt_code.Version = function () {
                 //lt_code.addChild(t, lt_code.getAll("head"));
                 console.log("页面中没有meta标记,显示utf-8文件可能会出现中文乱码\n请在head标签中添加:\n" + t.outerHTML);
             }
+        }();
+
+        //执行额外的onload函数
+        !function () {
+            lt_code.variable.onload.forEach(load => {
+                try {
+                    load.function();
+                } catch (e) {
+                    console.error(e);
+                }
+            });
         }();
 
         /**
@@ -6656,7 +6862,7 @@ lt_code.Version = function () {
         }
     });
 
-    return 17;
+    return 18;
 }();
 
 
@@ -11303,15 +11509,28 @@ lt_code.test.threeDimensionalCloud = function () {
         eval("console.trace(" + str + ")");
     };
 
+    ///**
+    // * 每一个
+    // * @param {Array} callback
+    // */
+    //Array.prototype.forEach = function (callback) {
+    //    for (var i = 0; i < this.length; i++) {
+    //        callback.call(this[i]);
+    //    }
+    //};
+
     /**
      * 每一个
      * @param {Array} callback
      */
-    Array.prototype.forEach = function (callback) {
-        for (var i = 0; i < this.length; i++) {
-            callback.call(this[i]);
-        }
-    };
+    Object.defineProperty(Array.prototype, "forEach", {
+        value: function (callback) {
+            for (var i = 0; i < this.length; i++) {
+                callback.call(this[i]);
+            }
+        },
+        enumerable:false
+    })
 
     /**旋转x轴 */
     var rotateX = () => {
@@ -13007,8 +13226,127 @@ lt_code.RSA = {
         return D;
     },
 
-    getKey2: function (p,q) {
-        
+    getKey2: function (bitLength) {
+        /** 生成大素数的函数 */
+        function generateLargePrime(bits) {
+            let prime;
+            do {
+                prime = generateRandomBigInt(bits);
+            } while (!isPrime(prime));
+            return prime;
+        }
+
+        /** 选择一个与 phi 互质的 e（伪代码，通常选择65537）*/
+        function chooseE(phi) {
+            let e = 65537; // 常用的公钥指数
+            while (gcd(e, phi) !== 1) {
+                e += 2; // 寻找下一个可能的 e
+            }
+            return e;
+        }
+
+        /** 计算最大公约数（欧几里得算法）*/
+        function gcd(a, b) {
+            if (b === 0) return a;
+            return gcd(b, a % b);
+        }
+
+        /** 计算模逆（扩展欧几里得算法）*/
+        function modInverse(e, phi) {
+            let [a, m] = [e, phi];
+            let [x, y, u, v] = [0, 1, 1, 0];
+            while (a !== 0) {
+                [q, r] = [Math.floor(m / a), m % a];
+                [m, a] = [a, r];
+                [x, u] = [u, x - q * u];
+                [y, v] = [v, y - q * v];
+            }
+            if (m !== 1) {
+                throw new Error("无法计算模逆");
+            }
+            return (x + phi) % phi;
+        }
+
+        /** 生成指定比特长度的随机大整数（伪代码）*/
+        function generateRandomBigInt(bits) {
+            let random = "1"; // 确保最高位是1
+            for (let i = 1; i < bits - 1; i++) {
+                random += Math.floor(Math.random() * 2); // 添加随机的0或1
+            }
+            random += "1"; // 确保最低位是1，使得数是奇数
+            //return BigInt("0b" + random);
+        }
+
+        /** 检查一个数是否为素数（伪代码，需要实现有效的素性测试）*/
+        function isPrime(n, accuracy = 20) {
+            if (n < 2n) return false;
+            if (n === 2n) return true;
+            if (n % 2n === 0n) return false;
+
+            // 写Miller-Rabin素性测试的代码
+            for (let i = 0; i < accuracy; i++) {
+                let a = BigInt(Math.floor(Math.random() * Number(n - 3n))) + 2n;
+                if (!millerRabinTest(a, n)) return false;
+            }
+            return true;
+        }
+
+        /**
+         * Miller-Rabin素性测试
+         * @param {any} a
+         * @param {any} n
+         */
+        function millerRabinTest(a, n) {
+            let d = lt_code.RSA.bigSubtractSlow(n,1);
+            let r = "0";
+            while (lt_code.RSA.bigQuotient(d,2)==0) {
+                d = lt_code.RSA.bigDividedCutSlow(d, 2);
+                r = lt_code.RSA.bigAddSlow(r, 1);
+            }
+            //let x = modPow(a, d, n);
+            let x = lt_code.RSA.bigPowerAndQuotient(a, d, n);
+            if (x === 1 || x === lt_code.RSA.bigSubtractSlow(n, 1)) return true;
+            for (let i = 0n; i < r - 1n; i++) {
+                x = (x * x) % n;
+                if (x === lt_code.RSA.bigSubtractSlow(n,1)) return true;
+            }
+            return false;
+        }
+
+        //function modPow(base, exponent, modulus) {
+        //    if (modulus === 1n) return 0n;
+        //    let result = 1n;
+        //    base = base % modulus;
+        //    while (exponent > 0n) {
+        //        if (exponent % 2n === 1n) {
+        //            result = (result * base) % modulus;
+        //        }
+        //        exponent = exponent >> 1n;
+        //        base = (base * base) % modulus;
+        //    }
+        //    return result;
+        //}
+
+        // 选择两个大素数 p 和 q
+        let p = generateLargePrime(bitLength / 2);
+        let q = generateLargePrime(bitLength / 2);
+
+        // 计算 N = p * q
+        let N = p * q;
+
+        // 计算欧拉函数 phi(N) = (p-1) * (q-1)
+        let phi = (p - 1) * (q - 1);
+
+        // 选择 e，e 需要与 phi(N) 互质
+        let e = chooseE(phi);
+
+        // 计算 e 相对于 phi(N) 的模逆 d
+        let d = modInverse(e, phi);
+
+        return {
+            publicKey: { N: N, e: e },
+            privateKey: { N: N, d: d }
+        };
     },
 
     /**
@@ -13387,203 +13725,374 @@ lt_code.addMethod.AddMethod = function () {
      * @param {number} index 索引
      * @param {number} [count] 项数
      */
-    Array.prototype.remove = function (index, count) {
-        var ret = [];
-        count = count == null || count == 0 ? 1 : count;
-        this.forEach(function (e, i) {
-            if (i < index) {
-                ret.push(e);
-            } else if (i >= index + count) {
-                ret.push(e);
-            }
-        });
-        return ret;
-    };
+    //Array.prototype.remove = function (index, count) {
+    //    var ret = [];
+    //    count = count == null || count == 0 ? 1 : count;
+    //    this.forEach(function (e, i) {
+    //        if (i < index) {
+    //            ret.push(e);
+    //        } else if (i >= index + count) {
+    //            ret.push(e);
+    //        }
+    //    });
+    //    return ret;
+    //};
+    Object.defineProperty(Array.prototype, "remove", {
+        value: function (index, count) {
+            var ret = [];
+            count = count == null || count == 0 ? 1 : count;
+            this.forEach(function (e, i) {
+                if (i < index) {
+                    ret.push(e);
+                } else if (i >= index + count) {
+                    ret.push(e);
+                }
+            });
+            return ret;
+        },
+        enumerable: false
+    });
 
     /**
      * 删除内容
      * @param {any} obj 要删除的对象
      * @param {any} [needAll] 是否全部删除
      */
-    Array.prototype.delete = function (obj, needAll) {
-        var ret = [];
-        var base = this;
-        if (Array.isArray(obj) === false) {
-            if (!needAll) {
-                var i = -1;
-                base.forEach(function (e, j) {
-                    if (obj === e && i < 0) {
-                        i = j;
-                    } else {
-                        ret.push(e);
-                    }
-                });
-            } else {
-                base.forEach(function (e) {
-                    if (obj !== e) {
-                        ret.push(e);
-                    }
-                });
+    //Array.prototype.delete = function (obj, needAll) {
+    //    var ret = [];
+    //    var base = this;
+    //    if (Array.isArray(obj) === false) {
+    //        if (!needAll) {
+    //            var i = -1;
+    //            base.forEach(function (e, j) {
+    //                if (obj === e && i < 0) {
+    //                    i = j;
+    //                } else {
+    //                    ret.push(e);
+    //                }
+    //            });
+    //        } else {
+    //            base.forEach(function (e) {
+    //                if (obj !== e) {
+    //                    ret.push(e);
+    //                }
+    //            });
+    //        }
+    //    }
+    //    //这里有bug
+    //    //else {
+    //    //    if (!needAll) {
+    //    //        obj.forEach(function (e) {
+    //    //            ret = ret.delete(e, false);
+    //    //        });
+    //    //    } else {
+    //    //        obj.forEach(function (e) {
+    //    //            ret = ret.delete(e, true);
+    //    //        });
+    //    //    }
+    //    //}
+    //    return ret;
+    //};
+    Object.defineProperty(Array.prototype, "delete", {
+        value: function (obj, needAll) {
+            var ret = [];
+            var base = this;
+            if (Array.isArray(obj) === false) {
+                if (!needAll) {
+                    var i = -1;
+                    base.forEach(function (e, j) {
+                        if (obj === e && i < 0) {
+                            i = j;
+                        } else {
+                            ret.push(e);
+                        }
+                    });
+                } else {
+                    base.forEach(function (e) {
+                        if (obj !== e) {
+                            ret.push(e);
+                        }
+                    });
+                }
             }
-        }
-        //这里有bug
-        //else {
-        //    if (!needAll) {
-        //        obj.forEach(function (e) {
-        //            ret = ret.delete(e, false);
-        //        });
-        //    } else {
-        //        obj.forEach(function (e) {
-        //            ret = ret.delete(e, true);
-        //        });
-        //    }
-        //}
-        return ret;
-    };
+            return ret;
+        },
+        enumerable: false
+    });
 
     /**
      * 随机取出一个数据
      */
-    Array.prototype.randomOne = function () {
-        let item = Math.random() * this.length;
-        item = Math.floor(item);
-        let ret = this[item];
-        return ret;
-    };
+    //Array.prototype.randomOne = function () {
+    //    let item = Math.random() * this.length;
+    //    item = Math.floor(item);
+    //    let ret = this[item];
+    //    return ret;
+    //};
+    Object.defineProperty(Array.prototype, "randomOne", {
+        value: function () {
+            let item = Math.random() * this.length;
+            item = Math.floor(item);
+            let ret = this[item];
+            return ret;
+        },
+        enumerable: false
+    });
 
     /**
      * 将整个列表随机化
      */
-    Array.prototype.random = function () {
-        let list = this;
-        let ret = [];
-        let count = this.length;
-        let item;
-        for (let i = 0; i < count; i++) {
-            item = list.randomOne();
-            list = list.delete(item);
-            ret.push(item);
-        }
-        return ret;
-    };
+    //Array.prototype.random = function () {
+    //    let list = this;
+    //    let ret = [];
+    //    let count = this.length;
+    //    let item;
+    //    for (let i = 0; i < count; i++) {
+    //        item = list.randomOne();
+    //        list = list.delete(item);
+    //        ret.push(item);
+    //    }
+    //    return ret;
+    //};
+    Object.defineProperty(Array.prototype, "random", {
+        value: function () {
+            let list = this;
+            let ret = [];
+            let count = this.length;
+            let item;
+            for (let i = 0; i < count; i++) {
+                item = list.randomOne();
+                list = list.delete(item);
+                ret.push(item);
+            }
+            return ret;
+        },
+        enumerable: false
+    });
 
     /**
      * 获取所有项
      * @param {object} item 其中一项
      */
-    Array.prototype.indexsOf = function (item) {
-        var ret = [];
-        this.forEach(function (e, i) {
-            if (e == item) {
-                ret.push(i);
-            }
-        });
-        return ret;
-    };
+    //Array.prototype.indexsOf = function (item) {
+    //    var ret = [];
+    //    this.forEach(function (e, i) {
+    //        if (e == item) {
+    //            ret.push(i);
+    //        }
+    //    });
+    //    return ret;
+    //};
+    Object.defineProperty(Array.prototype, "indexsOf", {
+        value: function (item) {
+            var ret = [];
+            this.forEach(function (e, i) {
+                if (e == item) {
+                    ret.push(i);
+                }
+            });
+            return ret;
+        },
+        enumerable: false
+    });
 
     /**
      * 获取所有项
      * @param {number} item 其中一项
      */
-    Uint8ClampedArray.prototype.indexsOf = function (item) {
-        var ret = [];
-        if (typeof (item) == "number") {
-            if (item > 255 || item < 0) {
-                return ret;
-            }
-            for (var i = 0; i < this.length; i++) {
-                if (this[i] == item) {
-                    ret.push(i);
+    //Uint8ClampedArray.prototype.indexsOf = function (item) {
+    //    var ret = [];
+    //    if (typeof (item) == "number") {
+    //        if (item > 255 || item < 0) {
+    //            return ret;
+    //        }
+    //        for (var i = 0; i < this.length; i++) {
+    //            if (this[i] == item) {
+    //                ret.push(i);
+    //            }
+    //        }
+    //        return ret;
+    //    } else {
+    //        console.error("参数输入错误!");
+    //    }
+    //};
+    Object.defineProperty(Uint8ClampedArray.prototype, "indexsOf", {
+        value: function (item) {
+            var ret = [];
+            if (typeof (item) == "number") {
+                if (item > 255 || item < 0) {
+                    return ret;
                 }
+                for (var i = 0; i < this.length; i++) {
+                    if (this[i] == item) {
+                        ret.push(i);
+                    }
+                }
+                return ret;
+            } else {
+                console.error("参数输入错误!");
             }
-            return ret;
-        } else {
-            console.error("参数输入错误!");
-        }
-    };
+        },
+        enumerable: false
+    });
 
     /**
      * 顺序排列
      * @param {boolean} isMinToMax 是否从小到大排列
      */
-    Array.prototype.order = function (isMinToMax) {
-        var ret = [];
-        var list = this;
-        const count = this.length;
-        if (isMinToMax) {
-            do {
-                let min = Math.min.apply(null, list);
-                for (let i = 0; i < list.indexsOf(min).length; i++) {
-                    ret.push(min);
+    //Array.prototype.order = function (isMinToMax) {
+    //    var ret = [];
+    //    var list = this;
+    //    const count = this.length;
+    //    if (isMinToMax) {
+    //        do {
+    //            let min = Math.min.apply(null, list);
+    //            for (let i = 0; i < list.indexsOf(min).length; i++) {
+    //                ret.push(min);
+    //            }
+    //            list = list.delete(min, true);
+    //            //console.log(list);
+    //        } while (list.length);
+    //    } else {
+    //        while (list.length > 0) {
+    //            let max = Math.max.apply(null, list);
+    //            for (let i = 0; i < list.indexsOf(max).length; i++) {
+    //                ret.push(max);
+    //            }
+    //            list = list.delete(max, true);
+    //            //console.log(list);
+    //        }
+    //    }
+    //    return ret;
+    //};
+    Object.defineProperty(Array.prototype, "order", {
+        value: function (isMinToMax) {
+            var ret = [];
+            var list = this;
+            const count = this.length;
+            if (isMinToMax) {
+                do {
+                    let min = Math.min.apply(null, list);
+                    for (let i = 0; i < list.indexsOf(min).length; i++) {
+                        ret.push(min);
+                    }
+                    list = list.delete(min, true);
+                    //console.log(list);
+                } while (list.length);
+            } else {
+                while (list.length > 0) {
+                    let max = Math.max.apply(null, list);
+                    for (let i = 0; i < list.indexsOf(max).length; i++) {
+                        ret.push(max);
+                    }
+                    list = list.delete(max, true);
+                    //console.log(list);
                 }
-                list = list.delete(min, true);
-                //console.log(list);
-            } while (list.length);
-        } else {
-            while (list.length > 0) {
-                let max = Math.max.apply(null, list);
-                for (let i = 0; i < list.indexsOf(max).length; i++) {
-                    ret.push(max);
-                }
-                list = list.delete(max, true);
-                //console.log(list);
             }
-        }
-        return ret;
-    };
+            return ret;
+        },
+        enumerable: false
+    });
 
     /**
      * 快速排序
      * 从小到大
      */
-    Array.prototype.quickSort = function () {
-        if (this.length <= 1) {
-            return this;
-        }
-        var pivotIndex = Math.floor(this.length / 2);
-        var pivot = this.splice(pivotIndex, 1)[0];
-        var left = [];
-        var right = [];
+    //Array.prototype.quickSort = function () {
+    //    if (this.length <= 1) {
+    //        return this;
+    //    }
+    //    var pivotIndex = Math.floor(this.length / 2);
+    //    var pivot = this.splice(pivotIndex, 1)[0];
+    //    var left = [];
+    //    var right = [];
 
-        for (var i = 0; i < this.length; i++) {
-            if (this[i] < pivot) {
-                left.push(this[i]);
-            } else {
-                right.push(this[i]);
+    //    for (var i = 0; i < this.length; i++) {
+    //        if (this[i] < pivot) {
+    //            left.push(this[i]);
+    //        } else {
+    //            right.push(this[i]);
+    //        }
+    //    }
+    //    return left.quickSort().concat([pivot], right.quickSort());
+    //};
+    Object.defineProperty(Array.prototype, "quickSort", {
+        value: function () {
+            if (this.length <= 1) {
+                return this;
             }
-        }
-        return left.quickSort().concat([pivot], right.quickSort());
-    };
+            var pivotIndex = Math.floor(this.length / 2);
+            var pivot = this.splice(pivotIndex, 1)[0];
+            var left = [];
+            var right = [];
+
+            for (var i = 0; i < this.length; i++) {
+                if (this[i] < pivot) {
+                    left.push(this[i]);
+                } else {
+                    right.push(this[i]);
+                }
+            }
+            return left.quickSort().concat([pivot], right.quickSort());
+        },
+        enumerable: false
+    });
 
     /**
      * 添加不重复的对象
      * @param {...any} item
      */
-    Array.prototype.add = function (...item) {
-        for (var i = 0; i < item.length; i++) {
-            if (this.indexOf(item[i]) >= 0) {
-                continue;
-            } else {
-                this[this.length] = item[i];
+    //Array.prototype.add = function (...item) {
+    //    for (var i = 0; i < item.length; i++) {
+    //        if (this.indexOf(item[i]) >= 0) {
+    //            continue;
+    //        } else {
+    //            this[this.length] = item[i];
+    //        }
+    //    }
+    //    return this.length;
+    //};
+    Object.defineProperty(Array.prototype, "add", {
+        value: function (...item) {
+            for (var i = 0; i < item.length; i++) {
+                if (this.indexOf(item[i]) >= 0) {
+                    continue;
+                } else {
+                    this[this.length] = item[i];
+                }
             }
-        }
-        return this.length;
-    };
+            return this.length;
+        },
+        enumerable: false
+    });
 
     /**
      * 删除对象
      * @param {...any} item
      */
-    Array.prototype.del = function (...item) {
-        for (var i = 0; i < item.length; i++) {
-            var index = this.indexOf(item[i]);
-            if (index >= 0) {
-                this.splice(index, 1);
-            } else {
-                continue;
+    //Array.prototype.del = function (...item) {
+    //    for (var i = 0; i < item.length; i++) {
+    //        var index = this.indexOf(item[i]);
+    //        if (index >= 0) {
+    //            this.splice(index, 1);
+    //        } else {
+    //            continue;
+    //        }
+    //    }
+    //};
+    Object.defineProperty(Array.prototype, "del", {
+        value: function (...item) {
+            for (var i = 0; i < item.length; i++) {
+                var index = this.indexOf(item[i]);
+                if (index >= 0) {
+                    this.splice(index, 1);
+                } else {
+                    continue;
+                }
             }
-        }
-    };
+        },
+        enumerable: false
+    });
 
     /**
      * 全部匹配
@@ -13625,19 +14134,36 @@ lt_code.addMethod.AddMethod = function () {
      * 查找token在TokenList中的位置
      * @param {String} tokenName
      */
-    DOMTokenList.prototype.indexOf = function (tokenName) {
-        for (var i = 0; i < this.length; i++) {
-            if (this[i]==tokenName) {
-                return i;
+    //DOMTokenList.prototype.indexOf = function (tokenName) {
+    //    for (var i = 0; i < this.length; i++) {
+    //        if (this[i]==tokenName) {
+    //            return i;
+    //        }
+    //    }
+    //    return -1;
+    //}
+    Object.defineProperty(DOMTokenList.prototype, "indexOf", {
+        value: function (tokenName) {
+            for (var i = 0; i < this.length; i++) {
+                if (this[i] == tokenName) {
+                    return i;
+                }
             }
-        }
-        return -1;
-    }
+            return -1;
+        },
+        enumerable: false
+    });
 
     /**将HTMLCollection集合对象转为 */
-    HTMLCollection.prototype.toArray = function () {
-        return Array.prototype.slice.call(this);
-    }
+    //HTMLCollection.prototype.toArray = function () {
+    //    return Array.prototype.slice.call(this);
+    //}
+    Object.defineProperty(HTMLCollection.prototype, "toArray", {
+        value: function () {
+            return Array.prototype.slice.call(this);
+        },
+        enumerable: false
+    });
 
     /**如果string没有matchAll则使用自己写的函数 */
     String.prototype.matchAll = String.prototype.matchAll ? String.prototype.matchAll : matchAll;
