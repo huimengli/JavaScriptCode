@@ -14173,6 +14173,97 @@ lt_code.addMethod.AddMethod = function () {
         var total = unescape(encodeURIComponent(JSON.stringify(localStorage))).length;
         console.log("localStorage已经使用了 " + Math.floor(total / 1024) + "KB 的空间");
     };
+
+    /**
+     * 两个列表取交集
+     * @param {[]} arr1
+     * @param {[]} arr2
+     */
+    Array.intersection = function (arr1, arr2) {
+        try {
+            //使用ES6
+            const set = new Set(arr2);
+            return arr1.filter(item => set.has(item));
+        } catch (e) {
+            //不支持ES6
+            return arr1.filter(item => arr2.has(item));
+        }
+    };
+
+    /**
+     * 两个列表取交集
+     */
+    Object.defineProperty(Array.prototype, "intersection", {
+        value: function (other) {
+            return Array.intersection(this, other);
+        },
+        enumerable: false
+    });
+
+    /**
+     * 并集
+     * @param {[]} arr1
+     * @param {[]} arr2
+     */
+    Array.union = function (arr1, arr2) {
+        try {
+            //使用ES6
+            return [...new Set([...arr1, ...arr2])];
+        } catch (e) {
+            //不支持ES6
+            var ret = [];
+            arr1.forEach(t => ret.add(t));
+            arr2.forEach(t => ret.add(t));
+            return ret;
+        }
+    };
+
+    /**
+     * 并集
+     */
+    Object.defineProperty(Array.prototype, "union", {
+        value: function (other) {
+            return Array.union(this, other);
+        },
+        enumerable: false
+    });
+
+    /**
+     * 差集
+     * @param {[]} arr1
+     * @param {[]} arr2
+     */
+    Array.difference = function (arr1, arr2) {
+        try {
+            //使用ES6
+            var set = new Set(arr2);
+            return arr1.filter(item => !set.includes(item));
+        } catch (e) {
+            //不支持ES6
+            return arr1.filter(item => !arr2.includes(item));
+        }
+    };
+
+    /**
+     * 差集
+     */
+    Object.defineProperty(Array.prototype, "difference", {
+        value: function (other) {
+            return Array.difference(this, other);
+        },
+        enumerable: false
+    });
+
+    /**
+     * 对称差
+     */
+    Array.symmetricDifference = function(arr1, arr2){
+        try {
+            return [...difference(arr1, arr2), ...difference(arr2, arr1)];
+        } catch (e) {
+            return Array.difference(arr1, arr2).union(Array.difference(arr2, arr1));
+        }
+    }
 }();
 
 //加载图标
