@@ -7611,6 +7611,45 @@ lt_code.test.fileToBase.getReturn = function () { };
 //fileToBase函数接口
 
 /**
+ * 直接读取上传文件为base64
+ * @param {HTMLInputElement} inputFile 上传文件的HTML输入元素
+ * @returns {Promise<string>} 返回一个Promise对象，该对象解析为base64编码的字符串
+ * @example
+ * lt_code.test.fileToBase64(event.target)
+ * .then(base64 => {
+ *     console.log('Base64:', base64);
+ * })
+ * .catch(error => {
+ *     console.error('错误:', error);
+ * });
+ */
+lt_code.test.fileToBase2 = function (inputFile) {
+    return new Promise((resolve, reject) => {
+        // 检查是否选择了文件
+        if (inputFile.files.length === 0) {
+            reject(new Error('未选择文件'));
+            return;
+        }
+
+        var oFReader = new FileReader();
+        var file = inputFile.files[0];
+
+        // 文件读取完成后触发的事件
+        oFReader.onloadend = function (e) {
+            resolve(e.target.result);
+        };
+
+        // 文件读取出错时触发的事件
+        oFReader.onerror = function (e) {
+            reject(new Error('读取文件时出错'));
+        };
+
+        // 以DataURL的形式读取文件内容
+        oFReader.readAsDataURL(file);
+    });
+};
+
+/**
  * 直接读取文件内容
  * @param {HTMLInputElement} inputFile 上传结点
  */
