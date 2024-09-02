@@ -103,8 +103,8 @@
 
     /* Completeness */
     // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
-    "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
-    "outDir": "./ts",  				                     /* Redirect output structure to the directory. */ 
-    "rootDir": "./tsOut",           	 	             /* Specify the root directory of input files. Use to control the output directory structure with --outDir*/
+    "skipLibCheck": true,                                /* Skip type checking all .d.ts files. */
+    "outDir": "./ts",  				                           /* Redirect output structure to the directory. */ 
+    "rootDir": "./tsOut",            	 	                 /* Specify the root directory of input files. Use to control the output directory structure with --outDir*/
   }
 }
