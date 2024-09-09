@@ -1937,32 +1937,35 @@ lt_code.getAll6 = function (htmldom) {
     //读取到的结果
     var rets = [];
     //开始读取
-    while (matchs!=null) {
-        if (matchs[1]=="") {//没有要求计算祖/子辈,没有添加或者减少
-            if (matchs[2]=="") {//要求根据tag查照,因为tag不会重复,所以不用计算筛选
-                rets = Array.prototype.slice.call(document.getElementsByTagName(matchs[3])); 
-            } else if (matchs[2]=="#") {
-                if (rets.length==0) {
-                    rets = Array.prototype.slice.call(document.getElementById(matchs[3]));
+    while (matchs != null) {
+        if (matchs[1] == "") {//没有要求计算祖/子辈,没有添加或者减少
+            if (matchs[2] == "") {//要求根据tag查照,因为tag不会重复,所以不用计算筛选
+                rets = Array.prototype.slice.call(document.getElementsByTagName(matchs[3]));
+            } else if (matchs[2] == "#") {
+                if (rets.length == 0) {
+                    var idElement = document.getElementById(matchs[3]);
+                    if (idElement) {
+                        rets.push(idElement); // 如果找到元素，将其放入数组
+                    }
                 } else {
                     rets = function () {
                         var ret = [];
                         for (var i = 0; i < rets.length; i++) {
-                            if (rets[i].id==matchs[3]) {
+                            if (rets[i].id == matchs[3]) {
                                 ret.add(rets[i]);
                             }
                         }
                         return ret;
                     }();
                 }
-            } else if (matchs[2]==".") {
+            } else if (matchs[2] == ".") {
                 if (rets.length == 0) {
                     rets = Array.prototype.slice.call(document.getElementsByClassName(matchs[3]));
                 } else {
                     rets = function () {
                         var ret = [];
                         for (var i = 0; i < rets.length; i++) {
-                            if (rets[i].classList.indexOf(matchs[3])>=0) {
+                            if (rets[i].classList.indexOf(matchs[3]) >= 0) {
                                 ret.add(rets[i]);
                             }
                         }
@@ -1970,8 +1973,8 @@ lt_code.getAll6 = function (htmldom) {
                     }();
                 }
             }
-        } else if (matchs[1]=="<") {//计算祖辈
-            if (rets.length==0) {
+        } else if (matchs[1] == "<") {//计算祖辈
+            if (rets.length == 0) {
                 return document.body;
             } else {
                 rets = function () {
@@ -1982,8 +1985,8 @@ lt_code.getAll6 = function (htmldom) {
                     return ret;
                 }();
             }
-        } else if (matchs[1]==">") {//计算子辈
-            if (rets.length==0) {//没有父辈
+        } else if (matchs[1] == ">") {//计算子辈
+            if (rets.length == 0) {//没有父辈
                 if (matchs[2] == "") {//要求根据tag查照
                     rets = Array.prototype.slice.call(document.getElementsByTagName(matchs[3]));
                 } else if (matchs[2] == "#") {
@@ -2021,13 +2024,13 @@ lt_code.getAll6 = function (htmldom) {
                     }();
                 }
             }
-        } else if (matchs[1]=="+") {//计算添加
+        } else if (matchs[1] == "+") {//计算添加
             if (matchs[2] == "") {//要求根据tag查照
-                rets.add.apply(rets,Array.prototype.slice.call(document.getElementsByTagName(matchs[3])));
+                rets.add.apply(rets, Array.prototype.slice.call(document.getElementsByTagName(matchs[3])));
             } else if (matchs[2] == "#") {
-                rets.add.apply(rets,Array.prototype.slice.call(document.getElementById(matchs[3])));
+                rets.add.apply(rets, Array.prototype.slice.call(document.getElementById(matchs[3])));
             } else if (matchs[2] == ".") {
-                rets.add.apply(rets,Array.prototype.slice.call(document.getElementsByClassName(matchs[3])));
+                rets.add.apply(rets, Array.prototype.slice.call(document.getElementsByClassName(matchs[3])));
             }
         } else if (matchs[1] == "^") {//计算减少
             if (matchs[2] == "") {//要求根据tag查照
