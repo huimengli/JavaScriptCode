@@ -14063,18 +14063,24 @@ lt_code.addMethod.AddMethod = function () {
             if (this.length <= 1) {
                 return this;
             }
-            var pivotIndex = Math.floor(this.length / 2);
-            var pivot = this.splice(pivotIndex, 1)[0];
+
+            // 创建一个新的数组来避免修改原始数组
+            var arrayCopy = this.slice();
+            var pivotIndex = Math.floor(arrayCopy.length / 2);
+            var pivot = arrayCopy.splice(pivotIndex, 1)[0];
+
             var left = [];
             var right = [];
 
-            for (var i = 0; i < this.length; i++) {
-                if (this[i] < pivot) {
-                    left.push(this[i]);
+            for (var i = 0; i < arrayCopy.length; i++) {
+                if (arrayCopy[i] < pivot) {
+                    left.push(arrayCopy[i]);
                 } else {
-                    right.push(this[i]);
+                    right.push(arrayCopy[i]);
                 }
             }
+
+            // 返回新的排序结果
             return left.quickSort().concat([pivot], right.quickSort());
         },
         enumerable: false
