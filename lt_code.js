@@ -1937,32 +1937,35 @@ lt_code.getAll6 = function (htmldom) {
     //读取到的结果
     var rets = [];
     //开始读取
-    while (matchs!=null) {
-        if (matchs[1]=="") {//没有要求计算祖/子辈,没有添加或者减少
-            if (matchs[2]=="") {//要求根据tag查照,因为tag不会重复,所以不用计算筛选
-                rets = Array.prototype.slice.call(document.getElementsByTagName(matchs[3])); 
-            } else if (matchs[2]=="#") {
-                if (rets.length==0) {
-                    rets = Array.prototype.slice.call(document.getElementById(matchs[3]));
+    while (matchs != null) {
+        if (matchs[1] == "") {//没有要求计算祖/子辈,没有添加或者减少
+            if (matchs[2] == "") {//要求根据tag查照,因为tag不会重复,所以不用计算筛选
+                rets = Array.prototype.slice.call(document.getElementsByTagName(matchs[3]));
+            } else if (matchs[2] == "#") {
+                if (rets.length == 0) {
+                    var idElement = document.getElementById(matchs[3]);
+                    if (idElement) {
+                        rets.push(idElement); // 如果找到元素，将其放入数组
+                    }
                 } else {
                     rets = function () {
                         var ret = [];
                         for (var i = 0; i < rets.length; i++) {
-                            if (rets[i].id==matchs[3]) {
+                            if (rets[i].id == matchs[3]) {
                                 ret.add(rets[i]);
                             }
                         }
                         return ret;
                     }();
                 }
-            } else if (matchs[2]==".") {
+            } else if (matchs[2] == ".") {
                 if (rets.length == 0) {
                     rets = Array.prototype.slice.call(document.getElementsByClassName(matchs[3]));
                 } else {
                     rets = function () {
                         var ret = [];
                         for (var i = 0; i < rets.length; i++) {
-                            if (rets[i].classList.indexOf(matchs[3])>=0) {
+                            if (rets[i].classList.indexOf(matchs[3]) >= 0) {
                                 ret.add(rets[i]);
                             }
                         }
@@ -1970,8 +1973,8 @@ lt_code.getAll6 = function (htmldom) {
                     }();
                 }
             }
-        } else if (matchs[1]=="<") {//计算祖辈
-            if (rets.length==0) {
+        } else if (matchs[1] == "<") {//计算祖辈
+            if (rets.length == 0) {
                 return document.body;
             } else {
                 rets = function () {
@@ -1982,8 +1985,8 @@ lt_code.getAll6 = function (htmldom) {
                     return ret;
                 }();
             }
-        } else if (matchs[1]==">") {//计算子辈
-            if (rets.length==0) {//没有父辈
+        } else if (matchs[1] == ">") {//计算子辈
+            if (rets.length == 0) {//没有父辈
                 if (matchs[2] == "") {//要求根据tag查照
                     rets = Array.prototype.slice.call(document.getElementsByTagName(matchs[3]));
                 } else if (matchs[2] == "#") {
@@ -2021,13 +2024,13 @@ lt_code.getAll6 = function (htmldom) {
                     }();
                 }
             }
-        } else if (matchs[1]=="+") {//计算添加
+        } else if (matchs[1] == "+") {//计算添加
             if (matchs[2] == "") {//要求根据tag查照
-                rets.add.apply(rets,Array.prototype.slice.call(document.getElementsByTagName(matchs[3])));
+                rets.add.apply(rets, Array.prototype.slice.call(document.getElementsByTagName(matchs[3])));
             } else if (matchs[2] == "#") {
-                rets.add.apply(rets,Array.prototype.slice.call(document.getElementById(matchs[3])));
+                rets.add.apply(rets, Array.prototype.slice.call(document.getElementById(matchs[3])));
             } else if (matchs[2] == ".") {
-                rets.add.apply(rets,Array.prototype.slice.call(document.getElementsByClassName(matchs[3])));
+                rets.add.apply(rets, Array.prototype.slice.call(document.getElementsByClassName(matchs[3])));
             }
         } else if (matchs[1] == "^") {//计算减少
             if (matchs[2] == "") {//要求根据tag查照
@@ -7609,6 +7612,45 @@ lt_code.test.fileToBase = function (inputFile) {
 //fileToBase函数接口
 lt_code.test.fileToBase.getReturn = function () { };
 //fileToBase函数接口
+
+/**
+ * 直接读取上传文件为base64
+ * @param {HTMLInputElement} inputFile 上传文件的HTML输入元素
+ * @returns {Promise<string>} 返回一个Promise对象，该对象解析为base64编码的字符串
+ * @example
+ * lt_code.test.fileToBase64(event.target)
+ * .then(base64 => {
+ *     console.log('Base64:', base64);
+ * })
+ * .catch(error => {
+ *     console.error('错误:', error);
+ * });
+ */
+lt_code.test.fileToBase2 = function (inputFile) {
+    return new Promise((resolve, reject) => {
+        // 检查是否选择了文件
+        if (inputFile.files.length === 0) {
+            reject(new Error('未选择文件'));
+            return;
+        }
+
+        var oFReader = new FileReader();
+        var file = inputFile.files[0];
+
+        // 文件读取完成后触发的事件
+        oFReader.onloadend = function (e) {
+            resolve(e.target.result);
+        };
+
+        // 文件读取出错时触发的事件
+        oFReader.onerror = function (e) {
+            reject(new Error('读取文件时出错'));
+        };
+
+        // 以DataURL的形式读取文件内容
+        oFReader.readAsDataURL(file);
+    });
+};
 
 /**
  * 直接读取文件内容
@@ -14021,18 +14063,24 @@ lt_code.addMethod.AddMethod = function () {
             if (this.length <= 1) {
                 return this;
             }
-            var pivotIndex = Math.floor(this.length / 2);
-            var pivot = this.splice(pivotIndex, 1)[0];
+
+            // 创建一个新的数组来避免修改原始数组
+            var arrayCopy = this.slice();
+            var pivotIndex = Math.floor(arrayCopy.length / 2);
+            var pivot = arrayCopy.splice(pivotIndex, 1)[0];
+
             var left = [];
             var right = [];
 
-            for (var i = 0; i < this.length; i++) {
-                if (this[i] < pivot) {
-                    left.push(this[i]);
+            for (var i = 0; i < arrayCopy.length; i++) {
+                if (arrayCopy[i] < pivot) {
+                    left.push(arrayCopy[i]);
                 } else {
-                    right.push(this[i]);
+                    right.push(arrayCopy[i]);
                 }
             }
+
+            // 返回新的排序结果
             return left.quickSort().concat([pivot], right.quickSort());
         },
         enumerable: false
