@@ -13322,13 +13322,13 @@ lt_code.RSA = {
         /** 检查一个数是否为素数（伪代码，需要实现有效的素性测试）*/
         function isPrime(n, accuracy = 20) {
             try {
-                if (n < 2n) return false;
-                if (n === 2n) return true;
-                if (n % 2n === 0n) return false;
+                if (n < Bigint(2)) return false;
+                if (n === Bigint(2)) return true;
+                if (n % Bigint(2) === Bigint(0)) return false;
 
                 // 写Miller-Rabin素性测试的代码
                 for (let i = 0; i < accuracy; i++) {
-                    let a = BigInt(Math.floor(Math.random() * Number(n - 3n))) + 2n;
+                    let a = BigInt(Math.floor(Math.random() * Number(n - Bigint(3)))) + Bigint(2);
                     if (!millerRabinTest(a, n)) return false;
                 }
                 return true;
@@ -13362,7 +13362,7 @@ lt_code.RSA = {
                 //let x = modPow(a, d, n);
                 let x = lt_code.RSA.bigPowerAndQuotient(a, d, n);
                 if (x === 1 || x === lt_code.RSA.bigSubtractSlow(n, 1)) return true;
-                for (let i = 0n; i < r - 1n; i++) {
+                for (let i = Bigint(0); i < r - Bigint(1); i++) {
                     x = (x * x) % n;
                     if (x === lt_code.RSA.bigSubtractSlow(n, 1)) return true;
                 }
