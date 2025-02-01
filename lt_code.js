@@ -8919,7 +8919,12 @@ lt_code.test.downFile = function (data, fileName) {
         var link = document.createElement('a');
         link.href = window.URL.createObjectURL(blob);
         link.download = fileName;
-        link.click();
+        // 判断是否支持<a download>属性
+        if(link.getAttribute("download")){
+            link.click();
+        }else{
+            window.open(link.href);
+        }
         window.URL.revokeObjectURL(link.href);
     }
 };
