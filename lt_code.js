@@ -8923,7 +8923,33 @@ lt_code.test.downFile = function (data, fileName) {
         if(link.getAttribute("download")){
             link.click();
         }else{
-            window.open(link.href);
+            // 尝试使用降级方案
+            var popup = window.open("", "_blank");
+            popup.document.title = "下载...";
+
+            var force = blob.type === "application/octet-stream"; // 二进制流数据
+            var isSafari = /Safari/i.test(navigator.userAgent) || true;
+            var isChromeIOS = /CriOS\/[\d]+/.test(navigator.userAgent);
+           
+            if (
+              (isChromeIOS || (force && isSafari) || isMacOSWebView) &&
+              typeof FileReader !== "undefined"
+            ) {
+              // Safari doesn't allow downloading of blob URLs
+              var reader = new FileReader();
+              reader.onloadend = function () {
+                var url = reader.result;
+                url = isChromeIOS
+                  ? url
+                  : url.replace(/^data:[^;]*;/, "data:attachment/file;"); // 处理成附件的形式
+                if (popup) popup.location.href = url;
+                else location = url;
+                popup = null; // reverse-tabnabbing #460
+              };
+              reader.readAsDataURL(blob);
+            }else{
+                // 暂不支持的方案
+            }
         }
         window.URL.revokeObjectURL(link.href);
     }
