@@ -628,7 +628,7 @@ lt_code.getClientRect = function (dom) {
 lt_code.searchTime = function (time) {
     var cut = new Date().getTime() - time.getTime();
     var ret = null;
-    if (cut<0) {
+    if (cut < 0) {
         ret = "未来";
     } else if (cut < 60 * 1000 && cut >= 0) {
         ret = "刚刚";
@@ -649,7 +649,7 @@ lt_code.searchTime = function (time) {
  * @param {any} szInput
  */
 lt_code.utf8ToChinese = function (szInput) {
-    if (!szInput || typeof(szInput)!="string") {
+    if (!szInput || typeof (szInput) != "string") {
         return szInput;
     }
     var x, wch, wch1, wch2, uch = "", szRet = "";
@@ -1804,32 +1804,32 @@ lt_code.getAll5 = function (htmldom) {
     //读取到的结果
     var rets = [];
     //开始读取
-    while (matchs!=null) {
-        if (matchs[1]=="") {//没有要求计算祖/子辈,没有添加或者减少
-            if (matchs[2]=="") {//要求根据tag查照,因为tag不会重复,所以不用计算筛选
-                rets = Array.prototype.slice.call(document.getElementsByTagName(matchs[3])); 
-            } else if (matchs[2]=="#") {
-                if (rets.length==0) {
+    while (matchs != null) {
+        if (matchs[1] == "") {//没有要求计算祖/子辈,没有添加或者减少
+            if (matchs[2] == "") {//要求根据tag查照,因为tag不会重复,所以不用计算筛选
+                rets = Array.prototype.slice.call(document.getElementsByTagName(matchs[3]));
+            } else if (matchs[2] == "#") {
+                if (rets.length == 0) {
                     rets = Array.prototype.slice.call(document.getElementById(matchs[3]));
                 } else {
                     rets = function () {
                         var ret = [];
                         for (var i = 0; i < rets.length; i++) {
-                            if (rets[i].id==matchs[3]) {
+                            if (rets[i].id == matchs[3]) {
                                 ret.add(rets[i]);
                             }
                         }
                         return ret;
                     }();
                 }
-            } else if (matchs[2]==".") {
+            } else if (matchs[2] == ".") {
                 if (rets.length == 0) {
                     rets = Array.prototype.slice.call(document.getElementsByClassName(matchs[3]));
                 } else {
                     rets = function () {
                         var ret = [];
                         for (var i = 0; i < rets.length; i++) {
-                            if (rets[i].classList.indexOf(matchs[3])>=0) {
+                            if (rets[i].classList.indexOf(matchs[3]) >= 0) {
                                 ret.add(rets[i]);
                             }
                         }
@@ -1837,8 +1837,8 @@ lt_code.getAll5 = function (htmldom) {
                     }();
                 }
             }
-        } else if (matchs[1]=="<") {//计算祖辈
-            if (rets.length==0) {
+        } else if (matchs[1] == "<") {//计算祖辈
+            if (rets.length == 0) {
                 return document.body;
             } else {
                 rets = function () {
@@ -1849,8 +1849,8 @@ lt_code.getAll5 = function (htmldom) {
                     return ret;
                 }();
             }
-        } else if (matchs[1]==">") {//计算子辈
-            if (rets.length==0) {//没有父辈
+        } else if (matchs[1] == ">") {//计算子辈
+            if (rets.length == 0) {//没有父辈
                 if (matchs[2] == "") {//要求根据tag查照
                     rets = Array.prototype.slice.call(document.getElementsByTagName(matchs[3]));
                 } else if (matchs[2] == "#") {
@@ -1888,13 +1888,13 @@ lt_code.getAll5 = function (htmldom) {
                     }();
                 }
             }
-        } else if (matchs[1]=="+") {//计算添加
+        } else if (matchs[1] == "+") {//计算添加
             if (matchs[2] == "") {//要求根据tag查照
-                rets.add.apply(rets,Array.prototype.slice.call(document.getElementsByTagName(matchs[3])));
+                rets.add.apply(rets, Array.prototype.slice.call(document.getElementsByTagName(matchs[3])));
             } else if (matchs[2] == "#") {
-                rets.add.apply(rets,Array.prototype.slice.call(document.getElementById(matchs[3])));
+                rets.add.apply(rets, Array.prototype.slice.call(document.getElementById(matchs[3])));
             } else if (matchs[2] == ".") {
-                rets.add.apply(rets,Array.prototype.slice.call(document.getElementsByClassName(matchs[3])));
+                rets.add.apply(rets, Array.prototype.slice.call(document.getElementsByClassName(matchs[3])));
             }
         } else if (matchs[1] == "-") {//计算减少
             if (matchs[2] == "") {//要求根据tag查照
@@ -5108,69 +5108,69 @@ lt_code.other.PBoids = function (dom_father) {
     // start particle simulation
     simulate(
         '2d', {
-            init: function () {
+        init: function () {
 
-                this.spray(150, function () {
-                    return [
-                        null,
-                        null,
-                        Vector.create(
-                            this.width * Math.random(),
-                            this.height * Math.random()
-                        ),
-                        Vector.random(1),
-                        .75 + (Math.random() * .5),
-                        100 * Math.random(), [
-                            this.behavior.cohesion(),
-                            this.behavior.alignment(),
-                            this.behavior.separation(),
+            this.spray(150, function () {
+                return [
+                    null,
+                    null,
+                    Vector.create(
+                        this.width * Math.random(),
+                        this.height * Math.random()
+                    ),
+                    Vector.random(1),
+                    .75 + (Math.random() * .5),
+                    100 * Math.random(), [
+                        this.behavior.cohesion(),
+                        this.behavior.alignment(),
+                        this.behavior.separation(),
 
-                            this.behavior.limit(1 + Math.random()),
+                        this.behavior.limit(1 + Math.random()),
 
-                            this.behavior.wrap(5),
-                            this.behavior.move()
-                        ]
+                        this.behavior.wrap(5),
+                        this.behavior.move()
                     ]
-                });
+                ]
+            });
 
-            },
-            tick: function () {
+        },
+        tick: function () {
 
-            },
-            beforePaint: function () {
-                this.clear();
-            },
-            paint: function (particle) {
+        },
+        beforePaint: function () {
+            this.clear();
+        },
+        paint: function (particle) {
 
-                var p = particle.position;
-                var v = particle.velocity;
-                var s = particle.stimulated || 0;
-                var l = particle.life;
+            var p = particle.position;
+            var v = particle.velocity;
+            var s = particle.stimulated || 0;
+            var l = particle.life;
 
-                this.paint.circle(p.x, p.y, v.magnitudeSquared, 'hsla(' + v.angle + ',100%,50%,1)');
+            this.paint.circle(p.x, p.y, v.magnitudeSquared, 'hsla(' + v.angle + ',100%,50%,1)');
 
-            },
-            afterPaint: function () {
-                // nothing
-            },
-            action: function (x, y) {
+        },
+        afterPaint: function () {
+            // nothing
+        },
+        action: function (x, y) {
 
-                // disperse if near
-                this.particles.forEach(function (p) {
+            // disperse if near
+            this.particles.forEach(function (p) {
 
-                    if (Vector.distanceSquared(p.position, {
-                        x: x,
-                        y: y
-                    }) < 4000) {
-                        p.velocity.randomize(100);
-                        p.position.x += p.velocity.x;
-                        p.position.y += p.velocity.y;
-                    }
+                if (Vector.distanceSquared(p.position, {
+                    x: x,
+                    y: y
+                }) < 4000) {
+                    p.velocity.randomize(100);
+                    p.position.x += p.velocity.x;
+                    p.position.y += p.velocity.y;
+                }
 
-                });
+            });
 
-            }
         }
+    }
     );
 
     setTimeout(() => {
@@ -6770,7 +6770,7 @@ lt_code.Version = function () {
                         "API模块": {
                             "简称": "API",
                             "全称": "API",
-                            "空间":"lt_code.API",
+                            "空间": "lt_code.API",
                         },
                     };
                     console.log(log);
@@ -6789,7 +6789,7 @@ lt_code.Version = function () {
                 case "pseudoThreeD":
                     /**伪3D模块 */
                     var pseudoThreeD = lt_code.newDom("script", {
-                        src: lt_code.variable.currentDir + "item/pseudoThreeD.js?time="+new Date().getTime(),
+                        src: lt_code.variable.currentDir + "item/pseudoThreeD.js?time=" + new Date().getTime(),
                     });
                     lt_code.addChild(pseudoThreeD, head);
                     break;
@@ -6857,7 +6857,7 @@ lt_code.Version = function () {
                         "API模块": {
                             "简称": "API",
                             "全称": "API",
-                            "空间":"lt_code.API",
+                            "空间": "lt_code.API",
                         },
                     };
                     console.log(log);
@@ -11571,7 +11571,7 @@ lt_code.test.threeDimensionalCloud = function () {
                 callback.call(this[i]);
             }
         },
-        enumerable:false
+        enumerable: false
     })
 
     /**旋转x轴 */
@@ -11735,7 +11735,7 @@ lt_code.variable.currentDir = function () {
  * @param {number} num 补位长度
  * @param {string} complementValue 补位内容
  */
-lt_code.variable.complement = function (input, num,complementValue="0") {
+lt_code.variable.complement = function (input, num, complementValue = "0") {
     var temp = lt_code.variable.toBackArray(input.toString());
     for (var i = 1; i <= num; i++) {
         if (i > temp.length) {
@@ -12359,10 +12359,10 @@ lt_code.RSA = {
         }() : false;
         let count = num.length;
         if (count <= 1) {
-            if (num%2==0) {
+            if (num % 2 == 0) {
                 return (lt_code.getNum(num) / 2).toString();
             } else {
-                return (lt_code.getNum(num-1) / 2).toString();
+                return (lt_code.getNum(num - 1) / 2).toString();
             }
         }
         let each = 0;
@@ -13321,16 +13321,29 @@ lt_code.RSA = {
 
         /** 检查一个数是否为素数（伪代码，需要实现有效的素性测试）*/
         function isPrime(n, accuracy = 20) {
-            if (n < 2n) return false;
-            if (n === 2n) return true;
-            if (n % 2n === 0n) return false;
+            try {
+                if (n < 2n) return false;
+                if (n === 2n) return true;
+                if (n % 2n === 0n) return false;
 
-            // 写Miller-Rabin素性测试的代码
-            for (let i = 0; i < accuracy; i++) {
-                let a = BigInt(Math.floor(Math.random() * Number(n - 3n))) + 2n;
-                if (!millerRabinTest(a, n)) return false;
+                // 写Miller-Rabin素性测试的代码
+                for (let i = 0; i < accuracy; i++) {
+                    let a = BigInt(Math.floor(Math.random() * Number(n - 3n))) + 2n;
+                    if (!millerRabinTest(a, n)) return false;
+                }
+                return true;
+            } catch (error) {
+                if (n < 2) return false;
+                if (n === 2) return true;
+                if (n % 2 === 0) return false;
+
+                // 写Miller-Rabin素性测试的代码
+                for (let i = 0; i < accuracy; i++) {
+                    let a = BigInt(Math.floor(Math.random() * Number(n - 3))) + 2;
+                    if (!millerRabinTest(a, n)) return false;
+                }
+                return true;
             }
-            return true;
         }
 
         /**
@@ -13339,35 +13352,38 @@ lt_code.RSA = {
          * @param {any} n
          */
         function millerRabinTest(a, n) {
-            let d = lt_code.RSA.bigSubtractSlow(n,1);
-            let r = "0";
-            while (lt_code.RSA.bigQuotient(d,2)==0) {
-                d = lt_code.RSA.bigDividedCutSlow(d, 2);
-                r = lt_code.RSA.bigAddSlow(r, 1);
+            try {
+                let d = lt_code.RSA.bigSubtractSlow(n, 1);
+                let r = "0";
+                while (lt_code.RSA.bigQuotient(d, 2) == 0) {
+                    d = lt_code.RSA.bigDividedCutSlow(d, 2);
+                    r = lt_code.RSA.bigAddSlow(r, 1);
+                }
+                //let x = modPow(a, d, n);
+                let x = lt_code.RSA.bigPowerAndQuotient(a, d, n);
+                if (x === 1 || x === lt_code.RSA.bigSubtractSlow(n, 1)) return true;
+                for (let i = 0n; i < r - 1n; i++) {
+                    x = (x * x) % n;
+                    if (x === lt_code.RSA.bigSubtractSlow(n, 1)) return true;
+                }
+                return false;
+            } catch (error) {
+                let d = lt_code.RSA.bigSubtractSlow(n, 1);
+                let r = "0";
+                while (lt_code.RSA.bigQuotient(d, 2) == 0) {
+                    d = lt_code.RSA.bigDividedCutSlow(d, 2);
+                    r = lt_code.RSA.bigAddSlow(r, 1);
+                }
+                //let x = modPow(a, d, n);
+                let x = lt_code.RSA.bigPowerAndQuotient(a, d, n);
+                if (x === 1 || x === lt_code.RSA.bigSubtractSlow(n, 1)) return true;
+                for (let i = 0; i < r - 1; i++) {
+                    x = (x * x) % n;
+                    if (x === lt_code.RSA.bigSubtractSlow(n, 1)) return true;
+                }
+                return false;
             }
-            //let x = modPow(a, d, n);
-            let x = lt_code.RSA.bigPowerAndQuotient(a, d, n);
-            if (x === 1 || x === lt_code.RSA.bigSubtractSlow(n, 1)) return true;
-            for (let i = 0n; i < r - 1n; i++) {
-                x = (x * x) % n;
-                if (x === lt_code.RSA.bigSubtractSlow(n,1)) return true;
-            }
-            return false;
         }
-
-        //function modPow(base, exponent, modulus) {
-        //    if (modulus === 1n) return 0n;
-        //    let result = 1n;
-        //    base = base % modulus;
-        //    while (exponent > 0n) {
-        //        if (exponent % 2n === 1n) {
-        //            result = (result * base) % modulus;
-        //        }
-        //        exponent = exponent >> 1n;
-        //        base = (base * base) % modulus;
-        //    }
-        //    return result;
-        //}
 
         // 选择两个大素数 p 和 q
         let p = generateLargePrime(bitLength / 2);
@@ -13433,7 +13449,7 @@ lt_code.RSA = {
          */
         var pow_mod = (x, n, mod) => {
             var res = 1;
-            while (n!="0") {
+            while (n != "0") {
                 if (n & 1)
                     res = mul(res, x, mod);
                 x = mul(x, x, mod);
@@ -13471,10 +13487,10 @@ lt_code.RSA = {
 
         var prime = [2, 3, 5, 7, 11, 13, 17, 19];
         for (var i = 0; i < prime.length; i++) {
-            if (n==prime[i]) {
+            if (n == prime[i]) {
                 return true;
             }
-            if (Miller_Rabbin(prime[i],n)==false) {
+            if (Miller_Rabbin(prime[i], n) == false) {
                 return false;//未通过探测 返回假
             }
         }
@@ -13486,7 +13502,7 @@ lt_code.RSA = {
         var a = "1000000000000000000000000000000000000000000000000000000000000000";
         const count = 1000;
         var list = [];
-        var ans1 = [],ans2 = [];
+        var ans1 = [], ans2 = [];
         for (var i = 0; i < count; i++) {
             list.push(this.bigRandom(a));
         }
@@ -14305,7 +14321,7 @@ lt_code.addMethod.AddMethod = function () {
     /**
      * 对称差
      */
-    Array.symmetricDifference = function(arr1, arr2){
+    Array.symmetricDifference = function (arr1, arr2) {
         try {
             return [...difference(arr1, arr2), ...difference(arr2, arr1)];
         } catch (e) {
