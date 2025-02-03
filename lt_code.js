@@ -8935,7 +8935,19 @@ lt_code.test.downFile = function (data, fileName) {
                     }
                 }
             }
+            var downloadDiv = lt_code.newDom("div");
+            downloadDiv.innerText = "下载文件正在转换中...";
+            var div = lt_code.newDom("div");
+            div.innerText = filename;
             popup.document.title = "下载...";
+            popup.document.body.style.textAlign = "center";
+            popup.document.body.style.lineHeight = "100px";
+            popup.document.body.style.fontSize = "60px";
+            popup.document.body.style.fontWeight = "bold";
+            popup.document.body.appendChild(downloadDiv);
+            popup.document.body.appendChild(link);
+            popup.document.body.appendChild(lt_code.newDom("br"));
+            popup.document.body.appendChild(div);
 
             var force = blob.type === "application/octet-stream"; // 二进制流数据
             var isSafari = /Safari/i.test(navigator.userAgent) || true;
@@ -8946,20 +8958,27 @@ lt_code.test.downFile = function (data, fileName) {
               (isChromeIOS || (force && isSafari) || isMacOSWebView) &&
               typeof FileReader !== "undefined"
             ) {
-              // Safari doesn't allow downloading of blob URLs
-              var reader = new FileReader();
-              reader.onloadend = function () {
-                var url = reader.result;
-                url = isChromeIOS
-                  ? url
-                  : url.replace(/^data:[^;]*;/, "data:attachment/file;"); // 处理成附件的形式
-                if (popup) popup.location.href = url;
-                else location = url;
-                popup = null; // reverse-tabnabbing #460
-              };
-              reader.readAsDataURL(blob);
+                // Safari doesn't allow downloading of blob URLs
+                var reader = new FileReader();
+                reader.onloadend = function () {
+                    var url = reader.result;
+                    url = isChromeIOS
+                    ? url
+                    : url.replace(/^data:[^;]*;/, "data:attachment/file;"); // 处理成附件的形式
+                    if (popup) popup.location.href = url;
+                    else location = url;
+                    popup = null; // reverse-tabnabbing #460
+                };
+                reader.readAsDataURL(blob);
             }else{
-                // 暂不支持的方案
+                var URL = _global.URL || _global.webkitURL;
+                var url = URL.createObjectURL(blob);
+                if (popup) popup.location = url;else location.href = url;
+                popup = null; // reverse-tabnabbing #460
+
+                setTimeout(function () {
+                    URL.revokeObjectURL(url);
+                }, 4E4); // 40s
             }
         }
         window.URL.revokeObjectURL(link.href);
