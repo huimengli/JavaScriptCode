@@ -8939,6 +8939,8 @@ lt_code.test.downFile = function (data, fileName) {
             downloadDiv.innerText = "下载文件正在转换中...";
             var div = lt_code.newDom("div");
             div.innerText = filename;
+            var propress = lt_code.newDom("div");
+            propress.innerText = "0/"+file.size;
             popup.document.title = "下载...";
             popup.document.body.style.textAlign = "center";
             popup.document.body.style.lineHeight = "100px";
@@ -8946,6 +8948,8 @@ lt_code.test.downFile = function (data, fileName) {
             popup.document.body.style.fontWeight = "bold";
             popup.document.body.appendChild(downloadDiv);
             popup.document.body.appendChild(link);
+            popup.document.body.appendChild(lt_code.newDom("br"));
+            popup.document.body.appendChild(propress);
             popup.document.body.appendChild(lt_code.newDom("br"));
             popup.document.body.appendChild(div);
 
@@ -8960,6 +8964,9 @@ lt_code.test.downFile = function (data, fileName) {
             ) {
                 // Safari doesn't allow downloading of blob URLs
                 var reader = new FileReader();
+                reader.onprogress = function (e) {
+                    propress.innerText = e.loaded+"/"+file.size;
+                };
                 reader.onloadend = function () {
                     var url = reader.result;
                     url = isChromeIOS
