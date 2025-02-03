@@ -8934,9 +8934,6 @@ lt_code.test.downFile = function (data, fileName) {
                         return;
                     }
                 }
-            }else{
-                alert("下载失败");
-                return;
             }
             popup.document.title = "下载...";
 
