@@ -8940,7 +8940,8 @@ lt_code.test.downFile = function (data, fileName) {
             var force = blob.type === "application/octet-stream"; // 二进制流数据
             var isSafari = /Safari/i.test(navigator.userAgent) || true;
             var isChromeIOS = /CriOS\/[\d]+/.test(navigator.userAgent);
-           
+            var isMacOSWebView = /Macintosh/.test(navigator.userAgent) && /AppleWebKit/.test(navigator.userAgent) && !/Safari/.test(navigator.userAgent);
+
             if (
               (isChromeIOS || (force && isSafari) || isMacOSWebView) &&
               typeof FileReader !== "undefined"
