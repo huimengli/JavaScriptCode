@@ -8917,14 +8917,25 @@ lt_code.test.downFile = function (data, fileName) {
         navigator.msSaveBlob(blob, fileName);
     } else {
         var link = document.createElement('a');
-        link.href = window.URL.createObjectURL(blob);
+        var URL = window.URL || window.webkitURL;
+        link.href = URL.createObjectURL(blob);
         link.download = fileName;
         // 判断是否支持<a download>属性
         if(link.getAttribute("download")){
             link.click();
         }else{
             // 尝试使用降级方案
-            var popup = window.open("", "_blank");
+            var popup = open('about:blank', '_blank');
+            if (!popup && confirm("是否下载 "+fileName+" 到本地?")) {
+                popup = window.open('about:blank', '_blank');
+                if (!popup){
+                    alert("下载失败");
+                    return;
+                }
+            }else{
+                alert("下载失败");
+                return;
+            }
             popup.document.title = "下载...";
 
             var force = blob.type === "application/octet-stream"; // 二进制流数据
