@@ -8926,11 +8926,13 @@ lt_code.test.downFile = function (data, fileName) {
         }else{
             // 尝试使用降级方案
             var popup = open('about:blank', '_blank');
-            if (!popup && confirm("是否下载 "+fileName+" 到本地?")) {
-                popup = window.open('about:blank', '_blank');
-                if (!popup){
-                    alert("下载失败");
-                    return;
+            if (!popup) { // 打开弹窗失败,需要用户点击获取权限
+                if(confirm("是否下载 "+fileName+" 到本地?")){
+                    popup = window.open('about:blank', '_blank');
+                    if (!popup){
+                        alert("下载失败");
+                        return;
+                    }
                 }
             }else{
                 alert("下载失败");
