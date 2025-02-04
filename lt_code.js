@@ -462,6 +462,14 @@ lt_code.variable.browserInfo = function () {
 }();
 
 /**
+ * 是否是Safari浏览器
+ */
+lt_code.variable.isSafari = function() {
+    var userAgent = navigator.userAgent.toLowerCase();
+    return userAgent.indexOf('safari') !== -1 && userAgent.indexOf('chrome') === -1;
+}
+
+/**
  * 对象深度拷贝
  * @param {object} obj
  */
