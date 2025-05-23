@@ -6690,8 +6690,9 @@ lt_code.Version = function () {
         /**
          * 初始化一些特殊模块
          * @param {string} object 模块名称
+         * @param {function} done 回调函数
          */
-        lt_code.init = function (object) {
+        lt_code.init = function (object, done = () => { }) {
             var head = lt_code.getAll("head");
             switch (object) {
                 //伪3D模块
@@ -6702,6 +6703,7 @@ lt_code.Version = function () {
                         src: lt_code.variable.currentDir + "item/pseudoThreeD.js"
                     });
                     lt_code.addChild(pseudoThreeD, head);
+                    pseudoThreeD.onload = done;
                     break;
                 //3D模块
                 case "TD":
@@ -6711,6 +6713,7 @@ lt_code.Version = function () {
                         src: lt_code.variable.currentDir + "item/threeD.js",
                     });
                     lt_code.addChild(threeD, head);
+                    threeD.onload = done;
                     break;
                 //图片操作模块
                 case "IMGO":
@@ -6719,6 +6722,7 @@ lt_code.Version = function () {
                         src: lt_code.variable.currentDir + "item/imageOperation.js",
                     });
                     lt_code.addChild(imageOperation, head);
+                    imageOperation.onload = done;
                     break;
                 //水印模块
                 case "WM":
@@ -6727,6 +6731,7 @@ lt_code.Version = function () {
                         src: lt_code.variable.currentDir + "item/watermark.js",
                     });
                     lt_code.addChild(watermark, head);
+                    watermark.onload = done;
                     break;
                 //API模块
                 case "API":
@@ -6734,6 +6739,7 @@ lt_code.Version = function () {
                         src: lt_code.variable.currentDir + "item/API.js",
                     });
                     lt_code.addChild(API, head);
+                    API.onload = done;
                     break;
                 default:
                     console.trace("没有这个模块!");
